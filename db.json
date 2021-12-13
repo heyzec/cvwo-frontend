@@ -1,0 +1,19 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "text": "Doctors Appointments",
+      "day": "2021-12-05T06:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "text": "Meeting at School",
+      "day": "2021-12-06T05:30:00.000Z"
+    },
+    {
+      "id": 3,
+      "text": "Drive back Home",
+      "day": "2021-12-08T09:36:00.000Z"
+    }
+  ]
+}
