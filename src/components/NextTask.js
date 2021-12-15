@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import dayjs from 'dayjs'
 
 const NextTask = ({ addTaskCallback }) => {
 
@@ -15,17 +16,17 @@ const NextTask = ({ addTaskCallback }) => {
       return
     }
     
-    const day = (new Date(`${date}T${time}`)).toISOString()
-      const task = {
-        "id": Math.random(),
-        "text": text,
-        "day": day,
-        "reminder": true
-      }
-      await addTaskCallback(task)
-      setText("")
-      setDate("")
-      setTime("")
+    const datetime = dayjs(`${date} ${time}`)
+    const task = {
+      "id": Math.random(),
+      "text": text,
+      "day": datetime.toISOString(),
+      "reminder": true
+    }
+    await addTaskCallback(task)
+    setText("")
+    setDate("")
+    setTime("")
   }
 
   return (

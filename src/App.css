@@ -57,6 +57,7 @@ body {
 
 .datetimepicker {
   font-family: var(--app-font);
+  font-size: medium;
   background-color: transparent;
   border: none;
 }

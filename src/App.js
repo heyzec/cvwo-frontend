@@ -3,9 +3,11 @@ import './App.css';
 import Header from './components/Header'
 import Task from './components/Task'
 import NextTask from './components/NextTask'
+import dayjs from 'dayjs'
 
 function App() {
   const [tasks, setTasks] = useState([])
+  const [datetime, setDatetime] = useState(dayjs())
 
   // READ from db - Run once after initial rendering
   useEffect(() => {
@@ -59,16 +61,15 @@ function App() {
 
   // Function for testing purposes
   const magic = async () => {
-    console.log(JSON.stringify(tasks))
-    await editTask(1, { text: "Doctor" })
-    console.log(JSON.stringify(tasks))
+    console.log(datetime)
+    setDatetime(dayjs())
   }
 
   return (
     <div className="App">
       <Header />
       <div className="container">
-        {tasks.map((task) => <Task key={task.id} task={task} updateTask={editTask} deleteTask={deleteTask} />)}
+        {tasks.map((task) => <Task key={task.id} task={task} isCreated={true} updateTask={editTask} deleteTask={deleteTask} />)}
         <NextTask addTaskCallback={addTask} />
         <button onClick={magic}>Magic!</button>
       </div>
