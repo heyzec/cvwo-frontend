@@ -1,18 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef} from 'react'
 import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
 import dayjs from 'dayjs'
 
-const Task = ({ task, updateTask, deleteTask }) => {
+const Task = ({ task, isCreated, updateTask, deleteTask, addTask }) => {
 
-  const [readOnly, setReadOnly] = useState(true)
+  const [readOnly, setReadOnly] = useState(isCreated)
   const [text, setText] = useState("")
+
+  const [datetime, setDatetime] = useState(isCreated ? dayjs(task.day) : null)
+  const [dateValue, setDateValue] = useState(isCreated ? datetime.format("YYYY-MM-DD") : "")
+  const [timeValue, setTimeValue] = useState(isCreated ? datetime.format("HH:mm") : "")
+  const dateReadable = isCreated ? datetime.format("ddd, D MMM 'YY") : ""
+  const timeReadable = isCreated ? datetime.format("HH:mm") : ""
   
-  const [datetime, setDatetime] = useState(dayjs(task.day))
-  const [dateValue, setDateValue] = useState(datetime.format("YYYY-MM-DD"))
-  const [timeValue, setTimeValue] = useState(datetime.format("HH:mm"))
-  const dateReadable = datetime.format("ddd, D MMM 'YY")
-  const timeReadable = datetime.format("HH:mm")
+  const textelem = useRef(null)
 
   const textChange = (e) => setText(e.target.value)
   const dateChange = async (e) => {
@@ -26,21 +28,42 @@ const Task = ({ task, updateTask, deleteTask }) => {
     setDatetime(dt)
   }
 
-  useEffect(() => {
-    setText(task.text)
-  }, [task])
+  useEffect(() => isCreated ? setText(task.text) : null, [task, isCreated])
   
-  
-  const handleBlur = (e) => {
-    setReadOnly(true)
-    if (text === task.text && datetime.toISOString() === task.day) {  
+  const pencilClicked = () => {
+    setReadOnly(false)
+    textelem.current.focus()
+  }
+
+  const handleBlur = async (e) => {
+    if (
+      (isCreated && text === task.text && datetime.toISOString() === task.day) ||
+      (!isCreated && (!text || !dateValue || !timeValue))
+    ) {
       // If there are no changes, do nothing
+      if (isCreated) {
+        setReadOnly(true)
+      }
       return
     }
-    updateTask(task.id, {
-      "text": text,
-      "day": dayjs(`${dateValue} ${timeValue}`).toISOString()
-    })
+
+    if (isCreated) {
+      updateTask(task.id, {
+        "text": text,
+        "day": datetime.toISOString()
+      })
+      setReadOnly(true)
+    } else {
+      const task = {
+        "text": text,
+        "day": datetime.toISOString(),
+      }
+      await addTask(task)
+      setText("")
+      setDateValue("")
+      setTimeValue("")
+      setReadOnly(false)
+    }
   }
 
   return (
@@ -48,27 +71,32 @@ const Task = ({ task, updateTask, deleteTask }) => {
       <div className="task-name" >
         <h3>
           <input readOnly={readOnly} className="task-name-input" value={text}
-            onChange={textChange} />
+            onChange={textChange} placeholder={isCreated ? "" : "Add a task here"}
+            onBlur={handleBlur} ref={textelem}/>
         </h3>
       </div>
+      {isCreated || text
+      ? (
+        <>
       <div className="task-time">
         {
-          readOnly
+          isCreated
             ? <p>{dateReadable}</p>
-            : <input className="datetimepicker" type="date" value={dateValue}
-            onChange={dateChange} onBlur={handleBlur}/>
+            : <input className={`datetimepicker${text ? "" : " hidden"}`} type="date" value={dateValue}
+              onChange={dateChange} onBlur={handleBlur} />
         }
       </div>
-      <div className="task-time">
+      <div className="task-time" visibility="hidden">
         {
-          readOnly
+          isCreated
             ? <p>{timeReadable}</p>
-            : <input className="datetimepicker" type="time" value={timeValue}
-            onChange={timeChange} onBlur={handleBlur}/>
+            : <input className={`datetimepicker${text ? "" : " hidden"}`} type="time" value={timeValue}
+              onChange={timeChange} onBlur={handleBlur} />
         }
       </div>
-      <HiPencil className="icon" onClick={() => setReadOnly(false)} />
-      <FaTimes className="icon" onClick={() => deleteTask(task.id)} />
+      <HiPencil className={`icon${isCreated ? "" : " hidden"}`} onClick={pencilClicked} />
+      <FaTimes className={`icon${isCreated ? "" : " hidden"}`} onClick={() => deleteTask(task.id)} />
+      </>) : ""}
     </div>
   )
 }

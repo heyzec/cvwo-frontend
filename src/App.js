@@ -20,15 +20,16 @@ function App() {
   }, [])
 
   // CREATE task and insert into db
-  const addTask = async (newTask) => {
+  const addTask = async (data) => {
     console.log("HTTP POST")
     const res = await fetch('http://localhost:5000/tasks', {
       method: 'POST',
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify(newTask),
+      body: JSON.stringify(data),
     })
+    const newTask = await res.json()
     setTasks([...tasks, newTask])
   }
 
@@ -70,7 +71,7 @@ function App() {
       <Header />
       <div className="container">
         {tasks.map((task) => <Task key={task.id} task={task} isCreated={true} updateTask={editTask} deleteTask={deleteTask} />)}
-        <NextTask addTaskCallback={addTask} />
+        <Task isCreated={false} addTask={addTask} />
         <button onClick={magic}>Magic!</button>
       </div>
     </div>

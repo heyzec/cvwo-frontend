@@ -9,6 +9,10 @@
   padding: 0;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 .App {
   text-align: center;
 }
@@ -31,7 +35,7 @@ body {
 
 
 .task-name {
-  flex: 1;
+  flex: 2;
 }
 
 .task-time {
@@ -44,6 +48,7 @@ body {
   font: inherit;
   background-color: transparent;
   border: none;
+  width: 100%;
 }
 
 .task-name-input, #task-next-input:focus {
