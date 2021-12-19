@@ -9,6 +9,85 @@
   padding: 0;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+#header {
+  background-color: #24292f;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0px 10px;
+}
+
+
+#header-spacer {
+  margin-right: auto;
+}
+
+.header-elem {
+  margin: 0px 20px;
+}
+
+#header-nav {
+  display: flex;
+  align-items: center;
+}
+
+#header-login {
+  border: 2px solid white;
+  padding: 3px 4px;
+  border-radius: 8px;
+}
+
+#header-toggle {
+  position: absolute;
+  top: 10px;
+  right: 5px;
+  display: none;
+}
+
+/* Small screens - standard breakpoint for mobile and tablets */
+@media only screen and (max-width: 768px) {
+  #header {
+    flex-direction: column;
+  }
+  
+  #header-toggle {
+    display: block;
+  }
+
+  #header-search, #header-date {
+    display: none;
+  }
+
+  #header-nav.active {
+    display: flex;
+  }
+  
+  #header-nav {
+    flex-direction: column;
+    display: none
+  }
+  
+
+  #header-login {
+    border: none;
+  }
+  /* .header-elem { */
+  /*   visibility: hidden; */
+  /* } */
+  
+}
+
+
+/* Large screens - standard breakpoint for computers */
+@media only screen and (min-width: 768px) {
+  
+}
+
 .hidden {
   visibility: hidden;
 }
