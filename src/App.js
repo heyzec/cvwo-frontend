@@ -2,89 +2,47 @@ import { useState, useEffect } from 'react'
 import './App.css';
 import Header from './components/Header'
 import Task from './components/Task'
-import dayjs from 'dayjs'
+
+import { Helpers } from './helpers'
 
 console.log(`This is a ${process.env.NODE_ENV} environment`)
-const REACT_APP_BACKEND_URL = process.env.REACT_APP_BACKEND_URL
 
 function App() {
   const [tasks, setTasks] = useState([])
-  const [datetime, setDatetime] = useState(dayjs())
+  const [tags, setTags] = useState([])
+  // const [datetime, setDatetime] = useState(dayjs())
 
-  // READ from db - Run once after initial rendering
+  const h = new Helpers()
+  h.setTasksCallbacks(() => tasks, setTasks)
+  h.setTagsCallbacks(() => tags, setTags)
+  const fetchTasks = h.fetchTasks
+  const addTask = h.addTask
+  const editTask = h.editTask
+  const deleteTask = h.deleteTask
+  const fetchTags = h.fetchTags
+  
+  
+
+
+
+  // Run once after initial rendering
   useEffect(() => {
-    console.log("HTTP GET")
-    const f = async () => {
-      const res = await fetch(REACT_APP_BACKEND_URL)
-      setTasks(await res.json())
-    }
-    f()
+    fetchTags()  // For now, the tags must be fetched first
+    fetchTasks()
   }, [])
+  
 
-  // CREATE task and insert into db
-  const addTask = async (data) => {
-    console.log("HTTP POST")
-    const res = await fetch(REACT_APP_BACKEND_URL, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-    if (res.status !== 201) {
-      alert("An error has occured :(")
-      return
-    }
-    const newTask = await res.json()
-    setTasks([...tasks, newTask])
-  }
-
-  // DELETE task from db
-  const deleteTask = async (id) => {
-    console.log("HTTP DELETE")
-    const res = await fetch(`${REACT_APP_BACKEND_URL}/${id}`, {
-      method: 'DELETE'
-    })
-    if (res.status !== 200 && res.status !== 204) {
-      alert("An error has occured :(")
-      return
-    }
-    setTasks(tasks.filter((task) => task.id !== id))
-  }
-
-  // UPDATE task in db
-  const editTask = async (id, data) => {
-    console.log("HTTP PATCH")
-    const res = await fetch(`${REACT_APP_BACKEND_URL}/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    })
-    if (res.status !== 200) {
-      alert("An error has occured :(")
-      return
-    }
-    setTasks([...tasks.map((task) => {
-      if (task.id !== id) {
-        return task
-      }
-      return Object.assign({}, task, data)
-    })])
-  }
 
   // Function for testing purposes
   const magic = async () => {
-    console.log(datetime)
-    setDatetime(dayjs())
   }
 
   return (
     <div className="App">
       <Header />
       <div className="container">
-        {tasks.map((task) => <Task key={task.id} task={task} isCreated={true} updateTask={editTask} deleteTask={deleteTask} />)}
+        {tasks.map((task) => <Task key={task.id} task={task} isCreated={true}
+          updateTask={editTask} deleteTask={deleteTask} tags={tags}/>)}
         <Task isCreated={false} addTask={addTask} />
         <button onClick={magic}>Magic!</button>
       </div>

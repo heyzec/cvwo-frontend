@@ -3,17 +3,31 @@
     {
       "id": 1,
       "text": "Doctors Appointments",
-      "day": "2021-12-05T06:30:00.000Z"
+      "day": "2021-12-05T06:30:00.000Z",
+      "tags": [
+        1
+      ]
     },
     {
       "id": 2,
       "text": "Meeting at School",
-      "day": "2021-12-06T05:30:00.000Z"
+      "day": "2021-12-06T05:30:00.000Z",
+      "tags": []
     },
     {
       "id": 3,
-      "text": "Drive back Home",
-      "day": "2021-12-08T09:36:00.000Z"
+      "text": "Coding homework",
+      "day": "2021-12-08T09:36:00.000Z",
+      "tags": [
+        1
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "id": 1,
+      "text": "CS1101S",
+      "color": "#00FF00"
     }
   ]
 }

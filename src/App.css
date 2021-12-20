@@ -43,6 +43,10 @@ body {
   
 }
 
+.tag-container {
+  flex: 1;
+}
+
 .task-name-input, #task-next-input {
   font-family: var(--app-font);
   font: inherit;
@@ -65,4 +69,11 @@ body {
   font-size: medium;
   background-color: transparent;
   border: none;
+}
+
+.tag {
+  border-radius: 20em;
+  font-size: 0.7em;
+  padding: 3px 6px;
+  display: inline-block;
 }
