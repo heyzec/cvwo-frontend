@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css';
 import Header from './components/Header'
 import Task from './components/Task'
 import dayjs from 'dayjs'
+import ToastContainer from './components/Toasts';
 
 function App() {
   const [tasks, setTasks] = useState([])
   const [datetime, setDatetime] = useState(dayjs())
+
+  const toasts = useRef(null)  // This ref allows us to access functions in the ToastContainer
 
   // READ from db - Run once after initial rendering
   useEffect(() => {
@@ -61,12 +64,15 @@ function App() {
 
   // Function for testing purposes
   const magic = async () => {
-    console.log(datetime)
-    setDatetime(dayjs())
+    toasts.current.notify("You can make lwidth, height...", "lightgreen", 2000)
   }
 
   return (
     <div className="App">
+      <ToastContainer ref={toasts} />
+      <div>
+
+      </div>
       <Header />
       <div className="container">
         {tasks.map((task) => <Task key={task.id} task={task} isCreated={true} updateTask={editTask} deleteTask={deleteTask} />)}
