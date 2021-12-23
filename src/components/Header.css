@@ -1,0 +1,145 @@
+#header {
+  height: 45px;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  
+  background-color: #24292f;
+  color: white;
+  white-space: nowrap;
+}
+
+
+#header-icon, #header-toggle {
+  margin: 10px;
+}
+
+#header-title {
+  display: flex;
+  align-items: center;
+}
+
+#header-title > * {
+  padding: 0px 9px;
+}
+
+
+#header-date {
+  position: relative;
+  left: 0;
+  overflow: hidden;
+  transition: left 200ms, width 200ms ease-in-out;
+  width: 20rem;
+}
+
+#header-date.active {
+  left: -10vw;
+  width: 0rem;
+}
+
+#header-search {
+  white-space: nowrap;
+}
+
+#header-search-input {
+  width: 0;
+  transition: width 200ms ease-in-out;
+  color: white;
+}
+
+#header-search-input.active {
+  width: 14rem;
+}
+
+#header-spacer {
+  margin-right: auto;
+}
+
+#header-nav {
+  display: flex;
+  align-items: center;
+}
+
+#header-nav > * {
+  margin: 0px 10px;
+}
+
+#header-nav > *:hover {
+  color: lightgray;
+  border-color: lightgray;
+}
+
+#header-nav-signup {
+  border: 1px solid white;
+  border-radius: 8px;
+  padding: 3px 4px;
+}
+
+#header-toggle {
+  position: absolute;
+  top: 0px;
+  right: 5px;
+  display: none;
+}
+
+/* Smaller screens */
+@media only screen and (max-width:768px) {
+  #header-title {
+    display: none;
+ } 
+}
+/* Small screens - breakpoint for mobile and tablets */
+@media only screen and (max-width: 600px) {
+
+  #header {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    height: auto;
+  }
+
+  
+  #header-toggle {
+    display: block;
+  }
+
+  #header-search, #header-date {
+    display: none;
+  }
+
+  #header-nav.active {
+    height: 6rem;
+  }
+  
+  #header-nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    width: 100vw;
+    height: 0;
+    position: absolute;
+    top: 45px;
+    overflow: hidden;
+    transition: height 200ms ease-in-out;
+
+    background-color: inherit;
+  }
+  
+
+  #header-login {
+    border: none;
+  }
+  /* .header-elem { */
+  /*   visibility: hidden; */
+  /* } */
+  
+}
+
+
+/* Large screens - breakpoint for computers */
+@media only screen and (min-width: 600px) {
+  
+}
