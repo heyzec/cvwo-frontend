@@ -5,8 +5,7 @@ import { BsTagsFill } from 'react-icons/bs'
 import dayjs from 'dayjs'
 import Tag from '../components/Tag'
 
-const Task = ({ context, task, isCreated, deleteTask, tags }) => {
-
+const Task = ({ context, task, isCreated, tags }) => {
 
   const [readOnly, setReadOnly] = useState(isCreated)
   const [text, setText] = useState("")
@@ -31,6 +30,10 @@ const Task = ({ context, task, isCreated, deleteTask, tags }) => {
     const dt = dayjs(`${dateValue} ${e.target.value}`)
     setDatetime(dt)
   }
+
+
+
+
 
   useEffect(() => isCreated ? setText(task.text) : null, [task, isCreated])
 
@@ -77,17 +80,12 @@ const Task = ({ context, task, isCreated, deleteTask, tags }) => {
     }
     const handler = (e) => {
       e.stopPropagation()
-
-      console.log(e.target.parentNode.attributes)
-      console.log(e.target.parentNode)
-      const tagId = parseInt(e.currentTarget.parentNode.attributes["data-tag-id"].value)
-      console.log('was')
-      console.log(task.tags)
-      console.log('new' + tagId)
+      const tagId = parseInt(e.currentTarget.closest(".tag").attributes["data-tag-id"].value)
       context.editTask(task.id, {
         "tags": task.tags.filter(id => id !== tagId)
       })
     }
+
     const cross = open ? <FaTimes className="tag-cross clickable" size="12" onClick={handler} /> : null
     return (task.tags.map((id) => {
       const tagObj = tags.find(x => x.id === id)

@@ -115,8 +115,6 @@ export class Helpers {
   // CREATE tag and insert into db
   addTag = async (data) => {
     const newTag = await httpPost("tags", data)
-    console.log("new tag to be added is")
-    console.log(newTag)
     if (newTag) {
       this.setTags([...this.getTags(), newTag])
     }
@@ -132,7 +130,6 @@ export class Helpers {
 
   // UPDATE tag in db
   editTag = async (id, data) => {
-    alert("huh")
     const output = await httpPatch("tags", id, data)
     if (output) {
       this.setTags([...this.getTags().map((tag) => {

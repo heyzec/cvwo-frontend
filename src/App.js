@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
-import './App.css';
 import Header from './components/Header'
 import Task from './components/Task'
 import Tag from './components/Tag'
 import svgColorWheel from './resources/colorwheel.png'
 import { AiOutlinePlusCircle, AiOutlineCheckCircle } from 'react-icons/ai'
+import { FaTimes } from 'react-icons/fa'
+import { HiPencil } from 'react-icons/hi'
 
 import { Helpers } from './helpers'
+import './App.css';
 
 const colorPalatte = [
   "#f2777a",
@@ -19,31 +21,25 @@ const colorPalatte = [
   "#d27b53"
 ]
 
-
 console.log(`This is a ${process.env.NODE_ENV} environment`)
 
 function App() {
+
   const [tasks, setTasks] = useState([])
   const [tags, setTags] = useState([])
-  // const [datetime, setDatetime] = useState(dayjs())
-  // 
 
-  const [tagEditable, setTagEditable] = useState(false)
-  // 
+  const context = new Helpers()
+  context.setTasksCallbacks(() => tasks, setTasks)
+  context.setTagsCallbacks(() => tags, setTags)
+
+
+  const [tagEditMode, setTagEditMode] = useState("")
+
+  const [tagText, setTagText] = useState("")
   const [colorValue, setColorValue] = useState("")
   const colorChange = (e) => setColorValue(e.target.value)
 
-  const h = new Helpers()
-  h.setTasksCallbacks(() => tasks, setTasks)
-  h.setTagsCallbacks(() => tags, setTags)
-  const fetchTasks = h.fetchTasks
-  const addTask = h.addTask
-  const editTask = h.editTask
-  const deleteTask = h.deleteTask
-  const fetchTags = h.fetchTags
-  const addTag = h.addTag
-  const context = h
-
+  const validateColor = (str) => str.match(/^#([\dA-F]{3}|[\dA-F]{6})$/i)
 
   const col = useRef(null)
   const ref2 = useRef(null)
@@ -53,21 +49,17 @@ function App() {
 
   // Run once after initial rendering
   useEffect(() => {
-    fetchTags()  // For now, the tags must be fetched first
-    fetchTasks()
+    context.fetchTags()  // For now, the tags must be fetched first
+    context.fetchTasks()
   }, [])
 
-  const [test, setTest] = useState(false)
-  const [tagText, setTagText] = useState(Math.random())  // tagText is a ugly workaround
 
   // Function for testing purposes
   const magic = async (e) => {
-    console.log(window)
-    window.addEventListener('click', (e) => {
-      alert("HI")
-    }, { once: true }
-    )
-    e.stopPropagation()
+    console.log("tasks is ")
+    console.log(tasks)
+    console.log("tag is ")
+    console.log(tags)
   }
 
   const callback = () => {
@@ -76,19 +68,90 @@ function App() {
   }
 
   const creatingNewTag = () => {
-    setTagEditable(true)
+    setTagEditMode("create")
     ref2.current.focus()
     setColorValue(colorPalatte[0])
   }
 
-  const newTagDone = async () => {
-    await context.addTag({
-      "text": ref2.current.textContent,
-      "color": colorValue
-    })
-    setTagEditable(false)
-    setTagText(Math.random())
+  const gotoMenu = () => {
+    setTagEditMode("menu")
   }
+
+  const newTagDone = async () => {
+    setTagEditMode("")
+    setTagText("")
+    if (!(tagText && validateColor(colorValue))) {
+      return
+    }
+    if (tagEditMode === "create") {
+      await context.addTag({
+        "text": tagText,
+        "color": colorValue
+      })
+    } else if (tagEditMode.match(/^edit\d+$/)) {
+      const tagId = parseInt(tagEditMode.match(/\d+/)[0])
+      await context.editTag(tagId, {
+        "text": tagText,
+        "color": colorValue
+      })
+
+    }
+  }
+
+
+
+  const tagChanged = async (e) => {
+    setTagText(e.target.value)
+  }
+
+
+
+  const genGlobalTagElems = () => {
+
+    const handleDelete = async (e) => {
+      e.stopPropagation()
+      const tagId = parseInt(e.currentTarget.closest(".tag").attributes["data-tag-id"].value)
+      const routines = []
+      tasks.forEach((task) => {
+        if (task.tags.includes(tagId)) {
+          routines.push(async () => {
+            await context.editTask(task.id, {
+              "tags": task.tags.filter(id => id !== tagId)
+            })
+          })
+        }
+      })
+
+      if (routines.length !== 0) {
+        const prompt = (`This tag will be removed from ${routines.length} tasks. Continue?`)
+        if (!window.confirm(prompt)) {
+          return
+        }
+      }
+      routines.forEach(routine => routine())
+      context.deleteTag(tagId)
+    }
+
+    const handleEdit = async (e) => {
+      e.stopPropagation()
+      const tagId = parseInt(e.currentTarget.closest(".tag").attributes["data-tag-id"].value)
+      const tag = tags.filter(tag => tag.id === tagId)[0]
+      setTagText(tag.text)
+      setColorValue(tag.color)
+      setTagEditMode(`edit${tagId}`)
+
+    }
+    const clickables = tagEditMode ? (
+      <>
+        <HiPencil className="tag-icon clickable" size="12" onClick={handleEdit} />
+        <FaTimes className="tag-icon clickable" size="12" onClick={handleDelete} />
+      </>
+    ) : null
+
+    return tags.map((tag) => <Tag key={tag.id} tag={tag} clickables={clickables} />)
+  }
+
+
 
   return (
     <div className="App">
@@ -100,19 +163,49 @@ function App() {
         <button onClick={magic}>Magic!</button>
       </div>
 
-      <div id="tag-test">
-        {tags.map((tag) => <Tag key={tag.id} tag={tag} />)}
-        <input id="col" ref={col} type="color" value={colorValue} onChange={colorChange} />
-        <Tag key={tagText} passRef={ref2} color={colorValue} className={tagEditable ? "" : "lower"} editable={true} value="" onBlur={(callback)} />
+      <div id="tags-footer">
+        <div id="tag-editor" className={tagEditMode.match(/create|edit\d+/) ? "" : "hidden"}>
+          <div id="tag-preview-container">
+            <Tag passRef={ref2} tag={{ "color": colorValue, "text": tagText }} editable={true} onBlur={(callback)} />
 
-        {
-          tagEditable
-            ? <AiOutlineCheckCircle className="clickable" onClick={newTagDone} />
-            : <AiOutlinePlusCircle className="clickable" onClick={creatingNewTag} />
-        }
+          </div>
+          <div className="tag-input-wrapper">
+            <input id="tag-input-text" className="themed-input"
+              value={tagText} placeholder="Tag name" onChange={tagChanged} />
 
-        <img className="clickable" src={svgColorWheel} width="20px" onClick={() => col.current.click()} />
+          </div>
+          <div className="tag-input-wrapper">
+            <img className="clickable" src={svgColorWheel} width="20px" onClick={() => col.current.click()} />
+            <span>
+              <input id="tag-input-color" className={`themed-input${validateColor(colorValue) ? "" : " red"}`}
+                maxLength={7} value={colorValue} placeholder="Color (hex value)" onChange={colorChange} />
 
+            </span>
+
+          </div>
+
+        </div>
+        <div id="tag-test">
+          {genGlobalTagElems()}
+          <input id="col" ref={col} type="color" value={colorValue} onChange={colorChange} />
+          {
+            ((str) => {
+              switch (str) {
+                case "":
+                  return <HiPencil className="clickable" onClick={gotoMenu} />
+                case "menu":
+                  return <AiOutlinePlusCircle className="clickable" size="20" onClick={creatingNewTag} />
+                case "create":
+                  return <AiOutlineCheckCircle className="clickable" size="20" onClick={newTagDone} />
+                case str.match(/^edit\d+$/)?.input:
+                  return <AiOutlineCheckCircle className="clickable" size="20" onClick={newTagDone} />
+                default:
+                  console.log(str)
+                  return "OOPS"
+              }
+            })(tagEditMode)
+          }
+        </div>
       </div>
     </div>
   );

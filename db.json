@@ -4,23 +4,42 @@
       "id": 1,
       "text": "Doctors Appointments",
       "day": "2021-12-05T06:30:00.000Z",
-      "tags": [
-        1
-      ]
+      "tags": []
     },
     {
       "id": 2,
       "text": "Meeting at School",
       "day": "2021-12-06T05:30:00.000Z",
-      "tags": []
+      "tags": [
+        2
+      ]
     },
     {
       "id": 3,
       "text": "Coding homework",
       "day": "2021-12-08T09:36:00.000Z",
       "tags": [
-        1
+        1,
+        2
       ]
+    },
+    {
+      "text": "Reading Assessment",
+      "day": "2021-12-20T04:45:00.000Z",
+      "tags": [
+        1,
+        2
+      ],
+      "id": 4
+    },
+    {
+      "text": "Eat Dinner",
+      "day": "2021-12-20T10:00:00.000Z",
+      "tags": [
+        3,
+        2
+      ],
+      "id": 5
     }
   ],
   "tags": [
@@ -28,6 +47,16 @@
       "id": 1,
       "text": "CS1101S",
       "color": "#00FF00"
+    },
+    {
+      "text": "NUS",
+      "color": "#ce5c00",
+      "id": 2
+    },
+    {
+      "text": "Family",
+      "color": "#ad7fa8",
+      "id": 3
     }
   ]
 }
