@@ -39,7 +39,7 @@ const Header = () => {
         <span>{nowString}</span>
       </div>
       <div id="header-search">
-        <GoSearch className="icon" onClick={clickedSearchIcon} />
+        <GoSearch className="clickable" onClick={clickedSearchIcon} />
         <input ref={refSearchBar} id="header-search-input" className={searchActive ? "active" : ""} placeholder="Search here" onBlur={searchIconBlurred} />
       </div>
       <div id="header-nav" className={active ? "active" : null}>

@@ -2,6 +2,7 @@
 
 :root {
   --app-font: 'Poppins', sans-serif;
+  --theme-gray: #f4f4f4;
 }
 
 * {
@@ -15,8 +16,38 @@
 
  
 .hidden {
-  visibility: hidden;
+  visibility: hidden !important;
 }
+
+.remove {
+  display: none !important;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+
+
+input.themed-input {
+  font-family: var(--app-font);
+  font: inherit;
+  min-width: 0;
+  width: fit-content;
+  
+
+  background-color: transparent;
+  border: none;
+  size: 0;
+  outline: none;
+}
+
+.lower {
+  z-index: -1;
+}
+
+
+/*  SPECIAL CSS END */
 
 .App {
   text-align: center;
@@ -31,11 +62,11 @@ body {
   align-items: center;
   padding: 10px;
 
-  background-color: #f4f4f4;
-  margin: 10px auto;
-  width: 80%;
+  background-color: var(--theme-gray);
+  margin: 10px 0px;
   height: 50px;
   text-align: left;
+  width: 80%;
 }
 
 
@@ -53,21 +84,145 @@ body {
   font: inherit;
   background-color: transparent;
   border: none;
-  width: 100%;
 }
+
+.tag-container {
+  flex: 1;
+}
+
+/* .task-name-input, #task-next-input { */
+/*   width: 100%; */
+/* } */
+
 
 .task-name-input, #task-next-input:focus {
   outline: none;
 }
 
 
-.icon {
-  cursor: pointer;
-}
 
 .datetimepicker {
   font-family: var(--app-font);
   font-size: medium;
   background-color: transparent;
   border: none;
+}
+
+.tag {
+  border-radius: 20em;
+  font-size: 0.7em;
+  padding: 3px 6px;
+  display: inline-block;
+  height: 1rem;
+  margin: 5px;
+  width: fit-content;  /* Stop it from expanding when container has additional space*/
+  white-space: nowrap;
+  
+  position: relative;
+
+
+}
+
+.tag-clickables {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+
+
+
+.tag-icon {
+  color: black;
+}
+
+#tags-footer {
+  position: absolute;
+  bottom: 0px;
+  
+  width: 100%;
+}
+
+#tag-editor {
+  display: flex;
+  justify-content: center;
+}
+
+
+#tag-preview-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#tag-input-text {
+  width: 100%;
+}
+#tag-input-color {
+  width: 100%;
+  min-width: 8rem;
+}
+.tag-input-wrapper {
+  /* background-color: lightblue; */
+  border-radius: 5px;
+  border: 1px solid grey;
+  margin: 20px;
+  flex: 1;
+  white-space: nowrap;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+#tag-test {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  background-color: rgb(188, 255, 233) ;
+}
+
+#tag-editor {
+  background-color: var(--theme-gray);
+}
+
+
+
+#col {
+  display: none;
+}
+
+.dropdown {
+  /* height: 10px; */
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  overflow: visible;
+  /* z-index: 2; */
+  direction: rtl;  /* make overflow to the left instead */
+}
+
+.dropdown-inner {
+  position: relative;
+  top: 70px;
+  display: flex;
+  background-color: white;
+  flex-direction: column;
+  width: fit-content;
+  align-items: center;
+  box-shadow: 5px 10px 8px #888888;
+  border: 1px solid black;
+  
+}
+
+
+.task-super {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  width: 80%;
+}
+
+.red {
+  color: red;
 }
