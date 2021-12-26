@@ -1,51 +1,81 @@
 import { useState, useEffect, useRef } from 'react'
+
+import dayjs from 'dayjs'
+
+import Tag from '../components/Tag'
+
 import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
 import { BsTagsFill } from 'react-icons/bs'
-import dayjs from 'dayjs'
-import Tag from '../components/Tag'
 
-const Task = ({ context, task, isCreated, tags }) => {
+import './Tag.css'
+
+const Task = ({ context, task, isCreated }) => {
+
+  const tags = context.getTags()
 
   const [readOnly, setReadOnly] = useState(isCreated)
-  const [text, setText] = useState("")
-
+  const [isOpen, setIsOpen] = useState(false)
   const [datetime, setDatetime] = useState(isCreated ? dayjs(task.day) : null)
+
+  const [textValue, setTextValue] = useState("")
   const [dateValue, setDateValue] = useState(isCreated ? datetime.format("YYYY-MM-DD") : "")
   const [timeValue, setTimeValue] = useState(isCreated ? datetime.format("HH:mm") : "")
   const dateReadable = isCreated ? datetime.format("ddd, D MMM 'YY") : ""
   const timeReadable = isCreated ? datetime.format("HH:mm") : ""
 
-  const textElem = useRef(null)  // rename this variable
-  const [open, setOpen] = useState(false)
+  const inputRef = useRef(null)
 
-  const textChange = (e) => setText(e.target.value)
-  const dateChange = async (e) => {
+  useEffect(() => isCreated ? setTextValue(task.text) : null, [task, isCreated])
+
+
+  const textChanged = (e) => setTextValue(e.target.value)
+  const dateChanged = async (e) => {
     setDateValue(e.target.value)
     const dt = dayjs(`${e.target.value} ${timeValue}`)
     setDatetime(dt)
   }
-  const timeChange = (e) => {
+  const timeChanged = (e) => {
     setTimeValue(e.target.value)
     const dt = dayjs(`${dateValue} ${e.target.value}`)
     setDatetime(dt)
   }
 
 
-
-
-
-  useEffect(() => isCreated ? setText(task.text) : null, [task, isCreated])
-
-  const pencilClicked = () => {
-    setReadOnly(false)
-    textElem.current.focus()
+  const tagIconClicked = (e) => {
+    e.stopPropagation()
+    const listener = (e) => {
+      setIsOpen(false)
+    }
+    if (!isOpen) {
+      window.addEventListener('click', listener, { once: true })
+      e.stopPropagation()
+    }
+    setIsOpen(!isOpen)
   }
 
-  const handleBlur = async (e) => {
+  const pencilIconClicked = () => {
+    setReadOnly(false)
+    inputRef.current.focus()
+  }
+
+  const crossIconClicked = (e) => {
+    context.deleteTask(task.id)
+  }
+
+  const dropdownTagClicked = (e) => {
+    e.stopPropagation()
+    const tagId = parseInt(e.currentTarget.attributes["data-tag-id"].value)
+    context.editTask(task.id, {
+      "tags": [...task.tags, tagId]
+    })
+  }
+  
+  
+  const taskBlurred = async (e) => {
     if (
-      (isCreated && text === task.text && datetime.toISOString() === task.day) ||
-      (!isCreated && (!text || !dateValue || !timeValue))
+      (isCreated && textValue === task.text && datetime.toISOString() === task.day) ||
+      (!isCreated && (!textValue || !dateValue || !timeValue))
     ) {
       // If there are no changes, do nothing
       if (isCreated) {
@@ -56,17 +86,17 @@ const Task = ({ context, task, isCreated, tags }) => {
 
     if (isCreated) {
       await context.editTask(task.id, {
-        "text": text,
+        "text": textValue,
         "day": datetime.toISOString()
       })
       setReadOnly(true)
     } else {
       await context.addTask({
-        "text": text,
+        "text": textValue,
         "day": datetime.toISOString(),
         "tags": []
       })
-      setText("")
+      setTextValue("")
       setDateValue("")
       setTimeValue("")
       setReadOnly(false)
@@ -74,7 +104,7 @@ const Task = ({ context, task, isCreated, tags }) => {
   }
 
 
-  const genTagElems = () => {
+  const generateTagElems = () => {
     if (!task.tags) {
       return null
     }
@@ -86,7 +116,7 @@ const Task = ({ context, task, isCreated, tags }) => {
       })
     }
 
-    const cross = open ? <FaTimes className="tag-icon clickable" size="12" onClick={handler} /> : null
+    const cross = isOpen ? <FaTimes className="tag-icon clickable" size="12" onClick={handler} /> : null
     return (task.tags.map((id) => {
       const tagObj = tags.find(x => x.id === id)
       return tagObj ? <Tag clickables={cross} key={tagObj.id} tag={tagObj} /> : null
@@ -95,76 +125,50 @@ const Task = ({ context, task, isCreated, tags }) => {
   }
 
 
-
-  const addTagClicked = (e) => {
-    e.stopPropagation()
-    const tagId = parseInt(e.currentTarget.attributes["data-tag-id"].value)
-    context.editTask(task.id, {
-      "tags": [...task.tags, tagId]
-    })
-
-  }
-
-  const tagIconClicked = (e) => {
-    e.stopPropagation()
-    const listener = (e) => {
-      setOpen(false)
-    }
-    if (!open) {
-      window.addEventListener('click', listener, { once: true })
-      e.stopPropagation()
-    }
-    setOpen(!open)
-  }
-
-  const crossIconClicked = (e) => {
-    context.deleteTask(task.id)
-  }
-
   return (
-    <div className="task-super">
+    <div className="task__wrapper">
       <div className="task">
-        <div className="task-name" >
+        <div className="task__text" >
           <h3>
-            <input readOnly={readOnly} className="editable themed-input" value={text}
-              onChange={textChange} placeholder={isCreated ? "" : "Add a task here"}
-              onBlur={handleBlur} ref={textElem} />
+            <input readOnly={readOnly} className="themed-input" value={textValue}
+              onChange={textChanged} placeholder={isCreated ? "" : "Add a task here"}
+              onBlur={taskBlurred} ref={inputRef} />
           </h3>
         </div>
-        {isCreated || text
+        {isCreated || textValue
           ? (
             <>
-              <div className="task-time">
+              <div className="task__time">
                 {
                   isCreated
                     ? <p>{dateReadable}</p>
-                    : <input className={`datetimepicker${text ? "" : " hidden"}`} type="date" value={dateValue}
-                      onChange={dateChange} onBlur={handleBlur} />
+                    : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="date" value={dateValue}
+                      onChange={dateChanged} onBlur={taskBlurred} />
                 }
               </div>
-              <div className="task-time" visibility="hidden">
+              <div className="task__time" visibility="hidden">
                 {
                   isCreated
                     ? <p>{timeReadable}</p>
-                    : <input className={`datetimepicker${text ? "" : " hidden"}`} type="time" value={timeValue}
-                      onChange={timeChange} onBlur={handleBlur} />
+                    : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="time" value={timeValue}
+                      onChange={timeChanged} onBlur={taskBlurred} />
                 }
               </div>
               <div className="tag-container">
-                {isCreated ? genTagElems() : null}
+                {isCreated ? generateTagElems() : null}
               </div>
               <BsTagsFill className="clickable" onClick={tagIconClicked} />
-              <HiPencil className={`clickable${isCreated ? "" : " hidden"}`} onClick={pencilClicked} />
+              <HiPencil className={`clickable${isCreated ? "" : " hidden"}`} onClick={pencilIconClicked} />
               <FaTimes className={`clickable${isCreated ? "" : " hidden"}`} onClick={crossIconClicked} />
             </>) : ""}
       </div>
-      <div className={`dropdown${open ? "" : " remove"}`}>
+      <div className={`task__dropdown-wrapper${isOpen ? "" : " remove"}`}>
         {task
           ?
-          <div className="dropdown-inner" >
+          <div className="task__dropdown" >
             {tags.filter(x => !task.tags.includes(x.id)).map((tag) =>
 
-              <Tag className="clickable" onClick={addTagClicked} key={tag.id} tag={tag} />
+              <Tag className="clickable" onClick={dropdownTagClicked} key={tag.id} tag={tag} />
             )}
 
           </div>

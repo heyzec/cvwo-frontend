@@ -2,8 +2,9 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
 
 
 const httpGet = async (resource) => {
-  console.log("HTTP GET")
-  const res = await fetch(`${BACKEND_URL}/${resource}`)
+  const endpoint = `${BACKEND_URL}/${resource}`
+  console.debug(`HTTP GET: ${endpoint}`)
+  const res = await fetch(endpoint)
   if (res.status !== 200) {
     alert("An error has occured :(")
     return
@@ -12,8 +13,9 @@ const httpGet = async (resource) => {
 }
 
 const httpPost = async (resource, data) => {
-  console.log("HTTP POST")
-  const res = await fetch(`${BACKEND_URL}/${resource}`, {
+  const endpoint = `${BACKEND_URL}/${resource}`
+  console.debug(`HTTP POST: ${endpoint}`)
+  const res = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
@@ -28,8 +30,9 @@ const httpPost = async (resource, data) => {
 }
 
 const httpDelete = async (resource, id) => {
-  console.log("HTTP DELETE")
-  const res = await fetch(`${BACKEND_URL}/${resource}/${id}`, {
+  const endpoint = `${BACKEND_URL}/${resource}/${id}`
+  console.debug(`HTTP DELETE: ${endpoint}`)
+  const res = await fetch(endpoint, {
     method: 'DELETE'
   })
   if (res.status !== 200 && res.status !== 204) {
@@ -40,8 +43,9 @@ const httpDelete = async (resource, id) => {
 }
 
 const httpPatch = async (resource, id, data) => {
-  console.log("HTTP PATCH")
-  const res = await fetch(`${BACKEND_URL}/${resource}/${id}`, {
+  const endpoint = `${BACKEND_URL}/${resource}/${id}`
+  console.debug(`HTTP PATCH: ${endpoint}`)
+  const res = await fetch(endpoint, {
     method: 'PATCH',
     headers: {
       'Content-type': 'application/json',
@@ -55,7 +59,8 @@ const httpPatch = async (resource, id, data) => {
   return await res.json()
 }
 
-export class Helpers {
+
+class Context {
 
   setTasksCallbacks = (getTasks, setTasks) => {
     this.getTasks = getTasks
@@ -66,6 +71,15 @@ export class Helpers {
     this.getTags = getTags
     this.setTags = setTags
   }
+
+  setNotify = (notifyCallback) => {
+    this.notify = (...args) => notifyCallback()(...args)
+  }
+
+  setMagic = (callback) => {
+    this.magic = callback
+  }
+
 
   // READ from db - Run once after initial rendering
   fetchTasks = async () => {
@@ -112,6 +126,7 @@ export class Helpers {
     }
   }
 
+
   // CREATE tag and insert into db
   addTag = async (data) => {
     const newTag = await httpPost("tags", data)
@@ -138,8 +153,8 @@ export class Helpers {
         }
         return Object.assign({}, tag, data)
       })])
-    } else {
-      console.log("CONSIERED FALSE")
     }
   }
 }
+
+export { Context }

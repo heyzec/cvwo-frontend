@@ -32,25 +32,25 @@ const Header = () => {
 
   return (
     <header className="test" id="header">
-      <FaClipboardList id="header-icon" size="25" />
-      <h1 id="header-title">Your To Dos</h1>
-      <div id="header-spacer"></div>
-      <div id="header-date" className={`header-elem${searchActive ? " active" : ""}`}>
+      <FaClipboardList id="header__icon" size="25" />
+      <h1 id="header__title">Your To Dos</h1>
+      <div id="header__spacer"></div>
+      <div id="header__date" className={`header-elem${searchActive ? " header__date--hidden" : ""}`}>
         <span>{nowString}</span>
       </div>
-      <div id="header-search">
+      <div id="header__search">
         <GoSearch className="clickable" onClick={clickedSearchIcon} />
-        <input ref={refSearchBar} id="header-search-input" className={searchActive ? "active" : ""} placeholder="Search here" onBlur={searchIconBlurred} />
+        <input ref={refSearchBar} id="header__input" className={`themed-input${searchActive ? " header__input--active" : ""}`} placeholder="Search here" onBlur={searchIconBlurred} />
       </div>
-      <div id="header-nav" className={active ? "active" : null}>
+      <div id="header__nav" className={active ? "header__nav--active" : null}>
         <div id="header-nav-signin" className="header-elem">
           <span>Sign in</span>
         </div>
-        <div id="header-nav-signup" className="header-elem">
+        <div id="header__signup" className="header-elem">
           <span>Sign up!</span>
         </div>
       </div>
-      <AiOutlineMenu id="header-toggle" size={25} onClick={toggleMenu} className="clickable" />
+      <AiOutlineMenu id="header__toggle" size={25} onClick={toggleMenu} className="clickable" />
     </header>
   )
 }

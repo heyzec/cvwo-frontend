@@ -1,0 +1,18 @@
+.tag {
+  border-radius: 20em;
+  font-size: 0.7em;
+  padding: 3px 6px;
+  display: inline-block;
+  height: 1rem;
+  margin: 5px;
+  width: fit-content;  /* Stop it from expanding when container has additional space*/
+  white-space: nowrap;
+  
+  position: relative;
+}
+
+.tag__clickables {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}

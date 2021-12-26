@@ -10,22 +10,20 @@
   white-space: nowrap;
 }
 
-
-#header-icon, #header-toggle {
+#header__icon, #header__toggle {
   margin: 10px;
 }
 
-#header-title {
+#header__title {
   display: flex;
   align-items: center;
 }
 
-#header-title > * {
+#header__title > * {
   padding: 0px 9px;
 }
 
-
-#header-date {
+#header__date {
   position: relative;
   left: 0;
   overflow: hidden;
@@ -33,50 +31,46 @@
   width: 20rem;
 }
 
-#header-date.active {
+#header__date.header__date--hidden {
   left: -10vw;
   width: 0rem;
 }
 
-#header-search {
-  white-space: nowrap;
-}
-
-#header-search-input {
+#header__input {
   width: 0;
   transition: width 200ms ease-in-out;
   color: white;
 }
 
-#header-search-input.active {
+#header__input.header__input--active {
   width: 14rem;
 }
 
-#header-spacer {
+#header__spacer {
   margin-right: auto;
 }
 
-#header-nav {
+#header__nav {
   display: flex;
   align-items: center;
 }
 
-#header-nav > * {
+#header__nav > * {
   margin: 0px 10px;
 }
 
-#header-nav > *:hover {
+#header__nav > *:hover {
   color: lightgray;
   border-color: lightgray;
 }
 
-#header-nav-signup {
+#header__signup {
   border: 1px solid white;
   border-radius: 8px;
   padding: 3px 4px;
 }
 
-#header-toggle {
+#header__toggle {
   position: absolute;
   top: 0px;
   right: 5px;
@@ -85,10 +79,11 @@
 
 /* Smaller screens */
 @media only screen and (max-width:768px) {
-  #header-title {
+  #header__title {
     display: none;
  } 
 }
+
 /* Small screens - breakpoint for mobile and tablets */
 @media only screen and (max-width: 600px) {
 
@@ -100,19 +95,19 @@
   }
 
   
-  #header-toggle {
+  #header__toggle {
     display: block;
   }
 
-  #header-search, #header-date {
+  #header__search, #header__date {
     display: none;
   }
 
-  #header-nav.active {
+  #header__nav.header__nav--active {
     height: 6rem;
   }
   
-  #header-nav {
+  #header__nav {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -128,11 +123,11 @@
     background-color: inherit;
   }
   
-
-  #header-login {
+  #header__login {
     border: none;
   }
   /* .header-elem { */
+  /* To consider removing this class
   /*   visibility: hidden; */
   /* } */
   

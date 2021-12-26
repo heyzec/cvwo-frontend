@@ -27,23 +27,22 @@ const ToastContainer = forwardRef((props, ref) => {
 
   const [toastArray, setToastArray] = useState([])
 
-
-
   const showToast = (message, color, duration) => {
     const id = Math.random()  // A proper UUID generator is better
     const thisToast = (
-      <Toast key={id}
-        text={message} color={color} duration={duration} />
+      <Toast key={id} text={message} color={color} duration={duration} />
     )
+    // Add this Toast to the array now, but remove it from the array after some time
     setToastArray([...toastArray, thisToast])
     setTimeout(() => {
       setToastArray((toastArray) => toastArray.filter((toast) => toast !== thisToast))
     }, duration + 1000)
   }
 
-  useImperativeHandle(ref, () => ({
+  useImperativeHandle(ref, () => ({  // To expose certain stuff to the parents via ref
     notify: showToast
   }))
+
 
   return (
     <div className="toast-container">
@@ -51,4 +50,4 @@ const ToastContainer = forwardRef((props, ref) => {
     </div>
   )
 })
-export default ToastContainer
+export { ToastContainer }
