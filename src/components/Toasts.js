@@ -27,7 +27,7 @@ const ToastContainer = forwardRef((props, ref) => {
 
   const [toastArray, setToastArray] = useState([])
 
-  const showToast = (message, color, duration) => {
+  const showToast = (message, color="lightgreen", duration=2000) => {
     const id = Math.random()  // A proper UUID generator is better
     const thisToast = (
       <Toast key={id} text={message} color={color} duration={duration} />

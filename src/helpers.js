@@ -4,7 +4,14 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
 const httpGet = async (resource) => {
   const endpoint = `${BACKEND_URL}/${resource}`
   console.debug(`HTTP GET: ${endpoint}`)
-  const res = await fetch(endpoint)
+  const res = await fetch(endpoint, {
+      method: 'GET',
+      credentials: 'include'
+  })
+  if (res.status === 401) {
+    console.log("Unauthorized")
+    return
+  }
   if (res.status !== 200) {
     alert("An error has occured :(")
     return
@@ -21,6 +28,7 @@ const httpPost = async (resource, data) => {
       'Content-type': 'application/json',
     },
     body: JSON.stringify(data),
+    credentials: 'include'
   })
   if (res.status !== 201) {
     alert("An error has occured :(")
@@ -33,7 +41,8 @@ const httpDelete = async (resource, id) => {
   const endpoint = `${BACKEND_URL}/${resource}/${id}`
   console.debug(`HTTP DELETE: ${endpoint}`)
   const res = await fetch(endpoint, {
-    method: 'DELETE'
+    method: 'DELETE',
+    credentials: 'include'
   })
   if (res.status !== 200 && res.status !== 204) {
     alert("An error has occured :(")
@@ -50,7 +59,8 @@ const httpPatch = async (resource, id, data) => {
     headers: {
       'Content-type': 'application/json',
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
+    credentials: 'include'
   })
   if (res.status !== 200) {
     alert("An error has occured")
@@ -70,6 +80,11 @@ class Context {
   setTagsCallbacks = (getTags, setTags) => {
     this.getTags = getTags
     this.setTags = setTags
+  }
+  
+  setHtmlCallbacks = (getHtml, setHtml) => {
+    this.getHtml = getHtml
+    this.setHtml = setHtml
   }
 
   setNotify = (notifyCallback) => {
