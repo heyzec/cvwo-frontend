@@ -7,28 +7,10 @@
       "tags": []
     },
     {
-      "id": 2,
-      "text": "Meeting at School",
-      "day": "2021-12-06T05:30:00.000Z",
-      "tags": [
-        2
-      ]
-    },
-    {
-      "id": 3,
-      "text": "Coding homework",
-      "day": "2021-12-08T09:36:00.000Z",
-      "tags": [
-        1,
-        2
-      ]
-    },
-    {
       "text": "Reading Assessment",
       "day": "2021-12-20T04:45:00.000Z",
       "tags": [
-        1,
-        2
+        1
       ],
       "id": 4
     },
@@ -37,26 +19,32 @@
       "day": "2021-12-20T10:00:00.000Z",
       "tags": [
         3,
-        2
+        1
       ],
       "id": 5
+    },
+    {
+      "text": "fefefefefe",
+      "day": "2021-12-28T16:24:48.397Z",
+      "tags": [],
+      "id": 6
     }
   ],
   "tags": [
     {
-      "id": 1,
-      "text": "CS1101S",
-      "color": "#00FF00"
-    },
-    {
-      "text": "NUS",
-      "color": "#ce5c00",
-      "id": 2
-    },
-    {
-      "text": "Family",
+      "text": "h",
       "color": "#ad7fa8",
       "id": 3
+    },
+    {
+      "text": "t4t4t4",
+      "color": "#ff00e9",
+      "id": 4
+    },
+    {
+      "text": "btdddd",
+      "color": "#f2777a",
+      "id": 5
     }
   ]
 }

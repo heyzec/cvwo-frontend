@@ -16,11 +16,14 @@ const Task = ({ context, task, isCreated }) => {
 
   const [readOnly, setReadOnly] = useState(isCreated)
   const [isOpen, setIsOpen] = useState(false)
-  const [datetime, setDatetime] = useState(isCreated ? dayjs(task.day) : null)
+  // const [datetime, setDatetime] = useState(isCreated ? dayjs(task.day) : null)
+  const [datetime, setDatetime] = useState(isCreated ? dayjs(task.day) : dayjs())
 
   const [textValue, setTextValue] = useState("")
-  const [dateValue, setDateValue] = useState(isCreated ? datetime.format("YYYY-MM-DD") : "")
-  const [timeValue, setTimeValue] = useState(isCreated ? datetime.format("HH:mm") : "")
+  // const [dateValue, setDateValue] = useState(isCreated ? datetime.format("YYYY-MM-DD") : "")
+  // const [timeValue, setTimeValue] = useState(isCreated ? datetime.format("HH:mm") : "")
+  const [dateValue, setDateValue] = useState(isCreated ? datetime.format("YYYY-MM-DD") : "1999-12-12")
+  const [timeValue, setTimeValue] = useState(isCreated ? datetime.format("HH:mm") : "12:12")
   const dateReadable = isCreated ? datetime.format("ddd, D MMM 'YY") : ""
   const timeReadable = isCreated ? datetime.format("HH:mm") : ""
 
