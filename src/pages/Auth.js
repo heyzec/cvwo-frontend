@@ -1,54 +1,41 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { signIn, signUp } from '../utils/auth';
+
+import './Auth.css'
 
 const Auth = ({ type, context }) => {
-  
 
-  const endpoint = `http://localhost:3000/${type}`
-  
+  const navigate = useNavigate()
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [html, setHtml] = useState("")
 
-  const emailChanged = (e) => {console.log("yay"); setEmail(e.target.value)}
+  const emailChanged = (e) => setEmail(e.target.value)
   const passwordChanged = (e) => setPassword(e.target.value)
+
+
+  const headerText = type === "signin" ? "Sign in" : type === "signup" ? "Let's get started!" : null
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
-    const data = {
-      user: { email, password: password}
+
+    if (type === "signin") {
+      await signIn(context, navigate, email, password)
+    } else if (type === "signup") {
+      await signUp(context, navigate, email, password)
     }
-    
-    console.log(JSON.stringify(data))
-    
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(data),
-      credentials: 'include'
-    })
-    const output = await res.text()
-    if (res.headers.get("Content-Type").includes("html")) {
-      context.setHtml(output)
-    } else {
-      context.notify(output, "lightgreen", 2000)
-    }
-    
   }
 
   return (
     <div>
-     <h1>{type}</h1>
-    <form action="http://localhost:5000/signin" method="post" onSubmit={handleSubmit}>
-      
-     <input type="text" name="user[email]" placeholder="email" value={email} onChange={emailChanged}/>
-     <input type="password" placeholder="password" name="user[password_digest]" value={password} onChange={passwordChanged} /> 
-    <input type="submit" value="Submit"/>
-    </form>
+      <div id="auth">
+        <h1 id="auth__header">{headerText}</h1>
+        <input className="themed-input auth__input" type="text" placeholder="Email" value={email} onChange={emailChanged} />
+        <input className="themed-input auth__input" type="password" placeholder="Password" value={password} onChange={passwordChanged} />
+        <button id="auth__submit" type="submit" onClick={handleSubmit}>Let's go!</button>
+      </div>
     </div>
-  
   )
 }
 
