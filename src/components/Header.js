@@ -3,11 +3,12 @@ import { GoSearch } from 'react-icons/go'
 import { AiOutlineMenu } from 'react-icons/ai'
 import { FaClipboardList } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import dayjs from 'dayjs'
 import './Header.css'
 
-const Header = () => {
+import { signOut } from '../utils/auth.js'
+
+const Header = ({ context }) => {
   
   const navigate = useNavigate()
 
@@ -38,10 +39,17 @@ const Header = () => {
   const appIconClicked = (e) => navigate("/")
   const signinIconClicked = (e) => navigate("signin")
   const signupIconClicked = (e) => navigate("signup")
+  
+  const signoutIconClicked = (e) => {
+    signOut()
+    context.setUser("")
+    navigate("/")
+    context.notify("Logged out!", "lightgreen", 1000)
+  }
 
   return (
     <header className="test" id="header">
-      <FaClipboardList id="header__icon" size="25" onClick={appIconClicked} />
+      <FaClipboardList id="header__icon" className="clickable" size="25" onClick={appIconClicked} />
       <h1 id="header__title">Your To Dos</h1>
       <div id="header__spacer"></div>
       <div id="header__date" className={`header-elem${searchActive ? " header__date--hidden" : ""}`}>
@@ -52,12 +60,20 @@ const Header = () => {
         <input ref={refSearchBar} id="header__input" className={`themed-input${searchActive ? " header__input--active" : ""}`} placeholder="Search here" onBlur={searchIconBlurred} />
       </div>
       <div id="header__nav" className={active ? "header__nav--active" : null}>
-        <div id="header-nav-signin" className="header-elem" onClick={signinIconClicked}>
-          <span>Sign in</span>
-        </div>
-        <div id="header__signup" className="header-elem" onClick={signupIconClicked}>
-          <span>Sign up!</span>
-        </div>
+        {context.getUser() ? (
+          <div id="header__signout" className="header-elem clickable" onClick={signoutIconClicked}>
+            <span>Sign out</span>
+          </div>
+        ) : (
+          <>
+            <div id="header__signin" className="header-elem clickable" onClick={signinIconClicked}>
+              <span>Sign in</span>
+            </div>
+            <div id="header__signup" className="header-elem clickable" onClick={signupIconClicked}>
+              <span>Sign up!</span>
+            </div>
+          </>
+        )}
       </div>
       <AiOutlineMenu id="header__toggle" size={25} onClick={toggleMenu} className="clickable" />
     </header>

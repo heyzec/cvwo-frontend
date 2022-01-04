@@ -23,12 +23,12 @@
 }
 
 
-input.themed-input {
+/* input.themed-input { */
+input {
   font: inherit; /* font-family: var(--app-font); */
   min-width: 0;
   width: fit-content;
   
-
   background-color: transparent;
   border: none;
   outline: none;
