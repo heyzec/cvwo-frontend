@@ -49,7 +49,8 @@ const Header = ({ context }) => {
 
   return (
     <header className="test" id="header">
-      <FaClipboardList id="header__icon" className="clickable" size="25" onClick={appIconClicked} />
+      <FaClipboardList id="header__icon" className="clickable" size="25" onClick={appIconClicked}
+        onContextMenu={(e) => {e.preventDefault(); context.magic()}} />
       <h1 id="header__title">Your To Dos</h1>
       <div id="header__spacer"></div>
       <div id="header__date" className={`header-elem${searchActive ? " header__date--hidden" : ""}`}>

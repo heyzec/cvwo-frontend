@@ -128,7 +128,6 @@ const Task = ({ context, task, isCreated }) => {
     context.editTask(task.id, {
       "done": !task.done
     })
-
   }
 
 
@@ -166,7 +165,7 @@ const Task = ({ context, task, isCreated }) => {
         <div className="tag-container">
           {isCreated ? generateTagElems() : null}
         </div>
-        <div className="tag__options">
+        <div className="task__options">
           {
             isCreated
               ? <>

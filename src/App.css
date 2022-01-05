@@ -52,3 +52,17 @@ body {
 .tag-container {
   flex: 1;
 }
+
+/* Templates */
+
+/* Smaller screens - tablets and below */
+@media only screen and (max-width: 768px) {
+}
+
+/* Small screens - breakpoint for mobile */
+@media only screen and (max-width: 600px) {
+}
+
+/* Large screens - breakpoint for computers */
+@media only screen and (min-width: 600px) {
+}

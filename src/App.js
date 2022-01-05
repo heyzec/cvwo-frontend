@@ -86,7 +86,6 @@ const App = () => {
       {
         // html ? <iframe title="debug" srcdoc={html} onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));' style={{ height: "500px", width: "100%", border: "none", overflow: "hidden" }} /> : null
       }
-      <button onClick={context.magic}>Magic!</button>
     </div>
   )
 }
