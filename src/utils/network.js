@@ -54,7 +54,7 @@ export const httpDelete = async (dir) => {
   return true
 }
 
-export const httpPatch = async (dir, id, data) => {
+export const httpPatch = async (dir, data) => {
   const endpoint = `${BACKEND_URL}${dir}`
   const res = await fetch(endpoint, {
     method: 'PATCH',

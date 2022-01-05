@@ -1,13 +1,14 @@
 .task__wrapper {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  width: 80%;
+  align-items: center;
+  width: 100vw;
 }
 
 .task {
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 10px;
 
   background-color: var(--theme-gray);
@@ -15,15 +16,42 @@
   height: 50px;
   text-align: left;
   width: 80%;
+  
+  gap: 10px;
+}
+
+.task__checkbox {
+  flex: initial;
+  
+  display: flex;
+  align-items: center;
 }
 
 .task__text {
   flex: 2;
+  font-size: large;
+  font-weight: bold;
+}
+
+.task__text > input {
+  width: 100%;
+  text-overflow: ellipsis;
+}
+
+.task__date {
+  flex: initial;
+  width: 12ch;
 }
 
 .task__time {
+  flex: initial;
+  width: 5ch;
+}
+
+.tag-container {
   flex: 1;
 }
+
 
 .task__dropdown-wrapper {
   position: absolute;
@@ -46,3 +74,6 @@
 }
 
 
+.task--strikethrough {
+  text-decoration: line-through 2px;
+}
