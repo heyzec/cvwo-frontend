@@ -7,7 +7,7 @@ import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
 import svgColorWheel from '../resources/colorwheel.png'
 
-import './TagsFooter.css'
+import './TagsSidebar.css'
 
 const colorPalatte = [
   "#f2777a",
@@ -21,18 +21,18 @@ const colorPalatte = [
 ]
 const validateColor = (str) => str.match(/^#([\dA-F]{3}|[\dA-F]{6})$/i)
 
-const TagsFooter = ({ context }) => {
+const TagsSidebar = ({ context }) => {
 
   const tags = context.getTags()
   const tasks = context.getTasks()
 
-  const [tagEditMode, setTagEditMode] = useState("")
-
   const [tagText, setTagText] = useState("")
   const [colorValue, setColorValue] = useState("")
 
-  const col = useRef(null)
-  const ref2 = useRef(null)
+  const [tagEditMode, setTagEditMode] = useState("")  // Whether tag is being created or edited
+  const [move, setMove] = useState(false)  // Keeps track whether sidebar shows tags or editor
+
+  const colorRef = useRef(null)  // A ref to the invisible color picker input elem
 
 
   const colorChanged = (e) => setColorValue(e.target.value)
@@ -41,16 +41,13 @@ const TagsFooter = ({ context }) => {
     setTagText(e.target.value)
   }
 
-
   const plusIconClicked = () => {
     setTagEditMode("create")
-    ref2.current.focus()
     setColorValue(colorPalatte[0])
+    setMove(true)
   }
 
   const tickIconClicked = async () => {
-    setTagEditMode("")
-    setTagText("")
     if (!(tagText && validateColor(colorValue))) {
       return
     }
@@ -61,18 +58,21 @@ const TagsFooter = ({ context }) => {
       })
     } else if (tagEditMode.match(/^edit\d+$/)) {
       const tagId = parseInt(tagEditMode.match(/\d+/)[0])
+
+      // Bug here, to fix
       await context.editTag(tagId, {
         "text": tagText,
         "color": colorValue
       })
-
     }
+    setTagEditMode("")
+    setTagText("")
+    setMove(false)
   }
 
   const pencilIconClicked = () => {
     setTagEditMode("menu")
   }
-
 
   const clickablesPencilIconClicked = async (e) => {
     e.stopPropagation()
@@ -81,7 +81,7 @@ const TagsFooter = ({ context }) => {
     setTagText(tag.text)
     setColorValue(tag.color)
     setTagEditMode(`edit${tagId}`)
-
+    setMove(true)
   }
 
   const clickablesCrossIconClicked = async (e) => {
@@ -115,35 +115,32 @@ const TagsFooter = ({ context }) => {
         <FaTimes className="tag-icon clickable" size="12" onClick={clickablesCrossIconClicked} />
       </>
     ) : null
-
     return tags.map((tag) => <Tag key={tag.id} tag={tag} clickables={clickables} />)
   }
 
+
   return (
-    <div id="tags-footer">
-      <div id="tags-footer__editor" className={tagEditMode.match(/create|edit\d+/) ? "" : "hidden"}>
-        <div id="tags-footer__preview-wrapper">
-          <Tag passRef={ref2} tag={{ "color": colorValue, "text": tagText }} />
-
+    <div id="tags-sidebar">
+      <div id="tags-sidebar__editor" className={move ? "tags--change" : ""} >
+        <AiOutlineCheckCircle className="clickable" size="20" onClick={tickIconClicked} />
+        <div id="tags-sidebar__preview-wrapper">
+          <Tag tag={{ "color": colorValue, "text": tagText }} />
         </div>
-        <div className="tags-footer__input-wrapper">
-          <input id="tags-footer__input-text" className="themed-input"
+        <div className="tags-sidebar__input-wrapper">
+          <input id="tags-sidebar__input-text" className="themed-input"
             value={tagText} placeholder="Tag name" onChange={tagChanged} />
-
         </div>
-        <div className="tags-footer__input-wrapper">
-          <img className="clickable" src={svgColorWheel} alt="color wheel" width="20px" onClick={() => col.current.click()} />
+        <div className="tags-sidebar__input-wrapper">
+          <img className="clickable" src={svgColorWheel} alt="color wheel" width="20px" onClick={() => colorRef.current.click()} />
           <span>
-            <input id="tags-footer__input-color" className={`themed-input${validateColor(colorValue) ? "" : " red"}`}
+            <input id="tags-sidebar__input-color" className={`themed-input${validateColor(colorValue) ? "" : " red"}`}
               maxLength={7} value={colorValue} placeholder="Color (hex value)" onChange={colorChanged} />
-
           </span>
         </div>
-
       </div>
-      <div id="tags-footer__tags">
-        {generateTagElems()}
-        <input id="tags-footer__hidden-color" ref={col} type="color" value={colorValue} onChange={colorChanged} />
+      <div id="tags-sidebar__tags" className={move ? "tags--change" : ""} >
+        <span id="tags-sidebar__label">Your tags</span>
+        <input id="tags-sidebar__hidden-color" ref={colorRef} type="color" value={colorValue} onChange={colorChanged} />
         {
           ((str) => {
             switch (str) {
@@ -151,19 +148,15 @@ const TagsFooter = ({ context }) => {
                 return <HiPencil className="clickable" onClick={pencilIconClicked} />
               case "menu":
                 return <AiOutlinePlusCircle className="clickable" size="20" onClick={plusIconClicked} />
-              case "create":
-                return <AiOutlineCheckCircle className="clickable" size="20" onClick={tickIconClicked} />
-              case str.match(/^edit\d+$/)?.input:
-                return <AiOutlineCheckCircle className="clickable" size="20" onClick={tickIconClicked} />
               default:
-                console.log(str)
-                return "OOPS"
+                return null
             }
           })(tagEditMode)
         }
+        {generateTagElems()}
       </div>
     </div>
   )
 }
 
-export default TagsFooter
+export default TagsSidebar

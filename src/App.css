@@ -3,6 +3,7 @@
 :root {
   --app-font: 'Poppins', sans-serif;
   --theme-gray: #f4f4f4;
+  --header-height: 45px;
 }
 
 * {
@@ -41,14 +42,38 @@ input {
 
 /*  -----------------------SPECIAL CSS END------------------------ */
 
+html {
+  /* scrollbar-width: none; */
+}
+
 .App {
   text-align: center;
+  /* display: flex; */
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
 }
 
 body {
   font-family: var(--app-font);
 }
 
+
+#page {
+  position: fixed;
+  top: var(--header-height);
+  bottom: 0;
+  width: 100vw;
+  overflow: scroll;
+
+}
+
 .tag-container {
   flex: 1;
+}
+
+
+button {
+  z-index: 100;
+  position: relative;
 }

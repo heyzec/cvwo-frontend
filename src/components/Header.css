@@ -1,5 +1,5 @@
 #header {
-  height: 45px;
+  height: var(--header-height);
 
   display: flex;
   justify-content: flex-end;
@@ -8,6 +8,17 @@
   background-color: #24292f;
   color: white;
   white-space: nowrap;
+  position: sticky;
+  left:0;
+  width: 100vw;
+  z-index: 2;
+}
+
+#aaaa {
+  /* width: 100%; */
+  /* background-color: blanchedalmond; */
+  /* height: 100vh; */
+  /* margin: auto; */
 }
 
 #header__icon, #header__toggle {
