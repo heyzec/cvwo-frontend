@@ -6,7 +6,7 @@ import Tag from '../components/Tag'
 
 import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
-import { BsTagsFill } from 'react-icons/bs'
+import { BsTagsFill, BsCircle, BsCheckCircle } from 'react-icons/bs'
 
 import './Tag.css'
 
@@ -124,56 +124,71 @@ const Task = ({ context, task, isCreated }) => {
     )
   }
 
+  const circleClicked = (e) => {
+    context.editTask(task.id, {
+      "done": !task.done
+    })
+  }
+
 
   return (
     <div className="task__wrapper">
       <div className="task">
-        <div className="task__text" >
-          <h3>
-            <input readOnly={readOnly} className="themed-input" value={textValue}
-              onChange={textChanged} placeholder={isCreated ? "" : "Add a task here"}
-              onBlur={taskBlurred} ref={inputRef} />
-          </h3>
+        <div className="task__checkbox">
+          {
+            isCreated && task.done ?
+              <BsCheckCircle className="clickable task--strikethrough" size="20" onClick={circleClicked} />
+              : <BsCircle className="clickable" size="20" onClick={circleClicked} />
+          }
         </div>
-        {isCreated || textValue
-          ? (
-            <>
-              <div className="task__time">
-                {
-                  isCreated
-                    ? <p>{dateReadable}</p>
-                    : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="date" value={dateValue}
-                      onChange={dateChanged} onBlur={taskBlurred} />
-                }
-              </div>
-              <div className="task__time" visibility="hidden">
-                {
-                  isCreated
-                    ? <p>{timeReadable}</p>
-                    : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="time" value={timeValue}
-                      onChange={timeChanged} onBlur={taskBlurred} />
-                }
-              </div>
-              <div className="tag-container">
-                {isCreated ? generateTagElems() : null}
-              </div>
-              <BsTagsFill className="clickable" onClick={tagIconClicked} />
-              <HiPencil className={`clickable${isCreated ? "" : " hidden"}`} onClick={pencilIconClicked} />
-              <FaTimes className={`clickable${isCreated ? "" : " hidden"}`} onClick={crossIconClicked} />
-            </>) : ""}
+        <div className="task__text" >
+          <input readOnly={readOnly} className={`themed-input${isCreated && task.done ? " task--strikethrough" : ""}`} value={textValue}
+            onChange={textChanged} placeholder={isCreated ? "" : "Add a task here"}
+            onBlur={taskBlurred} ref={inputRef} />
+        </div>
+        <div className="task__date">
+          {
+            isCreated
+              ? <p>{dateReadable}</p>
+              : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="date" value={dateValue}
+                onChange={dateChanged} onBlur={taskBlurred} />
+          }
+        </div>
+        <div className="task__time">
+          {
+            isCreated
+              ? <p>{timeReadable}</p>
+              : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="time" value={timeValue}
+                onChange={timeChanged} onBlur={taskBlurred} />
+          }
+        </div>
+        <div className="tag-container">
+          {isCreated ? generateTagElems() : null}
+        </div>
+        <div className="task__options">
+          {
+            isCreated
+              ? <>
+                <BsTagsFill className="clickable" onClick={tagIconClicked} />
+                <HiPencil className={`clickable${isCreated ? "" : " hidden"}`} onClick={pencilIconClicked} />
+                <FaTimes className={`clickable${isCreated ? "" : " hidden"}`} onClick={crossIconClicked} />
+              </>
+              : null
+          }
+        </div>
       </div>
       <div className={`task__dropdown-wrapper${isOpen ? "" : " remove"}`}>
-        {task
-          ?
-          <div className="task__dropdown" >
-            {tags.filter(x => !task.tags.includes(x.id)).map((tag) =>
-
-              <Tag className="clickable" onClick={dropdownTagClicked} key={tag.id} tag={tag} />
-            )}
-
-          </div>
-          : null}
-
+        {
+          task
+            ? <div className="task__dropdown" >
+              {
+                tags.filter(x => !task.tags.includes(x.id)).map((tag) =>
+                  <Tag className="clickable" onClick={dropdownTagClicked} key={tag.id} tag={tag} />
+                )
+              }
+            </div>
+            : null
+        }
       </div>
     </div>
   )
