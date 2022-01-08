@@ -1,6 +1,6 @@
 .task__wrapper {
   display: flex;
-  width: 100vw;
+  /* width: 100vw; */
 
   flex-direction: column;
   align-items: center;
@@ -16,7 +16,7 @@
   text-align: left;
   background-color: var(--theme-gray);
 
-  grid-template-columns: max-content 2fr 12ch 5ch 1fr max-content;
+  grid-template-columns: max-content 2fr 20ch 12ch 1fr max-content;
   align-items: center;
   gap: 10px;
 }
@@ -42,12 +42,12 @@
 
 .task__date {
   flex: initial;
-  width: 12ch;
+  width: 20ch;
 }
 
 .task__time {
   flex: initial;
-  width: 5ch;
+  width: 12ch;
 }
 
 .tag-container {

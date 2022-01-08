@@ -8,6 +8,16 @@ import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
 import { BsTagsFill, BsCircle, BsCheckCircle } from 'react-icons/bs'
 
+import IconButton from '@mui/material/IconButton'
+import Checkbox from '@mui/material/Checkbox'
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip'
+
+import AdapterDatejs from '@mui/lab/AdapterDayjs'
+import LocalizationProvider from '@mui/lab/LocalizationProvider'
+import DatePicker from '@mui/lab/DatePicker'
+import TimePicker from '@mui/lab/TimePicker'
+
 import './Tag.css'
 
 const Task = ({ context, task, isCreated }) => {
@@ -19,8 +29,8 @@ const Task = ({ context, task, isCreated }) => {
   const [datetime, setDatetime] = useState(isCreated ? dayjs(task.day) : null)
 
   const [textValue, setTextValue] = useState("")
-  const [dateValue, setDateValue] = useState(isCreated ? datetime.format("YYYY-MM-DD") : "")
-  const [timeValue, setTimeValue] = useState(isCreated ? datetime.format("HH:mm") : "")
+  const [dateValue, setDateValue] = useState(isCreated ? datetime.format("YYYY-MM-DD") : null)
+  const [timeValue, setTimeValue] = useState(isCreated ? datetime.format("HH:mm") : null)
   const dateReadable = isCreated ? datetime.format("ddd, D MMM 'YY") : ""
   const timeReadable = isCreated ? datetime.format("HH:mm") : ""
 
@@ -30,14 +40,14 @@ const Task = ({ context, task, isCreated }) => {
 
 
   const textChanged = (e) => setTextValue(e.target.value)
-  const dateChanged = async (e) => {
-    setDateValue(e.target.value)
-    const dt = dayjs(`${e.target.value} ${timeValue}`)
+  const dateChanged = async (value) => {
+    setDateValue(value)
+    const dt = dayjs(`${value} ${timeValue}`)
     setDatetime(dt)
   }
-  const timeChanged = (e) => {
-    setTimeValue(e.target.value)
-    const dt = dayjs(`${dateValue} ${e.target.value}`)
+  const timeChanged = (value) => {
+    setTimeValue(value)
+    const dt = dayjs(`${dateValue} ${value}`)
     setDatetime(dt)
   }
 
@@ -70,8 +80,8 @@ const Task = ({ context, task, isCreated }) => {
       "tags": [...task.tags, tagId]
     })
   }
-  
-  
+
+
   const taskBlurred = async (e) => {
     if (
       (isCreated && textValue === task.text && datetime.toISOString() === task.day) ||
@@ -130,36 +140,58 @@ const Task = ({ context, task, isCreated }) => {
     })
   }
 
-
   return (
+
     <div className="task__wrapper">
       <div className="task">
         <div className="task__checkbox">
-          {
-            isCreated && task.done ?
-              <BsCheckCircle className="clickable task--strikethrough" size="20" onClick={circleClicked} />
-              : <BsCircle className="clickable" size="20" onClick={circleClicked} />
-          }
+          <Tooltip title="Toggle done">
+            <Checkbox onClick={circleClicked}
+              icon={
+                <BsCircle className="clickable" size="20" />
+              }
+              checkedIcon={
+                <BsCheckCircle className="clickable task--strikethrough" size="20" />
+              }
+              checked={isCreated && task.done}
+              disabled={!isCreated}
+            />
+          </Tooltip>
         </div>
         <div className="task__text" >
           <input readOnly={readOnly} className={`themed-input${isCreated && task.done ? " task--strikethrough" : ""}`} value={textValue}
             onChange={textChanged} placeholder={isCreated ? "" : "Add a task here"}
             onBlur={taskBlurred} ref={inputRef} />
         </div>
+
         <div className="task__date">
           {
             isCreated
               ? <p>{dateReadable}</p>
-              : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="date" value={dateValue}
-                onChange={dateChanged} onBlur={taskBlurred} />
+
+              : <LocalizationProvider dateAdapter={AdapterDatejs}>
+                <DatePicker
+                  label="Date"
+                  value={dateValue}
+                  onChange={dateChanged}
+                  renderInput={(params) => <TextField className={textValue ? "" : "hidden"} {...params} />}
+                />
+              </LocalizationProvider>
           }
         </div>
         <div className="task__time">
           {
             isCreated
               ? <p>{timeReadable}</p>
-              : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="time" value={timeValue}
-                onChange={timeChanged} onBlur={taskBlurred} />
+              : <LocalizationProvider dateAdapter={AdapterDatejs}>
+                <TimePicker
+                  label="Time"
+                  value={timeValue}
+                  onChange={timeChanged}
+                  error={false}
+                  renderInput={(params) => { console.log(params); return <TextField className={textValue ? "" : "hidden"} {...params} /> }}
+                />
+              </LocalizationProvider>
           }
         </div>
         <div className="tag-container">
@@ -169,9 +201,21 @@ const Task = ({ context, task, isCreated }) => {
           {
             isCreated
               ? <>
-                <BsTagsFill className="clickable" onClick={tagIconClicked} />
-                <HiPencil className={`clickable${isCreated ? "" : " hidden"}`} onClick={pencilIconClicked} />
-                <FaTimes className={`clickable${isCreated ? "" : " hidden"}`} onClick={crossIconClicked} />
+                <Tooltip title="Tag">
+                  <IconButton onClick={tagIconClicked}>
+                    <BsTagsFill size="17" color="black" className="clickable" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Edit">
+                  <IconButton onClick={pencilIconClicked}>
+                    <HiPencil size="17" color="black" className={`clickable${isCreated ? "" : " hidden"}`} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <IconButton onClick={crossIconClicked}>
+                    <FaTimes size="17" color="black" className={`clickable${isCreated ? "" : " hidden"}`} />
+                  </IconButton>
+                </Tooltip>
               </>
               : null
           }
