@@ -1,4 +1,4 @@
-import { httpDelete, httpGet, httpPatch, httpPost } from "./network"
+import { httpDelete, httpGet, httpPatch, httpPost } from 'utils/network'
 
 
 

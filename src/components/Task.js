@@ -2,13 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 
 import dayjs from 'dayjs'
 
-import Tag from '../components/Tag'
+import Tag from 'components/Tag'
 
 import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
 import { BsTagsFill, BsCircle, BsCheckCircle } from 'react-icons/bs'
 
-import './Tag.css'
+import 'components/Task.css'
 
 const Task = ({ context, task, isCreated }) => {
 

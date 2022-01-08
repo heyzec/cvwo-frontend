@@ -1,13 +1,13 @@
 import { useState, useRef } from 'react'
 
-import Tag from './Tag'
+import Tag from 'components/Tag'
 
 import { AiOutlinePlusCircle, AiOutlineCheckCircle } from 'react-icons/ai'
 import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
-import svgColorWheel from '../resources/colorwheel.png'
+import svgColorWheel from 'resources/colorwheel.png'
 
-import './TagsSidebar.css'
+import 'components/TagsSidebar.css'
 
 const colorPalatte = [
   "#f2777a",

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
-import './Toasts.css'
+import 'components/Toasts.css'
 
 const Toast = ({ text, color, duration }) => {
   const [show, setShow] = useState(false)

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { signIn, signUp } from '../utils/auth';
+import { signIn, signUp } from 'utils/auth';
 
-import './Auth.css'
+import 'pages/Auth.css'
 
 const Auth = ({ type, context }) => {
 

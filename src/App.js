@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import Main from './pages/Main';
-import Auth from './pages/Auth';
-import Header from './components/Header'
-import Loading from './components/Loading';
-import { ToastContainer } from './components/Toasts';
-import { Context } from './utils/context'
-import { getUser } from './utils/auth'
+import Main from 'pages/Main';
+import Auth from 'pages/Auth';
+import Header from 'components/Header'
+import Loading from 'components/Loading';
+import { ToastContainer } from 'components/Toasts';
+import { Context } from 'utils/context'
+import { getUser } from 'utils/auth'
 
-import './App.css';
+import 'App.css';
 
 console.log(`This is a ${process.env.NODE_ENV} environment`)
 

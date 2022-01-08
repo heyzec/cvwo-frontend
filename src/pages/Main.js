@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import TagsSidebar from '../components/TagsSidebar';
-import ListsSidebar from '../components/ListsSidebar';
-import Task from '../components/Task'
+import TagsSidebar from 'components/TagsSidebar';
+import ListsSidebar from 'components/ListsSidebar';
+import Task from 'components/Task'
 
-import './Main.css'
+import 'pages/Main.css'
 
 
 const Main = ({ context }) => {

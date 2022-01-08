@@ -1,4 +1,4 @@
-import { httpGet, httpPost } from './network.js'
+import { httpGet, httpPost } from 'utils/network.js'
 
 
 export const getUser = async () => {

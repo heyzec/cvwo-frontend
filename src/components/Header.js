@@ -4,9 +4,9 @@ import { AiOutlineMenu } from 'react-icons/ai'
 import { FaClipboardList } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs'
-import './Header.css'
+import 'components/Header.css'
 
-import { signOut } from '../utils/auth.js'
+import { signOut } from 'utils/auth.js'
 
 const Header = ({ context }) => {
   

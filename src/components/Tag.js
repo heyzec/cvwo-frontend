@@ -1,4 +1,4 @@
-import './Task.css'
+import 'components/Tag.css'
 
 // Taken from: https://stackoverflow.com/q/11867545
 const isBright = (rgb) => (

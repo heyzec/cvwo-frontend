@@ -11,8 +11,8 @@ import {
   editTaskCallback,
   editTagCallback,
   editListCallback
-} from './resource.js'
-import { httpPost } from "./network"
+} from 'utils/resource'
+import { httpPost } from "utils/network"
 
 class Context {
   

@@ -1,4 +1,4 @@
-import './ListsSidebar.css'
+import 'components/ListsSidebar.css'
 
 const ListsSidebar = ({ context }) => {
 
