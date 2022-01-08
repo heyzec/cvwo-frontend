@@ -2,12 +2,12 @@ import { httpDelete, httpGet, httpPatch, httpPost } from "./network"
 
 
 
+// verb      HTTP      Rails action
 
-// GET -> Fetch
-// POST -> Create
-// PATCH -> Update
-// DELETE -> Destroy
-// READ
+// fetch  -> GET    -> index
+// add    -> POST   -> create
+// edit   -> PATCH  -> update
+// delete -> DELETE -> destroy
 
 const fetchObjCallback = (res) => async (setState) => {
   const r = await httpGet(`/${res}`)
@@ -18,8 +18,7 @@ const fetchObjCallback = (res) => async (setState) => {
 }
 export const fetchTasksCallback = fetchObjCallback("tasks")
 export const fetchTagsCallback = fetchObjCallback("tags")
-
-// ADD
+export const fetchListsCallback = fetchObjCallback("lists")
 
 const addObjCallback = (res) => async (setState, data) => {
   const r = await httpPost(`/${res}`, data)
@@ -28,12 +27,11 @@ const addObjCallback = (res) => async (setState, data) => {
     setState((state) => [...state, obj])
   }
 }
-export const addTaskCallback = addObjCallback("tasks")
+
+
 export const addTagCallback = addObjCallback("tags")
+export const addListCallback = addObjCallback("lists")
 
-
-
-// DELETE task from db
 
 const deleteObjCallback = (res) => async (setState, id) => {
   const r = await httpDelete(`/${res}/${id}`)
@@ -43,11 +41,9 @@ const deleteObjCallback = (res) => async (setState, id) => {
 }
 export const deleteTaskCallback = deleteObjCallback("tasks")
 export const deleteTagCallback = deleteObjCallback("tags")
+export const deleteListCallback = deleteObjCallback("lists")
 
 
-
-
-// UPDATE task in db
 const editObjCallback = (res) => async (setState, id, data) => {
   const r = await httpPatch(`/${res}/${id}`, data)
   if (r.ok) {
@@ -58,3 +54,4 @@ const editObjCallback = (res) => async (setState, id, data) => {
 }
 export const editTaskCallback = editObjCallback("tasks")
 export const editTagCallback = editObjCallback("tags")
+export const editListCallback = editObjCallback("lists")

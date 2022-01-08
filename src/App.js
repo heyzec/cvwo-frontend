@@ -29,16 +29,20 @@ const App = () => {
 
   const [tasks, setTasks] = useState([])
   const [tags, setTags] = useState([])
+  const [lists, setLists] = useState([])
   context.setTasksCallbacks(() => tasks, setTasks)
   context.setTagsCallbacks(() => tags, setTags)
+  context.setListsCallbacks(() => lists, setLists)
 
 
 
   // Function for testing purposes
   const magic = async (e) => {
-    context.notify(`user is now ${user}`, "lightgreen", 2000)
+    context.notify(`lists is now ${lists}`, "lightgreen", 2000)
+    console.log(lists)
+    context.setCurrentList(1)
   }
-  // context.setMagic(magic)
+  context.setMagic(magic)
 
 
   useEffect(() => {
@@ -53,7 +57,11 @@ const App = () => {
     const doGivenUser = async (user) => {
       if (user) {
         setShowLoading(true)
-        await Promise.all([context.fetchTags(), context.fetchTasks()])
+        await Promise.all([
+          context.fetchTags(),
+          context.fetchTasks(),
+          context.fetchLists()
+        ])
         setShowLoading(false)
       } else {
         context.setTags([])
@@ -73,16 +81,13 @@ const App = () => {
       <ToastContainer ref={toast} />
       <Router>
         <Header context={context} />
-    
         <div id="page">
-        <Routes>
-          <Route path="/" element={<Main context={context} />} />
-          <Route path="signin" element={<Auth context={context} type="signin" />} />
-          <Route path="signup" element={<Auth context={context} type="signup" />} />
-          <Route path="*" element={<h1>Oops, page don't exist!</h1>} />
-        </Routes>
-
-          
+          <Routes>
+            <Route path="/" element={<Main context={context} />} />
+            <Route path="signin" element={<Auth context={context} type="signin" />} />
+            <Route path="signup" element={<Auth context={context} type="signup" />} />
+            <Route path="*" element={<h1>Oops, page don't exist!</h1>} />
+          </Routes>
         </div>
       </Router>
 
@@ -91,11 +96,11 @@ const App = () => {
       {
         // html ? <iframe title="debug" srcdoc={html} onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));' style={{ height: "500px", width: "100%", border: "none", overflow: "hidden" }} /> : null
       }
-    {
+      {
 
-      <button onClick={context.magic}>Magic!</button>
-      
-    }
+        <button onClick={context.magic}>Magic!</button>
+
+      }
     </div>
   )
 }
