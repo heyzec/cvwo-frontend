@@ -1,6 +1,6 @@
 .task__wrapper {
   display: flex;
-  width: 100vw;
+  /* width: 100vw; */
 
   flex-direction: column;
   align-items: center;

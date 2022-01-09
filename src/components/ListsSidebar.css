@@ -1,6 +1,7 @@
 #lists-sidebar {
   background-color: var(--theme-gray);
-  height: 100vh;
+  /* height: 100vh; */
+  height: 100%;
   
   display: flex;
   flex-direction: column;

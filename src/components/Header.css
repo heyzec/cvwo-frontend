@@ -5,13 +5,15 @@
   justify-content: flex-end;
   align-items: center;
   
-  background-color: #24292f;
+  /* background-color: #24292f; */
   color: white;
+  color: var(--text-primary);
   white-space: nowrap;
   position: sticky;
   left:0;
-  width: 100vw;
-  z-index: 2;
+  /* width: 100vw; */
+  width: 100%;
+  /* z-index: 2; */
 }
 
 #aaaa {

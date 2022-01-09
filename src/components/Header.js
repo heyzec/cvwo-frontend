@@ -9,8 +9,9 @@ import 'components/Header.css'
 import { signOut } from 'utils/auth.js'
 
 const Header = ({ context }) => {
-  
-  const navigate = useNavigate()
+
+  /* const navigate = useNavigate() */  // Temporarily removed
+  const navigate = undefined
 
   const [active, setActive] = useState(false)
   const [searchActive, setSearchActive] = useState(false)
@@ -34,12 +35,12 @@ const Header = ({ context }) => {
     setSearchActive(!searchActive)
   }
   const searchIconBlurred = (e) => setSearchActive(false)
-  
+
 
   const appIconClicked = (e) => navigate("/")
   const signinIconClicked = (e) => navigate("signin")
   const signupIconClicked = (e) => navigate("signup")
-  
+
   const signoutIconClicked = (e) => {
     signOut()
     context.setUser("")
@@ -50,7 +51,7 @@ const Header = ({ context }) => {
   return (
     <header className="test" id="header">
       <FaClipboardList id="header__icon" className="clickable" size="25" onClick={appIconClicked}
-        onContextMenu={(e) => {e.preventDefault(); context.magic()}} />
+        onContextMenu={(e) => { e.preventDefault(); context.magic() }} />
       <h1 id="header__title">Your To Dos</h1>
       <div id="header__spacer"></div>
       <div id="header__date" className={`header-elem${searchActive ? " header__date--hidden" : ""}`}>

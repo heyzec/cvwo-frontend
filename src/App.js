@@ -10,6 +10,7 @@ import { Context } from 'utils/context'
 import { getUser } from 'utils/auth'
 
 import 'App.css';
+import ResponsiveTest from 'pages/ResponsiveTest';
 
 console.log(`This is a ${process.env.NODE_ENV} environment`)
 
@@ -80,15 +81,13 @@ const App = () => {
       <Loading show={showLoading} />
       <ToastContainer ref={toast} />
       <Router>
-        <Header context={context} />
-        <div id="page">
-          <Routes>
-            <Route path="/" element={<Main context={context} />} />
-            <Route path="signin" element={<Auth context={context} type="signin" />} />
-            <Route path="signup" element={<Auth context={context} type="signup" />} />
-            <Route path="*" element={<h1>Oops, page don't exist!</h1>} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/" element={<Main context={context} />} />
+          <Route path="sandbox" element={<ResponsiveTest context={context} />} />
+          <Route path="signin" element={<Auth context={context} type="signin" />} />
+          <Route path="signup" element={<Auth context={context} type="signup" />} />
+          <Route path="*" element={<h1>Oops, page don't exist!</h1>} />
+        </Routes>
       </Router>
 
 
