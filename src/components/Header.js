@@ -10,8 +10,7 @@ import { signOut } from 'utils/auth.js'
 
 const Header = ({ context }) => {
 
-  /* const navigate = useNavigate() */  // Temporarily removed
-  const navigate = undefined
+  const navigate = useNavigate() 
 
   const [active, setActive] = useState(false)
   const [searchActive, setSearchActive] = useState(false)

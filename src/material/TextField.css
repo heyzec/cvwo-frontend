@@ -1,0 +1,68 @@
+.textfield {
+  position: relative;
+  height: 2.5em;
+  width: 20ch;
+  
+  --grey: rgba(0, 0, 0, 0.12);
+}
+.textfield__input {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  padding: 0 1.2rem;
+
+  outline: none;
+  border: 1px solid;
+  border-color: var(--grey);
+  border-radius: 0.2rem;
+  
+  transition: border-color 100ms ease-out;
+}
+
+.textfield__input:hover {
+  border-width: 1px;
+  border-color: #252525;
+}
+.textfield__input:focus {
+  border-color: blueviolet;
+}
+
+.textfield__input:focus {
+  border-width: 2px;
+}
+
+.textfield__input:focus + .textfield__text-wrapper .textfield__text,
+  :not(.textfield__input[value=""]) + .textfield__text-wrapper .textfield__text {
+  background-color: white;
+  font-size: 67.25%;
+  transform: translate(0, -2em);
+}
+
+.textfield__input:focus + .textfield__text-wrapper .textfield__text {
+  color: blueviolet;
+}
+
+.textfield__text-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 1.2rem;
+
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+.textfield__text {
+  font-size: 100%;
+  padding: 0 0.5rem;
+
+  transform: translate(0);
+  color: black;
+  background-color: transparent;
+
+  transition-property: transform, font-size, color, background-color;
+  transition-duration: 150ms;
+  transition-timing-function: ease-out;
+}

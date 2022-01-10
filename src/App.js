@@ -10,7 +10,7 @@ import { Context } from 'utils/context'
 import { getUser } from 'utils/auth'
 
 import 'App.css';
-import ResponsiveTest from 'pages/ResponsiveTest';
+import Sandbox from 'pages/Sandbox';
 
 console.log(`This is a ${process.env.NODE_ENV} environment`)
 
@@ -83,7 +83,7 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<Main context={context} />} />
-          <Route path="sandbox" element={<ResponsiveTest context={context} />} />
+          <Route path="sandbox" element={<Sandbox context={context} />} />
           <Route path="signin" element={<Auth context={context} type="signin" />} />
           <Route path="signup" element={<Auth context={context} type="signup" />} />
           <Route path="*" element={<h1>Oops, page don't exist!</h1>} />
