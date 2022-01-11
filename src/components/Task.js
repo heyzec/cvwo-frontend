@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
-
 import dayjs from 'dayjs'
-
-import Tag from 'components/Tag'
 
 import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
 import { BsTagsFill, BsCircle, BsCheckCircle } from 'react-icons/bs'
+
+import Tag from 'components/Tag'
+import Tooltip from 'material/Tooltip'
+import IconButton from 'material/IconButton'
 
 import 'components/Task.css'
 
@@ -135,11 +136,15 @@ const Task = ({ context, task, isCreated }) => {
     <div className="task__wrapper">
       <div className="task">
         <div className="task__checkbox">
-          {
-            isCreated && task.done ?
-              <BsCheckCircle className="clickable task--strikethrough" size="20" onClick={circleClicked} />
-              : <BsCircle className="clickable" size="20" onClick={circleClicked} />
-          }
+          <Tooltip text={isCreated ? `Mark ${task.done ? "undone" : "done"}` : ""}>
+            <IconButton onClick={circleClicked}>
+              {
+                isCreated && task.done
+                  ? <BsCheckCircle size="20" />
+                  : <BsCircle size="20" />
+              }
+            </IconButton>
+          </Tooltip>
         </div>
         <div className="task__text" >
           <input readOnly={readOnly} className={`themed-input${isCreated && task.done ? " task--strikethrough" : ""}`} value={textValue}
@@ -169,9 +174,21 @@ const Task = ({ context, task, isCreated }) => {
           {
             isCreated
               ? <>
-                <BsTagsFill className="clickable" onClick={tagIconClicked} />
-                <HiPencil className={`clickable${isCreated ? "" : " hidden"}`} onClick={pencilIconClicked} />
-                <FaTimes className={`clickable${isCreated ? "" : " hidden"}`} onClick={crossIconClicked} />
+                <Tooltip text="Edit tags">
+                  <IconButton onClick={tagIconClicked}>
+                    <BsTagsFill size="15" className="clickable" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip text="Edit task">
+                  <IconButton onClick={pencilIconClicked}>
+                    <HiPencil size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip text="Delete task">
+                  <IconButton onClick={crossIconClicked}>
+                    <FaTimes size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
+                  </IconButton>
+                </Tooltip>
               </>
               : null
           }

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { signIn, signUp } from 'utils/auth';
+import TextField from 'material/TextField';
+import Button from 'material/Button';
 
 import 'pages/Auth.css'
 
@@ -31,9 +33,11 @@ const Auth = ({ type, context }) => {
     <div>
       <div id="auth">
         <h1 id="auth__header">{headerText}</h1>
-        <input className="themed-input auth__input" type="text" placeholder="Email" value={email} onChange={emailChanged} />
-        <input className="themed-input auth__input" type="password" placeholder="Password" value={password} onChange={passwordChanged} />
-        <button id="auth__submit" type="submit" onClick={handleSubmit}>Let's go!</button>
+        <form className="auth__form">
+          <TextField className="auth_input" type="text" label="Email" value={email} onChange={emailChanged} />
+          <TextField className="auth_input" type="password" label="Password" value={password} onChange={passwordChanged} />
+          <Button className="auth__submit" variant="contained" onClick={handleSubmit}>Let's go!</Button>
+        </form>
       </div>
     </div>
   )

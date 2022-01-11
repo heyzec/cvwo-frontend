@@ -1,13 +1,24 @@
 import ResponsivePage from 'components/ResponsivePage'
 
+import { HiPencil } from 'react-icons/hi'
+import IconButton from 'material/IconButton'
+import SelectableList from 'material/SelectableList'
+import SelectableListItem from 'material/SelectableListItem'
 import TextField from 'material/TextField'
 import Tooltip from 'material/Tooltip'
 import Button from 'material/Button'
-import { HiPencil } from 'react-icons/hi'
-import IconButton from 'material/IconButton'
 
+import 'pages/Sandbox.css'
 
 const Sandbox = ({ context }) => {
+
+  const Box = ({ children }) => {
+    return (
+      <div className="sandbox__box">
+        {children}
+      </div>
+    )
+  }
 
   return (
     <>
@@ -19,15 +30,28 @@ const Sandbox = ({ context }) => {
         <hr />
         <br />
         <TextField />
-        <div style={{ display: "flex", "justify-content": "center" }}>
-          <Tooltip text="Hello!">
-            <Button startIcon={<HiPencil />}>Hi</Button>
+        <Box>
+          <Tooltip text="Hello!" delay="500">
+            <Button startIcon={<HiPencil />} color="green">Hi</Button>
           </Tooltip>
           <Button startIcon={<HiPencil />}>
             <HiPencil />
           </Button>
-          <IconButton />
-        </div>
+          <IconButton>
+            <HiPencil />
+          </IconButton>
+        </Box>
+        <Box>
+          <Button variant="text" startIcon={<HiPencil />}>Hi</Button>
+          <Button variant="outlined" startIcon={<HiPencil />}>Hi</Button>
+          <Button variant="contained" startIcon={<HiPencil />}>Hi</Button>
+        </Box>
+        <Box>
+          <SelectableList>
+            <SelectableListItem selected={true} text="Testing"/>
+            <SelectableListItem text="Testing2" />
+          </SelectableList>
+        </Box>
       </ResponsivePage>
     </>
   )

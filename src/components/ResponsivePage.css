@@ -1,11 +1,4 @@
 .page {
-  --gray-primary: #566175;
-  --text-primary: rgb(255, 255, 255, 0.87);
-  --drawer-width: 100px;
-  --header-height: 45px;
-}
-
-.page {
   display: grid;
   width: 100vw;
   height: 100vh;
@@ -30,7 +23,6 @@
 }
 
 .page__drawer {
-  /* background-color: aqua; */
   width: var(--drawer-width)  
 }
 
@@ -52,10 +44,25 @@
     bottom: 0;
     transform: translateX(-100%);
     transition: transform 200ms;
+    z-index: 10;
   }
   
-  .page__drawer--open {
+  .page__drawer.page__drawer--open {
     transform: translateX(0);
+  }
+  
+  .page__overlay {
+    position: absolute;
+    inset: 0 0 0 0;
+    background-color: black;
+    transition: opacity 200ms;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .page__overlay.page__drawer--open {
+    opacity: 0.3;
+    z-index: 9;
   }
   
   .page__content {

@@ -6,24 +6,17 @@
 /* Contained button for high emphasis */
 
 
-
 .button {
-  /* width: 120px; */
-  /* height: 40px; */
-  background-color: #6200ee;
-
+  height: 30px;
   position: relative;
-  padding: 0.3rem 0.6rem;
   
-  /* outline: none; */
+  outline: none;
   border: none;
   border-radius: 0.4rem;
-  color: #fff;
   cursor: pointer;
   
-  filter: none;
-  transition: filter 200ms;
   font-family: inherit;
+  background-color: transparent;  /* By default, buttons have a background color */
 }
 
 .icon {
@@ -35,43 +28,64 @@
   gap: 0.2rem;
   justify-content: center;
   align-items: center;
-
-
-  
+  color: inherit;
+  font-weight: 800;
 }
 
-.button__icon {
-  /* margin: 10px; */
-  /* margin-right: 0.2rem; */
-  /* display: inline-flex; */
-  /* justify-content: center; */
-  /* align-items: center; */
+.button__decoration {
+  border-radius: inherit;
+  padding: 0.3rem 0.6rem;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 
-.button:hover {
-  filter: brightness(90%);
+.button--text .button__container {
+  color: currentColor;
 }
+
+.button--outlined .button__decoration {
+  background-color: transparent;
+  border: 1px solid currentColor;
+}
+
+.button--contained .button__decoration {
+  background-color: currentColor;
+}
+.button--contained .button__container {
+  color: white;
+}
+
+.button--icon { /* This class is defined in IconButton.js */
+  /* Make this a circle */
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+}
+
 
 .button__ripple-container {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  inset: 0 0 0 0;
+  border-radius: inherit;
   overflow: clip;
+  transition: background-color 200ms;
 }
 
+.button__ripple-container:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
 
-.ripple {
+.button__ripple {
   position: absolute;
   border-radius: 50%;
   transform: scale(0);
   animation: ripple 600ms;
   background-color: rgba(255, 255, 255, 0.7);
 }
-
-
 
 @keyframes ripple {
   to {

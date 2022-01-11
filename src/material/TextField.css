@@ -1,9 +1,7 @@
 .textfield {
   position: relative;
   height: 2.5em;
-  width: 20ch;
   
-  --grey: rgba(0, 0, 0, 0.12);
 }
 .textfield__input {
   box-sizing: border-box;
@@ -13,7 +11,7 @@
 
   outline: none;
   border: 1px solid;
-  border-color: var(--grey);
+  border-color: var(--divider-color);
   border-radius: 0.2rem;
   
   transition: border-color 100ms ease-out;
@@ -23,6 +21,7 @@
   border-width: 1px;
   border-color: #252525;
 }
+
 .textfield__input:focus {
   border-color: blueviolet;
 }
@@ -54,6 +53,7 @@
   display: flex;
   align-items: center;
 }
+
 .textfield__text {
   font-size: 100%;
   padding: 0 0.5rem;

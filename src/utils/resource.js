@@ -25,6 +25,7 @@ const addObjCallback = (res) => async (setState, data) => {
   if (r.ok) {
     const obj = await r.json()
     setState((state) => [...state, obj])
+    return obj
   }
 }
 

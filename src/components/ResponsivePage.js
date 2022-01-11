@@ -31,6 +31,7 @@ const ResponsivePage = ({ header, drawer, children }) => {
       <div className="page__content">
         {children}
       </div>
+      <div className={`page__overlay${mobileDrawerOpen ? " page__drawer--open" : ""}`}></div>
     </div>
   )
 }

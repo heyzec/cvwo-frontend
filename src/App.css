@@ -2,9 +2,18 @@
 
 :root {
   --app-font: 'Poppins', sans-serif;
-  --theme-gray: #f4f4f4;
+  --drawer-width: 160px;
   --header-height: 45px;
+  
+  --theme-gray: #f4f4f4;
+  --gray-primary: #566175;
+  --text-primary: rgb(255, 255, 255, 0.87);  /* Material defaults */
+  --divider-color: rgba(0, 0, 0, 0.12);      /* Material defaults */
+  
+  --background-default: #fafafa;             /* Material defaults */
+  --background-paper: white;                 /* Material defaults */
 }
+
 
 * {
   margin: 0;

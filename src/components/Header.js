@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef } from 'react'
-import { GoSearch } from 'react-icons/go'
-import { AiOutlineMenu } from 'react-icons/ai'
-import { FaClipboardList } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs'
-import 'components/Header.css'
 
+import { GoSearch } from 'react-icons/go'
+import { FaClipboardList } from 'react-icons/fa'
+
+import Button from 'material/Button'
+import IconButton from 'material/IconButton'
 import { signOut } from 'utils/auth.js'
+
+import 'components/Header.css'
 
 const Header = ({ context }) => {
 
-  const navigate = useNavigate() 
+  const navigate = useNavigate()
 
-  const [active, setActive] = useState(false)
   const [searchActive, setSearchActive] = useState(false)
   const [nowString, setNowString] = useState(dayjs().format("dddd, DD MMMM YYYY, HH:mm"))
 
@@ -26,7 +28,6 @@ const Header = ({ context }) => {
 
   const refSearchBar = useRef(null)
 
-  const toggleMenu = () => setActive(!active)
   const clickedSearchIcon = (e) => {
     if (!searchActive) {
       refSearchBar.current.focus()
@@ -48,7 +49,7 @@ const Header = ({ context }) => {
   }
 
   return (
-    <header className="test" id="header">
+    <header id="header">
       <FaClipboardList id="header__icon" className="clickable" size="25" onClick={appIconClicked}
         onContextMenu={(e) => { e.preventDefault(); context.magic() }} />
       <h1 id="header__title">Your To Dos</h1>
@@ -57,26 +58,21 @@ const Header = ({ context }) => {
         <span>{nowString}</span>
       </div>
       <div id="header__search">
-        <GoSearch className="clickable" onClick={clickedSearchIcon} />
+        <IconButton className="header__search-icon">
+          <GoSearch onClick={clickedSearchIcon} />
+        </IconButton>
         <input ref={refSearchBar} id="header__input" className={`themed-input${searchActive ? " header__input--active" : ""}`} placeholder="Search here" onBlur={searchIconBlurred} />
       </div>
-      <div id="header__nav" className={active ? "header__nav--active" : null}>
+      <div id="header__nav">
         {context.getUser() ? (
-          <div id="header__signout" className="header-elem clickable" onClick={signoutIconClicked}>
-            <span>Sign out</span>
-          </div>
+          <Button className="header__signout" onClick={signoutIconClicked}>Sign out</Button>
         ) : (
           <>
-            <div id="header__signin" className="header-elem clickable" onClick={signinIconClicked}>
-              <span>Sign in</span>
-            </div>
-            <div id="header__signup" className="header-elem clickable" onClick={signupIconClicked}>
-              <span>Sign up!</span>
-            </div>
+            <Button className="header__signin" onClick={signinIconClicked}>Sign in</Button>
+            <Button className="header__signup" variant="contained" onClick={signupIconClicked}>Sign up!</Button>
           </>
         )}
       </div>
-      <AiOutlineMenu id="header__toggle" size={25} onClick={toggleMenu} className="clickable" />
     </header>
   )
 }

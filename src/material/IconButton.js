@@ -1,11 +1,10 @@
 import Button from 'material/Button'
-import { HiPencil } from 'react-icons/hi'
 
-const IconButton = () => {
-
+// Just a wrapper for the Button component
+const IconButton = ({ children, className, onClick }) => {
   return (
-    <Button className="icon">
-      <HiPencil />
+    <Button className={`${className + " " || ""}button--icon`} onClick={onClick}>
+      {children}
     </Button>
   )
 }
