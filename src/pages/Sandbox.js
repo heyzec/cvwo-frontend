@@ -7,6 +7,7 @@ import SelectableListItem from 'material/SelectableListItem'
 import TextField from 'material/TextField'
 import Tooltip from 'material/Tooltip'
 import Button from 'material/Button'
+import Paper from 'material/Paper'
 
 import 'pages/Sandbox.css'
 
@@ -48,9 +49,16 @@ const Sandbox = ({ context }) => {
         </Box>
         <Box>
           <SelectableList>
-            <SelectableListItem selected={true} text="Testing"/>
+            <SelectableListItem selected={true} text="Testing" />
             <SelectableListItem text="Testing2" />
           </SelectableList>
+        </Box>
+        <Box>
+          <Paper elevation="1">Hello</Paper>
+          <Paper elevation="2">Hello</Paper>
+          <Paper elevation="3">Hello</Paper>
+          <Paper elevation="4">Hello</Paper>
+          <Paper elevation="5">Hello</Paper>
         </Box>
       </ResponsivePage>
     </>

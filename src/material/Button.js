@@ -1,3 +1,4 @@
+import Paper from 'material/Paper'
 import 'material/Button.css'
 
 const Button = ({ variant, startIcon, endIcon, children, className, onClick }) => {
@@ -27,16 +28,30 @@ const Button = ({ variant, startIcon, endIcon, children, className, onClick }) =
   }
 
   const variantClass = ["text", "outlined", "contained"].includes(variant) ? ` button--${variant}` : ""
+  
+  const buttonDecorationContents = (
+    <div className="button__container">
+      {startIcon}
+      {children}
+      {endIcon}
+    </div>
+  )
 
   return (
     <button className={`button${variantClass} ${className}`} onClick={buttonClicked}>
-      <div className="button__decoration">
-        <div className="button__container">
-          {startIcon}
-          {children}
-          {endIcon}
-        </div>
-      </div>
+      {
+        variant === "contained"
+          ? (
+            <Paper className="button__decoration">
+              {buttonDecorationContents}
+            </Paper>
+          )
+          : (
+            <div className="button__decoration">
+              {buttonDecorationContents}
+            </div>
+          )
+      }
       <div className="button__ripple-container"></div>
     </button>
   )

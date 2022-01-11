@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { AiOutlineMenu } from 'react-icons/ai'
 
+import Paper from 'material/Paper'
+
 import 'components/ResponsivePage.css'
 
 const ResponsivePage = ({ header, drawer, children }) => {
@@ -21,13 +23,13 @@ const ResponsivePage = ({ header, drawer, children }) => {
 
   return (
     <div className="page" onClick={pageClicked}>
-      <div className="page__header">
+      <Paper className="page__header">
         <AiOutlineMenu className="page__menu-icon" size="25" onClick={menuIconClicked} />
         {header}
-      </div>
-      <div className={`page__drawer${mobileDrawerOpen ? " page__drawer--open" : ""}`}>
+      </Paper>
+      <Paper className={`page__drawer${mobileDrawerOpen ? " page__drawer--open" : ""}`}>
         {drawer}
-      </div>
+      </Paper>
       <div className="page__content">
         {children}
       </div>
@@ -36,6 +38,3 @@ const ResponsivePage = ({ header, drawer, children }) => {
   )
 }
 export default ResponsivePage
-
-
-

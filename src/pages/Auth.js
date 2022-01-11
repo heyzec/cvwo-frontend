@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
-import { signIn, signUp } from 'utils/auth';
-import TextField from 'material/TextField';
-import Button from 'material/Button';
+import { useNavigate } from 'react-router-dom'
+import { signIn, signUp } from 'utils/auth'
+import TextField from 'material/TextField'
+import Button from 'material/Button'
+import Paper from 'material/Paper'
 
 import 'pages/Auth.css'
 
@@ -31,14 +32,15 @@ const Auth = ({ type, context }) => {
 
   return (
     <div>
-      <div id="auth">
+    <Paper className="auth">
         <h1 id="auth__header">{headerText}</h1>
         <form className="auth__form">
-          <TextField className="auth_input" type="text" label="Email" value={email} onChange={emailChanged} />
-          <TextField className="auth_input" type="password" label="Password" value={password} onChange={passwordChanged} />
+          <TextField className="auth__input" type="text" label="Email" value={email} onChange={emailChanged} />
+          <TextField className="auth__input" type="password" label="Password" value={password} onChange={passwordChanged} />
           <Button className="auth__submit" variant="contained" onClick={handleSubmit}>Let's go!</Button>
         </form>
-      </div>
+      
+    </Paper>
     </div>
   )
 }

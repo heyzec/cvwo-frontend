@@ -12,7 +12,7 @@
   gap: 10px;
 
   padding: 0 20px;
-  color: var(--text-primary);
+  color: var(--text-primary-light);
   background-color: var(--gray-primary);
   
   display: flex;

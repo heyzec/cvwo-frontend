@@ -7,7 +7,8 @@
   
   --theme-gray: #f4f4f4;
   --gray-primary: #566175;
-  --text-primary: rgb(255, 255, 255, 0.87);  /* Material defaults */
+  --text-primary-light: rgb(255, 255, 255, 0.87);  /* Material defaults */
+  --text-primary-dark: rgb(0, 0, 0, 0.87);         /* Material defaults */
   --divider-color: rgba(0, 0, 0, 0.12);      /* Material defaults */
   
   --background-default: #fafafa;             /* Material defaults */
@@ -42,6 +43,11 @@ input {
   background-color: transparent;
   border: none;
   outline: none;
+  color: inherit;  /* By browser default, input elems have a color of black */
+}
+
+button {
+  color: inherit;  /* By browser default, button elems have a color of black */
 }
 
 .lower {
@@ -50,10 +56,6 @@ input {
 
 
 /*  -----------------------SPECIAL CSS END------------------------ */
-
-html {
-  /* scrollbar-width: none; */
-}
 
 .App {
   text-align: center;
@@ -65,6 +67,7 @@ html {
 
 body {
   font-family: var(--app-font);
+  color: var(--text-primary-dark);
 }
 
 

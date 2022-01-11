@@ -1,4 +1,4 @@
-#auth {
+.auth {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -9,8 +9,7 @@
   height: 60vh;
 
   background-color: var(--theme-gray);
-  border-radius: 2rem;
-  box-shadow: 0px 0px 5px #aaa9a9;
+  border-radius: 1.5rem;
   
   display: flex;
   flex-direction: column;
@@ -24,13 +23,7 @@
 }
 
 .auth__input {
-  width: 80%;
-  margin: 5px;
-  padding: 10px;
-
-  border: 1px solid grey;
-  border-radius: 4px;
-  background-color: white;
+  width: 100%;
 }
 
 .auth__form {
@@ -39,16 +32,11 @@
   gap: 1rem;
   align-items: center;
 }
-.auth__submit, #auth__submit {
-  width: 80%;
+.auth__submit {
+  width: 100%;
   margin: 10px;
-  padding: 5px;
   height: 40px;
 
   color: cornflowerblue;
-  box-shadow: 0px 0px 0px;
 }
 
-#auth__submit:hover {
-  filter: brightness(110%);
-}

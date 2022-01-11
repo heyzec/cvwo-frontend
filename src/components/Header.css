@@ -6,7 +6,7 @@
   align-items: center;
   
   color: white;
-  color: var(--text-primary);
+  color: var(--text-primary-light);
   white-space: nowrap;
   position: sticky;
   left:0;
@@ -15,17 +15,17 @@
 }
 
 .header__signin {
-  color: var(--text-primary);
+  color: var(--text-primary-light);
 }
 .header__signup {
   color: blue;
 }
 .header__signout {
-  color: var(--text-primary);
+  color: var(--text-primary-light);
 }
 
 .header__search-icon {
-  color: var(--text-primary);
+  color: var(--text-primary-light);
 }
 
 #header__title {
