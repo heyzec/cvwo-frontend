@@ -3,7 +3,7 @@
 :root {
   --app-font: 'Poppins', sans-serif;
   --drawer-width: 160px;
-  --header-height: 45px;
+  --header-height: 55px;
   
   --theme-gray: #f4f4f4;
   --gray-primary: #566175;
@@ -21,20 +21,6 @@
   padding: 0;
 }
 
-.clickable {
-  cursor: pointer;
-}
-
-.hidden {
-  visibility: hidden !important;
-}
-
-.remove {
-  display: none !important;
-}
-
-
-/* input.themed-input { */
 input {
   font: inherit; /* font-family: var(--app-font); */
   min-width: 0;
@@ -50,6 +36,18 @@ button {
   color: inherit;  /* By browser default, button elems have a color of black */
 }
 
+.clickable {
+  cursor: pointer;
+}
+
+.hidden {
+  visibility: hidden !important;
+}
+
+.remove {
+  display: none !important;
+}
+
 .lower {
   z-index: -1;
 }
@@ -59,15 +57,13 @@ button {
 
 .App {
   text-align: center;
-  /* display: flex; */
   flex-direction: column;
-  width: 100vw;
-  height: 100vh;
 }
 
 body {
   font-family: var(--app-font);
   color: var(--text-primary-dark);
+  background-color: var(--background-default);
 }
 
 

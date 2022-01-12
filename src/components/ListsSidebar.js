@@ -19,7 +19,7 @@ const ListsSidebar = ({ context }) => {
     <div id="lists-sidebar">
       <span id="lists-sidebar__label">Your Lists</span>
       <Button className="lists-sidebar__new-list" variant="contained" onClick={addListClicked}>
-        Create a new list
+        Create new list
       </Button>
       <SelectableList>
         {

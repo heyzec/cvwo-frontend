@@ -2,7 +2,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -250%);
   
   width: 60vw;
   max-width: 80vh;
@@ -15,6 +15,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  
+  opacity: 0;
+  animation: drop 400ms ease-in-out forwards;
+}
+
+.auth__drop-shadow {
+  position: fixed;
+  inset: 0 0 0 0;
+  animation: fade-in 200ms forwards;
 }
 
 #auth__header {
@@ -40,3 +49,15 @@
   color: cornflowerblue;
 }
 
+@keyframes fade-in {
+  to {
+    background-color: rgb(0, 0, 0, 0.3);
+  }
+}
+
+@keyframes drop {
+  to {
+    transform: translate(-50%, -50%);
+    opacity: 1;
+  }
+}

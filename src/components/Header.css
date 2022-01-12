@@ -46,13 +46,13 @@
   width: 0rem;
 }
 
-#header__input {
+.header__input {
   width: 0;
   transition: width 200ms ease-in-out;
   color: white;
 }
 
-#header__input.header__input--active {
+.header__input.header__input--active {
   width: 14rem;
 }
 
@@ -65,15 +65,13 @@
   align-items: center;
 }
 
-#header__toggle {
-  position: absolute;
-  top: 0px;
-  right: 5px;
-  display: none;
+#header__search {
+  display: flex;
+  align-items: center;
 }
 
 /* Smaller screens */
-@media only screen and (max-width:768px) {
+@media only screen and (max-width: 768px) {
   #header__title {
     display: none;
  } 
@@ -81,44 +79,20 @@
 
 /* Small screens - breakpoint for mobile and tablets */
 @media only screen and (max-width: 600px) {
-
-  #header {
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-  }
   
-  #header__toggle {
-    display: block;
-  }
-
   #header__search, #header__date {
     display: none;
   }
   
   #header__nav {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    width: 100vw;
-    height: 0;
-    position: absolute;
-    top: 45px;
-    overflow: hidden;
-    transition: height 200ms ease-in-out;
-
-    background-color: inherit;
   }
   
   #header__login {
     border: none;
   }
-  /* .header-elem { */
-  /* To consider removing this class
-  /*   visibility: hidden; */
-  /* } */
   
 }
 

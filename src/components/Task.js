@@ -14,8 +14,10 @@ import 'components/Task.css'
 
 const Task = ({ context, task, isCreated }) => {
 
+  /***** Retrieve and set data from context object *****/
   const tags = context.getTags()
-
+  
+  /***** Define other states and refs required *****/
   const [readOnly, setReadOnly] = useState(isCreated)
   const [isOpen, setIsOpen] = useState(false)
   const [datetime, setDatetime] = useState(isCreated ? dayjs(task.day) : null)
@@ -28,9 +30,9 @@ const Task = ({ context, task, isCreated }) => {
 
   const inputRef = useRef(null)
 
-  useEffect(() => isCreated ? setTextValue(task.text) : null, [task, isCreated])
 
 
+  /***** Event handlers *****/
   const textChanged = (e) => setTextValue(e.target.value)
   const dateChanged = async (e) => {
     setDateValue(e.target.value)
@@ -42,7 +44,6 @@ const Task = ({ context, task, isCreated }) => {
     const dt = dayjs(`${dateValue} ${e.target.value}`)
     setDatetime(dt)
   }
-
 
   const tagIconClicked = (e) => {
     e.stopPropagation()
@@ -72,9 +73,9 @@ const Task = ({ context, task, isCreated }) => {
       "tags": [...task.tags, tagId]
     })
   }
-  
-  
+
   const taskBlurred = async (e) => {
+    // When task is blurred, save the edits (if any)
     if (
       (isCreated && textValue === task.text && datetime.toISOString() === task.day) ||
       (!isCreated && (!textValue || !dateValue || !timeValue))
@@ -105,7 +106,20 @@ const Task = ({ context, task, isCreated }) => {
     }
   }
 
+  const circleClicked = (e) => {
+    context.editTask(task.id, {
+      "done": !task.done
+    })
+  }
 
+
+  /***** Set task text *****/  // TODO: Check if its still necessary to delay doing this till after comp mounts?
+  useEffect(() => isCreated ? setTextValue(task.text) : null,
+    [task, isCreated]
+  )
+
+
+  /***** Function to be called in the block below *****/
   const generateTagElems = () => {
     if (!task.tags) {
       return null
@@ -120,83 +134,77 @@ const Task = ({ context, task, isCreated }) => {
 
     const cross = isOpen ? <FaTimes className="tag-icon clickable" size="12" onClick={handler} /> : null
     return (task.tags.map((id) => {
-      const tagObj = tags.find(x => x.id === id)
-      return tagObj ? <Tag clickables={cross} key={tagObj.id} tag={tagObj} /> : null
+      const tag = tags.find(x => x.id === id)
+      return tag ? <Tag clickables={cross} key={tag.id} tag={tag} /> : null
     })
     )
-  }
-
-  const circleClicked = (e) => {
-    context.editTask(task.id, {
-      "done": !task.done
-    })
   }
 
 
   return (
     <div className="task__wrapper">
       <Paper className="task">
-          <div className="task__checkbox">
-            <Tooltip text={isCreated ? `Mark ${task.done ? "undone" : "done"}` : ""}>
-              <IconButton onClick={circleClicked}>
-                {
-                  isCreated && task.done
-                    ? <BsCheckCircle size="20" />
-                    : <BsCircle size="20" />
-                }
-              </IconButton>
-            </Tooltip>
-          </div>
-          <div className="task__text" >
-            <input readOnly={readOnly} className={`themed-input${isCreated && task.done ? " task--strikethrough" : ""}`} value={textValue}
-              onChange={textChanged} placeholder={isCreated ? "" : "Add a task here"}
-              onBlur={taskBlurred} ref={inputRef} />
-          </div>
-          <div className="task__date">
-            {
-              isCreated
-                ? <p>{dateReadable}</p>
-                : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="date" value={dateValue}
-                  onChange={dateChanged} onBlur={taskBlurred} />
-            }
-          </div>
-          <div className="task__time">
-            {
-              isCreated
-                ? <p>{timeReadable}</p>
-                : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="time" value={timeValue}
-                  onChange={timeChanged} onBlur={taskBlurred} />
-            }
-          </div>
-          <div className="tag-container">
-            {isCreated ? generateTagElems() : null}
-          </div>
-          <div className="task__options">
-            {
-              isCreated
-                ? <>
-                  <Tooltip text="Edit tags">
-                    <IconButton onClick={tagIconClicked}>
-                      <BsTagsFill size="15" className="clickable" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip text="Edit task">
-                    <IconButton onClick={pencilIconClicked}>
-                      <HiPencil size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip text="Delete task">
-                    <IconButton onClick={crossIconClicked}>
-                      <FaTimes size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
-                    </IconButton>
-                  </Tooltip>
-                </>
-                : null
-            }
-          </div>
-      </Paper>
-        <div className={`task__dropdown-wrapper${isOpen ? "" : " remove"}`}>
+        <div className="task__checkbox">
+          <Tooltip text={isCreated ? `Mark ${task.done ? "undone" : "done"}` : ""}>
+            <IconButton onClick={circleClicked}>
+              {
+                isCreated && task.done
+                  ? <BsCheckCircle size="20" />
+                  : <BsCircle size="20" />
+              }
+            </IconButton>
+          </Tooltip>
+        </div>
+        <div className="task__text" >
+          <input readOnly={readOnly} className={`themed-input${isCreated && task.done ? " task--strikethrough" : ""}`} value={textValue}
+            onChange={textChanged} placeholder={isCreated ? "" : "Add a task here"}
+            onBlur={taskBlurred} ref={inputRef} />
+        </div>
+        <div className="task__date">
           {
+            isCreated
+              ? <p>{dateReadable}</p>
+              : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="date" value={dateValue}
+                onChange={dateChanged} onBlur={taskBlurred} />
+          }
+        </div>
+        <div className="task__time">
+          {
+            isCreated
+              ? <p>{timeReadable}</p>
+              : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="time" value={timeValue}
+                onChange={timeChanged} onBlur={taskBlurred} />
+          }
+        </div>
+        <div className="tag-container">
+          {isCreated ? generateTagElems() : null}
+        </div>
+        <div className="task__options">
+          {
+            isCreated
+              ? <>
+                <Tooltip text="Edit tags">
+                  <IconButton onClick={tagIconClicked}>
+                    <BsTagsFill size="15" className="clickable" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip text="Edit task">
+                  <IconButton onClick={pencilIconClicked}>
+                    <HiPencil size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip text="Delete task">
+                  <IconButton onClick={crossIconClicked}>
+                    <FaTimes size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
+                  </IconButton>
+                </Tooltip>
+              </>
+              : null
+          }
+        </div>
+      </Paper>
+      <div className={`task__dropdown-wrapper${isOpen ? "" : " remove"}`}>
+        {
           task
             ? <Paper elevation="4" className="task__dropdown" >
               {

@@ -6,6 +6,7 @@ import { AiOutlinePlusCircle, AiOutlineCheckCircle } from 'react-icons/ai'
 import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
 import svgColorWheel from 'resources/colorwheel.png'
+import {validateColor} from 'utils/funcs'
 
 import 'components/TagsSidebar.css'
 
@@ -19,7 +20,6 @@ const colorPalatte = [
   "#0c090c",
   "#d27b53"
 ]
-const validateColor = (str) => str.match(/^#([\dA-F]{3}|[\dA-F]{6})$/i)
 
 const TagsSidebar = ({ context }) => {
 

@@ -18,7 +18,8 @@
   border-radius: 5px;
   color: white;
   font-size: 0.7rem;
-  background-color: rgba(0, 0, 0, 0.466);
+  background-color: rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
 
   opacity: 0;
   top: 1rem;
@@ -28,7 +29,6 @@
   transition: 100ms;
 }
 
-/* .tooltip__content:hover + .tooltip__text-wrapper .tooltip__text { */
 .tooltip__text.tooltip--active {
   opacity: 1;
   top: 1.5rem;

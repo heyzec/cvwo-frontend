@@ -2,20 +2,22 @@ import { useState } from 'react'
 
 import ResponsivePage from "components/ResponsivePage"
 import Header from "components/Header"
-import ListsSidebar from 'components/ListsSidebar';
-import TagsSidebar from 'components/TagsSidebar';
+import ListsSidebar from 'components/ListsSidebar'
+import TagsSidebar from 'components/TagsSidebar'
 import Task from 'components/Task'
 import Button from 'material/Button'
 
 import 'pages/Main.css'
 
 const Main = ({ context }) => {
-
+  
+  /***** Retrieve necessary data from and set callbacks on context object *****/
   const tasks = context.getTasks()
   const [currentList, setCurrentList] = useState(null)
-
   context.setCurrentListCallbacks(() => currentList, setCurrentList)
 
+
+  /***** Event handlers *****/
   const editListClicked = (e) => {
     const userInput = prompt("Please enter name of list")
     if (userInput) {
@@ -26,7 +28,7 @@ const Main = ({ context }) => {
   }
 
   const deleteListClicked = (e) => {
-    const prompt = `You are abou to delete this list permenantly. Continue?`
+    const prompt = `You are about to permenantly delete this list containing ${currentListTasks.length} tasks. Continue?`
     if (!window.confirm(prompt)) {
       return
     }
@@ -34,7 +36,10 @@ const Main = ({ context }) => {
     setCurrentList(null)
     // Also delete tasks locally?
   }
+
+  
   const currentListName = currentList ? context.getLists().find((list) => list.id === currentList).text : null
+  const currentListTasks = currentList ? tasks.filter((task) => task.list_id === currentList) : null
 
   return (
     <ResponsivePage
@@ -66,7 +71,7 @@ const Main = ({ context }) => {
                 </div>
                 <div id="task-container">
                   {
-                    tasks.filter((task) => task.list_id === currentList).map(
+                    currentListTasks.map(
                       ((task) => <Task context={context} key={task.id} task={task} isCreated={true} />)
                     )
                   }

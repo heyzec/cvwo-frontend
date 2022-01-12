@@ -1,8 +1,10 @@
 .textfield {
   position: relative;
   height: 2.5em;
-  
+  overflow-x: clip;
+  overflow-y: visible;
 }
+
 .textfield__input {
   box-sizing: border-box;
   height: 100%;
@@ -43,10 +45,7 @@
 
 .textfield__text-wrapper {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  inset: 0 0 0 0;
   padding: 0 1.2rem;
 
   pointer-events: none;
