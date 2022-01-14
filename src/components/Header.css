@@ -8,7 +8,6 @@
   color: white;
   color: var(--text-primary-light);
   white-space: nowrap;
-  position: sticky;
   left:0;
   width: 100%;
   gap: 10px;
@@ -24,9 +23,6 @@
   color: var(--text-primary-light);
 }
 
-.header__search-icon {
-  color: var(--text-primary-light);
-}
 
 #header__title {
   display: flex;
@@ -46,15 +42,6 @@
   width: 0rem;
 }
 
-.header__input {
-  width: 0;
-  transition: width 200ms ease-in-out;
-  color: white;
-}
-
-.header__input.header__input--active {
-  width: 14rem;
-}
 
 #header__spacer {
   margin-right: auto;
@@ -65,10 +52,6 @@
   align-items: center;
 }
 
-#header__search {
-  display: flex;
-  align-items: center;
-}
 
 /* Smaller screens */
 @media only screen and (max-width: 768px) {

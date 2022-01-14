@@ -28,6 +28,8 @@ class Context {
   setListsCallbacks = this.#prepState("lists")
   setCurrentListCallbacks = this.#prepState("currentList")
   setHtmlCallbacks = this.#prepState("html")
+  setSearchValueCallbacks = this.#prepState("searchValue")
+  setSearchBoolsCallbacks = this.#prepState("searchBools")
 
   setNotify = (notifyCallback) => {
     this.notify = (...args) => notifyCallback()(...args)

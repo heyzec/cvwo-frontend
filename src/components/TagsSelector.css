@@ -1,0 +1,11 @@
+.tags-selector {
+  width: 8rem;
+  padding: 5px;
+
+  color: black;  /* For icons inside to inherit */
+  background-color: var(--background-default);
+  border: 1px solid var(--divider-color);
+
+  flex-direction: column;
+  align-items: center;
+}

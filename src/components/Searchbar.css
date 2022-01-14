@@ -1,0 +1,49 @@
+.searchbar {
+  display: flex;
+  align-items: center;
+}
+
+.searchbar__icon {
+  color: var(--text-primary-light);
+}
+
+.searchbar__box {
+  width: 0;
+  transition: width 200ms ease-in-out;
+  color: white;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.searchbar__box--active {
+  width: 14rem;
+  overflow: visible;
+}
+
+.searchbar__dropdown-wrapper {
+  position: absolute;
+  z-index: 5 ;
+  right: 1px;
+  /* left: 1px; */
+  animation: dropin 200ms forwards;
+  border-radius: 1rem;
+  
+}
+
+.searchbar__tags {
+  border: 2px solid purple;
+  position: relative;
+  
+}
+
+@keyframes dropin {
+  from {
+    transform: translateY(-10%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

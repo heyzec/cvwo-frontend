@@ -6,6 +6,7 @@ import { HiPencil } from 'react-icons/hi'
 import { BsTagsFill, BsCircle, BsCheckCircle } from 'react-icons/bs'
 
 import Tag from 'components/Tag'
+import TagsSelector from 'components/TagsSelector'
 import Tooltip from 'material/Tooltip'
 import IconButton from 'material/IconButton'
 import Paper from 'material/Paper'
@@ -31,7 +32,6 @@ const Task = ({ context, task, isCreated }) => {
   const inputRef = useRef(null)
 
 
-
   /***** Event handlers *****/
   const textChanged = (e) => setTextValue(e.target.value)
   const dateChanged = async (e) => {
@@ -47,15 +47,18 @@ const Task = ({ context, task, isCreated }) => {
 
   const tagIconClicked = (e) => {
     e.stopPropagation()
-    const listener = (e) => {
-      setIsOpen(false)
-    }
     if (!isOpen) {
-      window.addEventListener('click', listener, { once: true })
-      e.stopPropagation()
+      window.addEventListener('click', function handler(e) {
+        if (e.target.closest(".task__dropdown-wrapper")) {
+          return
+        }
+        setIsOpen(false)
+        e.currentTarget.removeEventListener(e.type, handler)
+      })
     }
     setIsOpen(!isOpen)
   }
+
 
   const pencilIconClicked = () => {
     setReadOnly(false)
@@ -66,6 +69,15 @@ const Task = ({ context, task, isCreated }) => {
     context.deleteTask(task.id)
   }
 
+  const genDropdownTagClicked = (tagId) => {
+    // e.stopPropagation()  // Prevent dropdown from closing upon tag selected
+    // const tagId = parseInt(e.currentTarget.attributes["data-tag-id"].value)
+    // const tagId = tag.id
+    
+    context.editTask(task.id, {
+      "tags": [...task.tags, tagId]
+    })
+  }
   const dropdownTagClicked = (e) => {
     e.stopPropagation()
     const tagId = parseInt(e.currentTarget.attributes["data-tag-id"].value)
@@ -206,13 +218,7 @@ const Task = ({ context, task, isCreated }) => {
       <div className={`task__dropdown-wrapper${isOpen ? "" : " remove"}`}>
         {
           task
-            ? <Paper elevation="4" className="task__dropdown" >
-              {
-                tags.filter(x => !task.tags.includes(x.id)).map((tag) =>
-                  <Tag className="clickable" onClick={dropdownTagClicked} key={tag.id} tag={tag} />
-                )
-              }
-            </Paper>
+            ? <TagsSelector tags={tags.filter(tag => !task.tags.includes(tag.id))} genOnClick={genDropdownTagClicked} />
             : null
         }
       </div>

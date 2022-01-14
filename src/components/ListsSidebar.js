@@ -25,10 +25,11 @@ const ListsSidebar = ({ context }) => {
         {
           context.getLists().map((list) => (
             <SelectableListItem
-              text={list.text}
               onClick={(e) => context.setCurrentList(list.id)}
               selected={list.id === context.getCurrentList()}
-            />
+            >
+              {list.text}
+            </SelectableListItem>
           ))
         }
       </SelectableList>

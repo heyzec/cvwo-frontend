@@ -60,21 +60,9 @@
   width: 0px;
   height: 0px;
   overflow: visible;
-  direction: rtl;  /* make overflow to the left instead */
+  /* direction: rtl;  /1* make overflow to the left instead *1/ */
 }
 
-.task__dropdown {
-  display: flex;
-  position: relative;
-  top: 70px;
-  width: fit-content;
-  
-  background-color: white;
-  border: 1px solid var(--divider-color);
-
-  flex-direction: column;
-  align-items: center;
-}
 
 
 .task--strikethrough {
