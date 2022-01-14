@@ -11,6 +11,7 @@ import 'components/Searchbar.css'
 
 const Searchbar = ({ context, searchActive, setSearchActive }) => {
 
+  /***** Retrieve states from context object *****/
   const tags = context.getTags()
 
   // Value of input elem in searchbar

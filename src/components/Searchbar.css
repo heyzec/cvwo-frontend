@@ -25,25 +25,11 @@
   position: absolute;
   z-index: 5 ;
   right: 1px;
-  /* left: 1px; */
-  animation: dropin 200ms forwards;
+  animation: dropin 150ms forwards;  /* Defined in App.css */
   border-radius: 1rem;
-  
 }
 
 .searchbar__tags {
   border: 2px solid purple;
   position: relative;
-  
-}
-
-@keyframes dropin {
-  from {
-    transform: translateY(-10%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
 }

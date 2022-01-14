@@ -1,12 +1,12 @@
 #lists-sidebar {
-  background-color: var(--theme-gray);
   height: 100%;
   width: 100%;
   
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
+  overflow-y: scroll;
 }
 
 #lists-sidebar__label {
@@ -20,5 +20,5 @@
   background-color: white;
 }
 .lists-sidebar__new-list {
-  color: orange;
+  color: var(--theme-orange);
 }

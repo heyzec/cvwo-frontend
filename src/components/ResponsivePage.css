@@ -18,12 +18,15 @@
   display: flex;
 }
 
+
 .page__menu-icon {
   display: none;
 }
 
 .page__drawer {
-  width: var(--drawer-width)  
+  width: var(--drawer-width);
+  position: relative;
+  overflow: clip;
 }
 
 .page__content {

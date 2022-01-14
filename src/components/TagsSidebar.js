@@ -1,12 +1,17 @@
 import { useState, useRef } from 'react'
 
-import Tag from 'components/Tag'
-
-import { AiOutlinePlusCircle, AiOutlineCheckCircle } from 'react-icons/ai'
-import { FaTimes } from 'react-icons/fa'
-import { HiPencil } from 'react-icons/hi'
+import { FaPlus } from 'react-icons/fa'
+import { HiOutlineDotsVertical } from 'react-icons/hi'
 import svgColorWheel from 'resources/colorwheel.png'
-import {validateColor} from 'utils/funcs'
+
+import { validateColor } from 'utils/funcs'
+import Tag from 'components/Tag'
+import Button from 'material/Button'
+import IconButton from 'material/IconButton'
+import TextField from 'material/TextField'
+import SelectableList from 'material/SelectableList'
+import SelectableListItem from 'material/SelectableListItem'
+import Paper from 'material/Paper'
 
 import 'components/TagsSidebar.css'
 
@@ -22,32 +27,73 @@ const colorPalatte = [
 ]
 
 const TagsSidebar = ({ context }) => {
-
+  
+  /***** Retrieve states from context object *****/
   const tags = context.getTags()
   const tasks = context.getTasks()
+  
+  
+  
+  /***** Initialise states and refs *****/
+  const [tagText, setTagText] = useState("")            // For input elem in editor
+  const [colorValue, setColorValue] = useState("")      // For input elem in editor
 
-  const [tagText, setTagText] = useState("")
-  const [colorValue, setColorValue] = useState("")
+  const [tagEditMode, setTagEditMode] = useState("")    // Whether tag is being created or edited
+  const [editorOpen, setEditorOpen] = useState(false)   // Keeps track whether sidebar shows tags or editor
+  const [selectedTag, setSelectedTag] = useState(null)  // Which tag's menu icon was clicked
 
-  const [tagEditMode, setTagEditMode] = useState("")  // Whether tag is being created or edited
-  const [move, setMove] = useState(false)  // Keeps track whether sidebar shows tags or editor
+  const colorRef = useRef(null)                         // A ref to the invisible color picker input elem
+  const floatRef = useRef(null)                         // Ref to the floating menu
+  
+  
 
-  const colorRef = useRef(null)  // A ref to the invisible color picker input elem
+  /***** Event handlers *****/
+  const colorValueChanged = (e) => setColorValue(e.target.value)
+  const tagTextChanged = (e) => setTagText(e.target.value)
 
-
-  const colorChanged = (e) => setColorValue(e.target.value)
-
-  const tagChanged = async (e) => {
-    setTagText(e.target.value)
-  }
-
-  const plusIconClicked = () => {
+  const createTagClicked = () => {
     setTagEditMode("create")
     setColorValue(colorPalatte[0])
-    setMove(true)
+    setEditorOpen(true)
+  }
+  
+  const menuEditClicked = (e) => {
+    e.stopPropagation()
+    const tagId = selectedTag
+    const tag = tags.filter(tag => tag.id === tagId)[0]
+    setTagText(tag.text)
+    setColorValue(tag.color)
+    setTagEditMode(`edit${tagId}`)
+    setEditorOpen(true)
   }
 
-  const tickIconClicked = async () => {
+  const menuDeleteClicked = async (e) => {
+    e.stopPropagation()
+    const tagId = selectedTag
+    const routines = []
+    tasks.forEach((task) => {
+      if (task.tags.includes(tagId)) {
+        routines.push(async () => {
+          await context.editTask(task.id, {
+            "tags": task.tags.filter(id => id !== tagId)
+          })
+        })
+      }
+    })
+
+    const tag = tags.filter((tag) => tag.id === tagId)[0]
+
+    if (routines.length !== 0) {
+      const prompt = `The tag '${tag.text}' will be removed from ${routines.length} tasks. Continue?`
+      if (!window.confirm(prompt)) {
+        return
+      }
+    }
+    routines.forEach(routine => routine())
+    context.deleteTag(tagId)
+  }
+
+  const doneButtonClicked = async () => {
     if (!(tagText && validateColor(colorValue))) {
       return
     }
@@ -67,96 +113,83 @@ const TagsSidebar = ({ context }) => {
     }
     setTagEditMode("")
     setTagText("")
-    setMove(false)
+    setEditorOpen(false)
   }
 
-  const pencilIconClicked = () => {
-    setTagEditMode("menu")
-  }
 
-  const clickablesPencilIconClicked = async (e) => {
-    e.stopPropagation()
-    const tagId = parseInt(e.currentTarget.closest(".tag").attributes["data-tag-id"].value)
-    const tag = tags.filter(tag => tag.id === tagId)[0]
-    setTagText(tag.text)
-    setColorValue(tag.color)
-    setTagEditMode(`edit${tagId}`)
-    setMove(true)
-  }
+  // Not an event handler, but generates an event handler
+  const genDotsClicked = (tag) => (e) => {
 
-  const clickablesCrossIconClicked = async (e) => {
-    e.stopPropagation()
-    const tagId = parseInt(e.currentTarget.closest(".tag").attributes["data-tag-id"].value)
-    const routines = []
-    tasks.forEach((task) => {
-      if (task.tags.includes(tagId)) {
-        routines.push(async () => {
-          await context.editTask(task.id, {
-            "tags": task.tags.filter(id => id !== tagId)
-          })
-        })
-      }
-    })
+    floatRef.current.style.top = `${e.pageY - 140}px`
+    floatRef.current.style.left = `${e.pageX - 50}px`
 
-    if (routines.length !== 0) {
-      const prompt = (`This tag will be removed from ${routines.length} tasks. Continue?`)
-      if (!window.confirm(prompt)) {
-        return
-      }
+    if (!selectedTag) {
+      window.addEventListener('click', function handler(ev) {
+        if (e.nativeEvent === ev || ev.target.closest(".tags-sidebar__float")) {
+          return
+        }
+        setSelectedTag(null)
+        ev.currentTarget.removeEventListener(ev.type, handler)
+      }, { capture: true })  // Use capture so that the window's event listener fires first
     }
-    routines.forEach(routine => routine())
-    context.deleteTag(tagId)
+    setSelectedTag(tag.id)
   }
 
-  const generateTagElems = () => {
-    const clickables = tagEditMode ? (
-      <>
-        <HiPencil className="tag-icon clickable" size="12" onClick={clickablesPencilIconClicked} />
-        <FaTimes className="tag-icon clickable" size="12" onClick={clickablesCrossIconClicked} />
-      </>
-    ) : null
-    return tags.map((tag) => <Tag key={tag.id} tag={tag} clickables={clickables} />)
-  }
 
+  const tagItems = tags.map((tag) => (
+    <div className="tags-sidebar__row">
+      <Tag key={tag.id} tag={tag} />
+      <span className="tags-sidebar__spacer"></span>
+      <IconButton onClick={genDotsClicked(tag)} >
+        <HiOutlineDotsVertical />
+      </IconButton>
+    </div>
+  ))
 
   return (
     <div id="tags-sidebar">
-      <div id="tags-sidebar__editor" className={move ? "tags--change" : ""} >
-        <AiOutlineCheckCircle className="clickable" size="20" onClick={tickIconClicked} />
+      <div id="tags-sidebar__tags" >
+        <span id="tags-sidebar__label">Your tags</span>
+        <Button
+          className="tags-sidebar__add-tag"
+          variant="contained"
+          startIcon={<FaPlus />}
+          onClick={createTagClicked}
+        >
+          Create tag
+        </Button>
+        {tagItems}
+        <div ref={floatRef} className={`tags-sidebar__float${selectedTag ? "" : " remove"}`}>
+          <Paper>
+            <SelectableList>
+              <SelectableListItem onClick={menuEditClicked}>
+                Edit
+              </SelectableListItem>
+              <SelectableListItem onClick={menuDeleteClicked}>
+                Delete
+              </SelectableListItem>
+            </SelectableList>
+          </Paper>
+        </div>
+      </div>
+      <div id="tags-sidebar__editor" className={editorOpen ? "tags--editing" : ""} >
+        <input id="tags-sidebar__hidden-color" ref={colorRef} type="color" value={colorValue} onChange={colorValueChanged} />
         <div id="tags-sidebar__preview-wrapper">
           <Tag tag={{ "color": colorValue, "text": tagText }} />
         </div>
-        <div className="tags-sidebar__input-wrapper">
-          <input id="tags-sidebar__input-text" className="themed-input"
-            value={tagText} placeholder="Tag name" onChange={tagChanged} />
-        </div>
+        <TextField label="Tag name" value={tagText} onChange={tagTextChanged} />
         <div className="tags-sidebar__input-wrapper">
           <img className="clickable" src={svgColorWheel} alt="color wheel" width="20px" onClick={() => colorRef.current.click()} />
           <span>
             <input id="tags-sidebar__input-color" className={`themed-input${validateColor(colorValue) ? "" : " red"}`}
-              maxLength={7} value={colorValue} placeholder="Color (hex value)" onChange={colorChanged} />
+              maxLength={7} value={colorValue} placeholder="Color (hex value)" onChange={colorValueChanged} />
           </span>
         </div>
-      </div>
-      <div id="tags-sidebar__tags" className={move ? "tags--change" : ""} >
-        <span id="tags-sidebar__label">Your tags</span>
-        <input id="tags-sidebar__hidden-color" ref={colorRef} type="color" value={colorValue} onChange={colorChanged} />
-        {
-          ((str) => {
-            switch (str) {
-              case "":
-                return <HiPencil className="clickable" onClick={pencilIconClicked} />
-              case "menu":
-                return <AiOutlinePlusCircle className="clickable" size="20" onClick={plusIconClicked} />
-              default:
-                return null
-            }
-          })(tagEditMode)
-        }
-        {generateTagElems()}
+        <Button variant="contained" onClick={doneButtonClicked}>
+          Done
+        </Button>
       </div>
     </div>
   )
 }
-
 export default TagsSidebar

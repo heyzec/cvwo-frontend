@@ -38,7 +38,7 @@ const Button = ({ variant, startIcon, endIcon, children, className, onClick }) =
   )
 
   return (
-    <button className={`button${variantClass} ${className}`} onClick={buttonClicked}>
+    <button className={`button${variantClass}${className ? " " + className : ""}`} onClick={buttonClicked}>
       {
         variant === "contained"
           ? (

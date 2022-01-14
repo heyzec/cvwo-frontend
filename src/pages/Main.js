@@ -1,39 +1,77 @@
 import { useState } from 'react'
 
 import { HiOutlineDotsVertical } from 'react-icons/hi'
+import { ImSortAlphaAsc, ImSortAlphaDesc, ImSortNumericAsc, ImSortNumbericDesc } from 'react-icons/im'
 
-import ResponsivePage from 'components/ResponsivePage'
 import Header from 'components/Header'
 import ListsSidebar from 'components/ListsSidebar'
+import ResponsivePage from 'components/ResponsivePage'
+import SlidingDrawer from 'components/SlidingDrawer'
 import TagsSidebar from 'components/TagsSidebar'
 import Task from 'components/Task'
+
 import Button from 'material/Button'
 import IconButton from 'material/IconButton'
+import Paper from 'material/Paper'
+import SelectableList from 'material/SelectableList'
+import SelectableListItem from 'material/SelectableListItem'
+import Tooltip from 'material/Tooltip'
 
 import 'pages/Main.css'
 
 const Main = ({ context }) => {
 
-  /***** Retrieve necessary data from and set callbacks on context object *****/
+  /***** Retrieve states from and set callbacks on context object *****/
   const tasks = context.getTasks()
   const lists = context.getLists()
   const tags = context.getTags()
   const [currentList, setCurrentList] = useState(null)
   context.setCurrentListCallbacks(() => currentList, setCurrentList)
+  const [searchValue, setSearchValue] = useState("")
+  context.setSearchValueCallbacks(() => searchValue, setSearchValue)
   const [searchBools, setSearchBools] = useState([])
   context.setSearchBoolsCallbacks(() => searchBools, setSearchBools)
 
 
-  /***** Event handlers *****/
+  /***** Create states for use within this file (exclude search; that's below) *****/
+  const [nextPage, setNextPage] = useState(false)
+  const [editListOpen, setEditListOpen] = useState(false)
+  
+
+  /***** Define some useful variables *****/
+  let currentListName = null;
+  let currentListTasks = null;
+  if (currentList) {
+    currentListName = context.getLists().find((list) => list.id === currentList).text
+    currentListTasks = tasks.filter((task) => task.list_id === currentList)
+  }
+  let getTasksFromList = (list) => tasks.filter((task) => (task.list_id) == list.id)
+  
+
+  /***** General event handlers *****/
+  const changePageClicked = (e) => setNextPage(!nextPage)  // This state is for the SlidingDrawer
+
+  const dotsIconClicked = (e) => {
+    if (!editListOpen) {
+      window.addEventListener('click', function handler(ev) {
+        if (e.nativeEvent === ev || ev.target.closest(".searchbar__dropdown-wrapper")) {
+          return
+        }
+        setEditListOpen(false)
+        ev.currentTarget.removeEventListener(ev.type, handler)
+      })
+    }
+    setEditListOpen(!editListOpen)
+  }
+  
   const editListClicked = (e) => {
-    const userInput = prompt("Please enter name of list")
+    const userInput = prompt("Please enter name of list", currentListName)
     if (userInput) {
       context.editList(currentList, {
         "text": userInput
       })
     }
   }
-
 
   const deleteListClicked = (e) => {
     const prompt = `You are about to permenantly delete this list containing ${currentListTasks.length} tasks. Continue?`
@@ -45,23 +83,8 @@ const Main = ({ context }) => {
     // Also delete tasks locally?
   }
 
-  const [searchValue, setSearchValue] = useState("")
-  context.setSearchValueCallbacks(() => searchValue, setSearchValue)
 
-
-
-  let currentListName = null;
-  let currentListTasks = null;
-  if (currentList) {
-    currentListName = context.getLists().find((list) => list.id === currentList).text
-    currentListTasks = tasks.filter((task) => task.list_id === currentList)
-  }
-
-  let getTasksFromList = (list) => tasks.filter((task) => (task.list_id) == list.id)
-
-
-  /***** Prepare states and sort/filtering functions *****/
-
+  /***** Search/Filter/Sort - Prepare states and sort/filtering functions *****/
   const [SORT_AZ, SORT_TIME] = [1, 2]
   const [sortMethod, setSortMethod] = useState(SORT_AZ)
 
@@ -72,7 +95,6 @@ const Main = ({ context }) => {
     [SORT_AZ]: tasksComparerAZ,
     [SORT_TIME]: tasksComparerTime
   }
-
 
   const filtSearch = (task) => task.text.toLowerCase().includes(searchValue.toLowerCase())
 
@@ -89,8 +111,7 @@ const Main = ({ context }) => {
   const filt = (task) => filtSearch(task) && filtTags(task)
   const sor = allTasksComparers[sortMethod]
 
-  /***** Helpers functions and event handlers *****/
-
+  /***** Search/Filter/Sort - Helpers functions and event handlers *****/
   let tasksMapper = (array) => (
     array.map((task) =>
       <Task context={context} key={task.id} task={task} isCreated={true} />
@@ -108,8 +129,7 @@ const Main = ({ context }) => {
   const sortTimeClicked = (e) => setSortMethod(SORT_TIME)
 
 
-  /***** Compute tasks to show after sorting and filtering *****/
-
+  /***** Search/Filter/Sort - Compute tasks to show after sorting and filtering *****/
   let tasksContents
 
   if (!searchValue) {
@@ -143,7 +163,6 @@ const Main = ({ context }) => {
       ))
     }
 
-
     tasksContents.push(
       fromCurrent.length === 0
         ? <span>
@@ -154,7 +173,9 @@ const Main = ({ context }) => {
 
     tasksContents.push(
       fromOthers.length === 0
-        ? "No results from other lists"
+        ? <span>
+          No results from other lists
+        </span>
         : (
           <>
             <span>From other lists</span>
@@ -165,16 +186,18 @@ const Main = ({ context }) => {
   }
 
 
-
-
-
-
-
   return (
     <ResponsivePage
       header={<Header context={context} />}
-      drawer={<ListsSidebar context={context} />}
-      drawer2={<TagsSidebar context={context} />}
+      drawer={
+        <SlidingDrawer
+          drawer1={<ListsSidebar context={context} />}
+          drawer2={<TagsSidebar context={context} />}
+          label1="Tags"
+          label2="Lists"
+          nextPage={nextPage} changePageClicked={changePageClicked}
+        />
+      }
     >
       <>
         <span>
@@ -191,17 +214,29 @@ const Main = ({ context }) => {
               ?
               <>
                 <div>
-                  <span className="list-name">{currentListName}</span>
-                  <IconButton>
-                    <HiOutlineDotsVertical size="22" />
-                  </IconButton>
+                  <span className="main__list-name">{currentListName}</span>
+                  <span className="main__menu">
+                    <Tooltip text="More options">
+                      <IconButton onClick={dotsIconClicked}>
+                        <HiOutlineDotsVertical size="22" />
+                      </IconButton>
+                    </Tooltip>
+                    <Paper className={`main__float${editListOpen ? " main__float--show" : ""}`}>
+                      <SelectableList>
+                        <SelectableListItem onClick={editListClicked}>
+                          Edit
+                        </SelectableListItem>
+                        <SelectableListItem onClick={deleteListClicked}>
+                          Delete
+                        </SelectableListItem>
+                      </SelectableList>
+                    </Paper>
+                  </span>
                   {
-                    // <Button onClick={editListClicked}>Edit name</Button>
-                    // <Button onClick={deleteListClicked}>Delete</Button>
                   }
                 </div>
                 <div>
-                  <Button onClick={sortAZClicked}>Sort: AZj</Button>
+                  <Button onClick={sortAZClicked}>Sort: AZ</Button>
                   <Button onClick={sortTimeClicked}>Sort: Time</Button>
                   {sortMethod}
                 </div>

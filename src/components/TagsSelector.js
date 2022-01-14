@@ -12,7 +12,6 @@ import 'components/TagsSelector.css'
 const TagsSelector = ({ tags, bools, genOnClick }) => {
 
   /***** Validate input props *****/
-
   if (
     (bools && !tags) ||
     (bools && bools.length !== 0 && tags.length !== bools.length)
@@ -22,6 +21,7 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
 
   const [searchValue, setSearchValue] = useState("")
 
+  const valueChanged = (e) => setSearchValue(e.target.value)
 
   let tableContents = []
   for (let i = 0; i < tags.length; i++) {
@@ -39,11 +39,7 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
         }}
       >
         <div>
-          {
-            bools && bools[i]
-              ? <TiTick />
-              : null
-          }
+          <TiTick className={bools && bools[i] ? "" : "hidden"} />
           <Tag
             className="clickable"
             key={tag.id}
@@ -54,7 +50,6 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
     )
   }
 
-  const valueChanged = (e) => setSearchValue(e.target.value)
 
   return (
     <Paper elevation="4" className="tags-selector" >

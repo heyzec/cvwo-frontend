@@ -30,6 +30,7 @@
   align-items: center;
   color: inherit;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .button__decoration {
@@ -42,16 +43,13 @@
   justify-content: center;
 }
 
-
 .button--text .button__container {
   color: currentColor;
 }
-
 .button--outlined .button__decoration {
   background-color: transparent;
   border: 1px solid currentColor;
 }
-
 .button--contained .button__decoration {
   background-color: currentColor;
 }
@@ -65,7 +63,6 @@
   width: 30px;
   border-radius: 50%;
 }
-
 
 .button__ripple-container {
   position: absolute;

@@ -15,7 +15,7 @@ import 'components/Task.css'
 
 const Task = ({ context, task, isCreated }) => {
 
-  /***** Retrieve and set data from context object *****/
+  /***** Retrieve states from context object *****/
   const tags = context.getTags()
   
   /***** Define other states and refs required *****/

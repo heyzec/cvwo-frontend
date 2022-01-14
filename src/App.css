@@ -6,6 +6,7 @@
   --header-height: 55px;
   
   --theme-gray: #f4f4f4;
+  --theme-orange: orange;
   --gray-primary: #566175;
   --text-primary-light: rgb(255, 255, 255, 0.87);  /* Material defaults */
   --text-primary-dark: rgb(0, 0, 0, 0.87);         /* Material defaults */
@@ -92,4 +93,15 @@ body {
 
 /* Large screens - breakpoint for computers */
 @media only screen and (min-width: 600px) {
+}
+
+@keyframes dropin {
+  from {
+    transform: translateY(-10%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

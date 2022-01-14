@@ -1,15 +1,32 @@
 import Button from 'material/Button'
 import 'material/SelectableListItem.css'
 
-const SelectableListItem = ({ selected, onClick, children }) => {
+const SelectableListItem = ({ startIcon, endIcon, selected, onClick, children }) => {
+
+  const contents = (
+    <div>
+      {startIcon}
+      {children}
+      {
+        endIcon ?
+          <>
+            <span className="list__item__spacer"></span>
+            {endIcon}
+          </>
+          : null
+      }
+    </div>
+  )
+
+
   return (
-    <div className={`list__item${selected ? " list__item--selected" : ""}`}>
+    <div className={`list__item${selected ? " list__item__selected" : ""}`}>
       <Button onClick={onClick}>
-        {children}
+        {contents}
       </Button>
       {
         selected
-          ? <div className="list__item-overlay"> </div>
+          ? <div className="list__item__overlay"> </div>
           : null
       }
     </div>
