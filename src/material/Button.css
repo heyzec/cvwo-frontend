@@ -1,0 +1,92 @@
+/* Material guidelines: */
+/* https://material.io/components/buttons */
+
+/* Text button for low emphasis */
+/* Outlined button for medium emphasis */
+/* Contained button for high emphasis */
+
+
+.button {
+  height: 30px;
+  position: relative;
+  
+  outline: none;
+  border: none;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  
+  font-family: inherit;
+  background-color: transparent;  /* By default, buttons have a background color */
+}
+
+.icon {
+  border-radius: 50%;
+}
+
+.button__container {
+  display: flex;
+  gap: 0.2rem;
+  justify-content: center;
+  align-items: center;
+  color: inherit;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.button__decoration {
+  border-radius: inherit;
+  padding: 0.3rem 0.6rem;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button--text .button__container {
+  color: currentColor;
+}
+.button--outlined .button__decoration {
+  background-color: transparent;
+  border: 1px solid currentColor;
+}
+.button--contained .button__decoration {
+  background-color: currentColor;
+}
+.button--contained .button__container {
+  color: white;
+}
+
+.button--icon { /* This class is defined in IconButton.js */
+  /* Make this a circle */
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+}
+
+.button__ripple-container {
+  position: absolute;
+  inset: 0 0 0 0;
+  border-radius: inherit;
+  overflow: clip;
+  transition: background-color 200ms;
+}
+
+.button__ripple-container:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.button__ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 600ms;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}

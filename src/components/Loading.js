@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import './Loading.css'
+import 'components/Loading.css'
 
 const Loading = ({ show, ref }) => {
 

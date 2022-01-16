@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
-import './Toasts.css'
+import Paper from 'material/Paper'
+import 'components/Toasts.css'
 
 const Toast = ({ text, color, duration }) => {
   const [show, setShow] = useState(false)
@@ -17,9 +18,9 @@ const Toast = ({ text, color, duration }) => {
   }
 
   return (
-    <div ref={self} className={`toast-box${show ? " toast-show" : ""}`} style={style}>
+    <Paper ref={self} elevation="3" className={`toast-box${show ? " toast-show" : ""}`} style={style}>
       {text}
-    </div>
+    </Paper>
   )
 }
 
@@ -42,7 +43,6 @@ const ToastContainer = forwardRef((props, ref) => {
   useImperativeHandle(ref, () => ({  // To expose certain stuff to the parents via ref
     notify: showToast
   }))
-
 
   return (
     <div className="toast-container">

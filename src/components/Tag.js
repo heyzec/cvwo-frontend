@@ -1,13 +1,6 @@
-import './Task.css'
+import { isBright } from 'utils/funcs'
+import 'components/Tag.css'
 
-// Taken from: https://stackoverflow.com/q/11867545
-const isBright = (rgb) => (
-  (
-    parseInt(rgb.substring(1, 3), 16) * 0.299 +
-    parseInt(rgb.substring(3, 5), 16) * 0.587 +
-    parseInt(rgb.substring(5, 7), 16) * 0.114
-  ) > 186 - 40
-)
 
 const Tag = ({ tag, className, passRef, clickables, onClick }) => {
 

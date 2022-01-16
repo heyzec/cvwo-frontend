@@ -1,13 +1,18 @@
 import { 
   fetchTasksCallback,
   fetchTagsCallback,
+  fetchListsCallback,
   addTaskCallback,
   addTagCallback,
+  addListCallback,
   deleteTaskCallback,
   deleteTagCallback,
+  deleteListCallback,
   editTaskCallback,
-  editTagCallback
-} from './resource.js'
+  editTagCallback,
+  editListCallback
+} from 'utils/resource'
+import { httpPost } from "utils/network"
 
 class Context {
   
@@ -20,7 +25,11 @@ class Context {
   setUserCallbacks = this.#prepState("user")
   setTasksCallbacks = this.#prepState("tasks")
   setTagsCallbacks = this.#prepState("tags")
+  setListsCallbacks = this.#prepState("lists")
+  setCurrentListCallbacks = this.#prepState("currentList")
   setHtmlCallbacks = this.#prepState("html")
+  setSearchValueCallbacks = this.#prepState("searchValue")
+  setSearchBoolsCallbacks = this.#prepState("searchBools")
 
   setNotify = (notifyCallback) => {
     this.notify = (...args) => notifyCallback()(...args)
@@ -32,13 +41,23 @@ class Context {
   
   fetchTasks = () => fetchTasksCallback(this.setTasks)
   fetchTags = () => fetchTagsCallback(this.setTags)
-  addTask = (data) => addTaskCallback(this.setTasks, data)
+  fetchLists = () => fetchListsCallback(this.setLists)
   addTag = (data) => addTagCallback(this.setTags, data)
+  addList = (data) => addListCallback(this.setLists, data)
   deleteTask = (id) => deleteTaskCallback(this.setTasks, id)
   deleteTag = (id) => deleteTagCallback(this.setTags, id)
+  deleteList = (id) => deleteListCallback(this.setLists, id)
   editTask = (id, data) => editTaskCallback(this.setTasks, id, data)
   editTag = (id, data) => editTagCallback(this.setTags, id, data)
+  editList = (id, data) => editListCallback(this.setLists, id, data)
 
+  addTask = async (list_id, data) => {
+    const r = await httpPost(`/lists/${list_id}/create`, data)
+    if (r.ok) {
+      const obj = await r.json()
+      this.setTasks((state) => [...state, obj])
+    }
+  }
 
 }
 

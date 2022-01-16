@@ -1,0 +1,29 @@
+#task-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.main__list-name {
+  font-size: 2.5rem;
+  color: var(--gray-primary);
+}
+
+.main__menu {
+  position: relative;
+}
+
+.main__float {
+  position: absolute;
+  top: 0;
+  left: 2rem;
+  overflow: hidden;
+  z-index: 1;
+  animation: dropin 150ms forwards;  /* Defined in App.css */
+  display: none;
+}
+
+.main__float--show {
+  display: initial;
+}

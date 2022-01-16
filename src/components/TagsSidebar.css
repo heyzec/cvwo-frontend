@@ -1,0 +1,99 @@
+#tags-sidebar {
+  width: 100%;
+  height: 100%;
+
+  overflow-y: scroll;
+}
+
+#tags-sidebar__tags {
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: scroll;
+}
+
+
+#tags-sidebar__label {
+  width: 80%;
+  padding: 2px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid black;
+}
+
+.tags-sidebar__add-tag {
+  color: var(--theme-orange);
+}
+
+#tags-sidebar__editor {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  overflow: hidden;
+  background-color: var(--theme-gray);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  height: 0;
+  opacity: 0;
+  transition-property: height, opacity;
+  transition-duration: 400ms, 400ms;
+}
+
+#tags-sidebar__editor.tags--editing {
+  height: 50%;
+  opacity: 1;
+}
+
+#tags-sidebar__hidden-color {
+  display: none;
+}
+
+#tags-sidebar__preview-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tags-sidebar__input-wrapper {
+  width: 90%;
+  margin: 20px;
+  padding: 5px;
+
+  border: 1px solid grey;
+  border-radius: 5px;
+  white-space: nowrap;
+
+  display: flex;
+  align-items: center;
+}
+
+#tags-sidebar__input-color {
+  width: 100%;
+  min-width: 8rem;
+  font-size: small;
+}
+
+.tags-sidebar__row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.tags-sidebar__spacer {
+  flex: 1;
+}
+
+.tags-sidebar__float {
+  position: fixed;
+  background-color: red;
+  z-index: 1;
+  animation: dropin 150ms forwards;  /* Defined in App.css */
+}

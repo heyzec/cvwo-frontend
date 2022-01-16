@@ -1,26 +1,32 @@
 #header {
-  height: 45px;
+  height: var(--header-height);
 
   display: flex;
   justify-content: flex-end;
   align-items: center;
   
-  background-color: #24292f;
   color: white;
+  color: var(--text-primary-light);
   white-space: nowrap;
+  left:0;
+  width: 100%;
+  gap: 10px;
 }
 
-#header__icon, #header__toggle {
-  margin: 10px;
+.header__signin {
+  color: var(--text-primary-light);
 }
+.header__signup {
+  color: blue;
+}
+.header__signout {
+  color: var(--text-primary-light);
+}
+
 
 #header__title {
   display: flex;
   align-items: center;
-}
-
-#header__title > * {
-  padding: 0px 9px;
 }
 
 #header__date {
@@ -36,15 +42,6 @@
   width: 0rem;
 }
 
-#header__input {
-  width: 0;
-  transition: width 200ms ease-in-out;
-  color: white;
-}
-
-#header__input.header__input--active {
-  width: 14rem;
-}
 
 #header__spacer {
   margin-right: auto;
@@ -55,30 +52,9 @@
   align-items: center;
 }
 
-#header__nav > * {
-  margin: 0px 10px;
-}
-
-#header__nav > *:hover {
-  color: lightgray;
-  border-color: lightgray;
-}
-
-#header__signup, #header__signout {
-  border: 1px solid white;
-  border-radius: 8px;
-  padding: 3px 4px;
-}
-
-#header__toggle {
-  position: absolute;
-  top: 0px;
-  right: 5px;
-  display: none;
-}
 
 /* Smaller screens */
-@media only screen and (max-width:768px) {
+@media only screen and (max-width: 768px) {
   #header__title {
     display: none;
  } 
@@ -86,50 +62,20 @@
 
 /* Small screens - breakpoint for mobile and tablets */
 @media only screen and (max-width: 600px) {
-
-  #header {
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    height: auto;
-  }
-
   
-  #header__toggle {
-    display: block;
-  }
-
   #header__search, #header__date {
     display: none;
-  }
-
-  #header__nav.header__nav--active {
-    height: 6rem;
   }
   
   #header__nav {
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    width: 100vw;
-    height: 0;
-    position: absolute;
-    top: 45px;
-    overflow: hidden;
-    transition: height 200ms ease-in-out;
-
-    background-color: inherit;
   }
   
   #header__login {
     border: none;
   }
-  /* .header-elem { */
-  /* To consider removing this class
-  /*   visibility: hidden; */
-  /* } */
   
 }
 

@@ -1,19 +1,24 @@
 import { useState, useEffect, useRef } from 'react'
-
 import dayjs from 'dayjs'
-
-import Tag from '../components/Tag'
 
 import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
-import { BsTagsFill } from 'react-icons/bs'
+import { BsTagsFill, BsCircle, BsCheckCircle } from 'react-icons/bs'
 
-import './Tag.css'
+import Tag from 'components/Tag'
+import TagsSelector from 'components/TagsSelector'
+import Tooltip from 'material/Tooltip'
+import IconButton from 'material/IconButton'
+import Paper from 'material/Paper'
+
+import 'components/Task.css'
 
 const Task = ({ context, task, isCreated }) => {
 
+  /***** Retrieve states from context object *****/
   const tags = context.getTags()
-
+  
+  /***** Define other states and refs required *****/
   const [readOnly, setReadOnly] = useState(isCreated)
   const [isOpen, setIsOpen] = useState(false)
   const [datetime, setDatetime] = useState(isCreated ? dayjs(task.day) : null)
@@ -26,9 +31,8 @@ const Task = ({ context, task, isCreated }) => {
 
   const inputRef = useRef(null)
 
-  useEffect(() => isCreated ? setTextValue(task.text) : null, [task, isCreated])
 
-
+  /***** Event handlers *****/
   const textChanged = (e) => setTextValue(e.target.value)
   const dateChanged = async (e) => {
     setDateValue(e.target.value)
@@ -41,18 +45,20 @@ const Task = ({ context, task, isCreated }) => {
     setDatetime(dt)
   }
 
-
   const tagIconClicked = (e) => {
     e.stopPropagation()
-    const listener = (e) => {
-      setIsOpen(false)
-    }
     if (!isOpen) {
-      window.addEventListener('click', listener, { once: true })
-      e.stopPropagation()
+      window.addEventListener('click', function handler(e) {
+        if (e.target.closest(".task__dropdown-wrapper")) {
+          return
+        }
+        setIsOpen(false)
+        e.currentTarget.removeEventListener(e.type, handler)
+      })
     }
     setIsOpen(!isOpen)
   }
+
 
   const pencilIconClicked = () => {
     setReadOnly(false)
@@ -63,6 +69,15 @@ const Task = ({ context, task, isCreated }) => {
     context.deleteTask(task.id)
   }
 
+  const genDropdownTagClicked = (tagId) => {
+    // e.stopPropagation()  // Prevent dropdown from closing upon tag selected
+    // const tagId = parseInt(e.currentTarget.attributes["data-tag-id"].value)
+    // const tagId = tag.id
+    
+    context.editTask(task.id, {
+      "tags": [...task.tags, tagId]
+    })
+  }
   const dropdownTagClicked = (e) => {
     e.stopPropagation()
     const tagId = parseInt(e.currentTarget.attributes["data-tag-id"].value)
@@ -70,9 +85,9 @@ const Task = ({ context, task, isCreated }) => {
       "tags": [...task.tags, tagId]
     })
   }
-  
-  
+
   const taskBlurred = async (e) => {
+    // When task is blurred, save the edits (if any)
     if (
       (isCreated && textValue === task.text && datetime.toISOString() === task.day) ||
       (!isCreated && (!textValue || !dateValue || !timeValue))
@@ -91,7 +106,7 @@ const Task = ({ context, task, isCreated }) => {
       })
       setReadOnly(true)
     } else {
-      await context.addTask({
+      await context.addTask(context.getCurrentList(), {
         "text": textValue,
         "day": datetime.toISOString(),
         "tags": []
@@ -103,7 +118,20 @@ const Task = ({ context, task, isCreated }) => {
     }
   }
 
+  const circleClicked = (e) => {
+    context.editTask(task.id, {
+      "done": !task.done
+    })
+  }
 
+
+  /***** Set task text *****/  // TODO: Check if its still necessary to delay doing this till after comp mounts?
+  useEffect(() => isCreated ? setTextValue(task.text) : null,
+    [task, isCreated]
+  )
+
+
+  /***** Function to be called in the block below *****/
   const generateTagElems = () => {
     if (!task.tags) {
       return null
@@ -118,8 +146,8 @@ const Task = ({ context, task, isCreated }) => {
 
     const cross = isOpen ? <FaTimes className="tag-icon clickable" size="12" onClick={handler} /> : null
     return (task.tags.map((id) => {
-      const tagObj = tags.find(x => x.id === id)
-      return tagObj ? <Tag clickables={cross} key={tagObj.id} tag={tagObj} /> : null
+      const tag = tags.find(x => x.id === id)
+      return tag ? <Tag clickables={cross} key={tag.id} tag={tag} /> : null
     })
     )
   }
@@ -127,53 +155,72 @@ const Task = ({ context, task, isCreated }) => {
 
   return (
     <div className="task__wrapper">
-      <div className="task">
-        <div className="task__text" >
-          <h3>
-            <input readOnly={readOnly} className="themed-input" value={textValue}
-              onChange={textChanged} placeholder={isCreated ? "" : "Add a task here"}
-              onBlur={taskBlurred} ref={inputRef} />
-          </h3>
+      <Paper className="task">
+        <div className="task__checkbox">
+          <Tooltip text={isCreated ? `Mark ${task.done ? "undone" : "done"}` : ""}>
+            <IconButton onClick={circleClicked}>
+              {
+                isCreated && task.done
+                  ? <BsCheckCircle size="20" />
+                  : <BsCircle size="20" />
+              }
+            </IconButton>
+          </Tooltip>
         </div>
-        {isCreated || textValue
-          ? (
-            <>
-              <div className="task__time">
-                {
-                  isCreated
-                    ? <p>{dateReadable}</p>
-                    : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="date" value={dateValue}
-                      onChange={dateChanged} onBlur={taskBlurred} />
-                }
-              </div>
-              <div className="task__time" visibility="hidden">
-                {
-                  isCreated
-                    ? <p>{timeReadable}</p>
-                    : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="time" value={timeValue}
-                      onChange={timeChanged} onBlur={taskBlurred} />
-                }
-              </div>
-              <div className="tag-container">
-                {isCreated ? generateTagElems() : null}
-              </div>
-              <BsTagsFill className="clickable" onClick={tagIconClicked} />
-              <HiPencil className={`clickable${isCreated ? "" : " hidden"}`} onClick={pencilIconClicked} />
-              <FaTimes className={`clickable${isCreated ? "" : " hidden"}`} onClick={crossIconClicked} />
-            </>) : ""}
-      </div>
+        <div className="task__text" >
+          <input readOnly={readOnly} className={`themed-input${isCreated && task.done ? " task--strikethrough" : ""}`} value={textValue}
+            onChange={textChanged} placeholder={isCreated ? "" : "Add a task here"}
+            onBlur={taskBlurred} ref={inputRef} />
+        </div>
+        <div className="task__date">
+          {
+            isCreated
+              ? <p>{dateReadable}</p>
+              : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="date" value={dateValue}
+                onChange={dateChanged} onBlur={taskBlurred} />
+          }
+        </div>
+        <div className="task__time">
+          {
+            isCreated
+              ? <p>{timeReadable}</p>
+              : <input className={`themed-input ${textValue ? "" : " hidden"}`} type="time" value={timeValue}
+                onChange={timeChanged} onBlur={taskBlurred} />
+          }
+        </div>
+        <div className="tag-container">
+          {isCreated ? generateTagElems() : null}
+        </div>
+        <div className="task__options">
+          {
+            isCreated
+              ? <>
+                <Tooltip text="Edit tags">
+                  <IconButton onClick={tagIconClicked}>
+                    <BsTagsFill size="15" className="clickable" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip text="Edit task">
+                  <IconButton onClick={pencilIconClicked}>
+                    <HiPencil size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip text="Delete task">
+                  <IconButton onClick={crossIconClicked}>
+                    <FaTimes size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
+                  </IconButton>
+                </Tooltip>
+              </>
+              : null
+          }
+        </div>
+      </Paper>
       <div className={`task__dropdown-wrapper${isOpen ? "" : " remove"}`}>
-        {task
-          ?
-          <div className="task__dropdown" >
-            {tags.filter(x => !task.tags.includes(x.id)).map((tag) =>
-
-              <Tag className="clickable" onClick={dropdownTagClicked} key={tag.id} tag={tag} />
-            )}
-
-          </div>
-          : null}
-
+        {
+          task
+            ? <TagsSelector tags={tags.filter(tag => !task.tags.includes(tag.id))} genOnClick={genDropdownTagClicked} />
+            : null
+        }
       </div>
     </div>
   )
