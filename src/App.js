@@ -91,6 +91,7 @@ const App = () => {
           <Route path="sandbox" element={<Sandbox context={context} />} />
           <Route path="signin" element={<Auth context={context} type="signin" />} />
           <Route path="signup" element={<Auth context={context} type="signup" />} />
+          <Route path="auth" element={<Auth context={context} type="auth" />} />
           <Route path="*" element={<h1>Oops, page don't exist!</h1>} />
         </Routes>
       </Router>
