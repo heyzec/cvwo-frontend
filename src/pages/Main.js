@@ -85,15 +85,19 @@ const Main = ({ context }) => {
 
 
   /***** Search/Filter/Sort - Prepare states and sort/filtering functions *****/
-  const [SORT_AZ, SORT_TIME] = [1, 2]
-  const [sortMethod, setSortMethod] = useState(SORT_AZ)
+  const [SORT_AZ_ASC, SORT_AZ_DSC, SORT_TIME_ASC, SORT_TIME_DSC] = [1, 2, 3, 4]
+  const [sortMethod, setSortMethod] = useState(SORT_AZ_ASC)
 
-  const tasksComparerAZ = (task1, task2) => task1.text > task2.text
-  const tasksComparerTime = (task1, task2) => task1.day > task2.day
+  const tasksComparerAzAsc = (task1, task2) => task1.text > task2.text
+  const tasksComparerAzDsc = (task1, task2) => task1.text < task2.text
+  const tasksComparerTimeAsc = (task1, task2) => task1.day > task2.day
+  const tasksComparerTimeDsc = (task1, task2) => task1.day < task2.day
 
   const allTasksComparers = {
-    [SORT_AZ]: tasksComparerAZ,
-    [SORT_TIME]: tasksComparerTime
+    [SORT_AZ_ASC]: tasksComparerAzAsc,
+    [SORT_AZ_DSC]: tasksComparerAzDsc,
+    [SORT_TIME_ASC]: tasksComparerTimeAsc,
+    [SORT_TIME_DSC]: tasksComparerTimeDsc
   }
 
   const filtSearch = (task) => task.text.toLowerCase().includes(searchValue.toLowerCase())
@@ -125,8 +129,24 @@ const Main = ({ context }) => {
     </>
   )
 
-  const sortAZClicked = (e) => setSortMethod(SORT_AZ)
-  const sortTimeClicked = (e) => setSortMethod(SORT_TIME)
+  const sortAZClicked = (e) => {
+    if (sortMethod === SORT_AZ_ASC) {
+      setSortMethod(SORT_AZ_DSC)
+    } else if (sortMethod === SORT_AZ_DSC) {
+      setSortMethod(SORT_AZ_ASC)
+    } else {
+      setSortMethod(SORT_AZ_ASC)
+    }
+  }
+  const sortTimeClicked = (e) => {
+    if (sortMethod === SORT_TIME_ASC) {
+      setSortMethod(SORT_TIME_DSC)
+    } else if (sortMethod === SORT_TIME_DSC) {
+      setSortMethod(SORT_TIME_ASC)
+    } else {
+      setSortMethod(SORT_TIME_ASC)
+    }
+  }
 
 
   /***** Search/Filter/Sort - Compute tasks to show after sorting and filtering *****/
@@ -236,9 +256,21 @@ const Main = ({ context }) => {
                   }
                 </div>
                 <div>
-                  <Button onClick={sortAZClicked}>Sort: AZ</Button>
-                  <Button onClick={sortTimeClicked}>Sort: Time</Button>
-                  {sortMethod}
+                  <Button
+                    variant={[SORT_AZ_ASC, SORT_AZ_DSC].includes(sortMethod) ? "contained" : "outlined"}
+                    startIcon={sortMethod !== SORT_AZ_DSC ? <ImSortAlphaAsc /> : <ImSortAlphaDesc />}
+                    onClick={sortAZClicked}
+                  >
+                    Sort: AZ
+                  </Button>
+                  <Button
+                    variant={[SORT_TIME_ASC, SORT_TIME_DSC].includes(sortMethod) ? "contained" : "outlined"}
+                    startIcon={sortMethod !== SORT_TIME_DSC ? <ImSortNumericAsc /> : <ImSortNumbericDesc />}
+            
+                    onClick={sortTimeClicked}
+                  >
+                    Sort: Time
+                  </Button>
                 </div>
                 <div id="task-container">
                   {tasksContents}
