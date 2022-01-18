@@ -1,37 +1,45 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { BsGithub } from 'react-icons/bs'
 import { FcGoogle } from 'react-icons/fc'
 
-import { changePassword, getUserDetails, changeEmail, deleteAccount } from "utils/settings"
-import { authGithubRedirect, authGoogleRedirect } from "utils/auth"
+import { changePassword, getUserDetails, changeEmail, deleteAccount, submitAvatar } from 'utils/settings'
+import { authGithubRedirect, authGoogleRedirect } from 'utils/auth'
+import { httpGet } from 'utils/network'
 
-import ResponsivePage from "components/ResponsivePage"
-import Header from "components/Header"
+import ResponsivePage from 'components/ResponsivePage'
+import Header from 'components/Header'
+import Identicon from 'components/Identicon'
 
-import Button from "material/Button"
-import SelectableList from "material/SelectableList"
-import SelectableListItem from "material/SelectableListItem"
-import TextField from "material/TextField"
+import Button from 'material/Button'
+import SelectableList from 'material/SelectableList'
+import SelectableListItem from 'material/SelectableListItem'
+import TextField from 'material/TextField'
 
 import 'pages/Settings.css'
 
 const Settings = ({ context }) => {
-  
+
+  const [userId, setUserId] = [context.getUserId(), context.setUserId]
+
   const [emailValue, setEmailValue] = useState("")
   const [oldPasswordValue, setOldPasswordValue] = useState("")
   const [newPasswordValue, setNewPasswordValue] = useState("")
-  
+
   const [githubLinked, setGithubLinked] = useState(false)
   const [googleLinked, setGoogleLinked] = useState(false)
 
   const [currentTab, setCurrentTab] = useState(0)
 
+
+  // const fileSelected = (e) => setSelectedFile(e.target.files[0])
+  // const [selectedFile, setSelectedFile] = useState(null)
+
   const navigate = useNavigate()
 
 
-  /***** Check for user details, but only after component is loaded*****/
+  /***** Check for user details, but only after component is loaded *****/
   useEffect(async () => {
     const user = await getUserDetails()
     if (!user) {
@@ -43,14 +51,22 @@ const Settings = ({ context }) => {
     if (user.github_id) {
       setGithubLinked(true)
     }
+
+    setUserId(user.id)
   }, [])
-  
-  
+
+
   /***** Event handlers *****/
   const emailValueChanged = (e) => setEmailValue(e.target.value)
   const oldPasswordValueChanged = (e) => setOldPasswordValue(e.target.value)
   const newPasswordValueChanged = (e) => setNewPasswordValue(e.target.value)
-  
+
+
+  // const submitAvatarClicked = async (e) => {
+  //   console.log(selectedFile)
+  //   await submitAvatar(selectedFile)
+  // }
+
   const changeEmailClicked = async (e) => {
     const r = await changeEmail(emailValue)
     if (r.status !== 200) {
@@ -83,16 +99,16 @@ const Settings = ({ context }) => {
   }
 
   const closeAccountClicked = async (e) => {
-      const prompt = `You are going to delete your account. THIS ACTION IS IRREVERSIBLE!`
-      if (!window.confirm(prompt)) {
-        return
-      }
+    const prompt = `You are going to delete your account. THIS ACTION IS IRREVERSIBLE!`
+    if (!window.confirm(prompt)) {
+      return
+    }
     await deleteAccount()
     context.setUser("")
     context.notify("Your account has been deleted. Goodbye!")
     navigate('/')
   }
-  
+
   const extAuthGithubClicked = (e) => {
     e.preventDefault()  // This line is necessary
     authGithubRedirect()
@@ -103,16 +119,35 @@ const Settings = ({ context }) => {
     authGoogleRedirect()
   }
 
+  const getAvatar = (e) => {
+    httpGet('/getavatar')
+  }
+
 
   /***** Tabs *****/
+
+  const tabPersonalisation = <>
+    <h1>Dark mode</h1>
+    <span>Hi</span>
+    <Button variant="contained">Enable</Button>
+  </>
+
 
   const tabAccount = <>
     <div>
       <h1>Change display name</h1>
       <span>Your current name is blank</span>
+    </div>
+    <div>
+      <h1>Avatar Image</h1>
+      <div>
+        <span>Here's your current avatar</span>
+      </div>
+      <Identicon context={context} size="100" />
       {
-          // <TextField className="settings__input" label="New email" value={emailValue} onChange={emailValueChanged} />
-          // <Button variant="outlined" onClick={changeEmailClicked}>Submit</Button>
+        // <div></div>
+        // <input type="file" name="avatar" onChange={fileSelected} />
+        // <Button variant="outlined" onClick={submitAvatarClicked}>Submit</Button>
       }
     </div>
     <div>
@@ -178,8 +213,7 @@ const Settings = ({ context }) => {
     <div>
       <h1>Close account</h1>
       <div>
-        <span>This will permenantly delete all your data from our databases</span>
-
+        <span>This will permenantly delete all your data from our databases.</span>
       </div>
       <Button
         className="settings__close-acc"
@@ -188,19 +222,11 @@ const Settings = ({ context }) => {
       >
         Close account
       </Button>
-
     </div>
-  </>
-
-  const tabPersonalisation = <>
-    <h1>Dark mode</h1>
-    <span>Hi</span>
-    <Button variant="contained">Enable</Button>
   </>
 
   // Remove the accounts tab if user has not created an account
   const allTabs = context.getUser() ? [tabPersonalisation, tabAccount] : [tabPersonalisation]
-
 
   return (
     <ResponsivePage

@@ -221,9 +221,7 @@ const Main = ({ context }) => {
       <>
         <span>
           {context.getUser()
-            ? (<>
-              Welcome {context.getUser()}
-            </>)
+            ? null
             : "You're not logged in!"
           }
         </span>

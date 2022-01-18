@@ -9,13 +9,14 @@ import Loading from 'components/Loading'
 import { ToastContainer } from 'components/Toasts'
 import { Context } from 'utils/context'
 import { getUser } from 'utils/auth'
+import { getUserDetails } from "utils/settings"
 
 import 'App.css'
 
 console.log(`This is a ${process.env.NODE_ENV} environment`)
 
 const App = () => {
-
+  
 
   /***** Initialise context object *****/
   const context = new Context()
@@ -28,12 +29,15 @@ const App = () => {
   context.setListsCallbacks(() => lists, setLists)
   const [currentList, setCurrentList] = useState(null)
   context.setCurrentListCallbacks(() => currentList, setCurrentList)
+
   
   const toast = useRef(null)  // Allows us to access functions in the components
   const [user, setUser] = useState("")
+  const [userId, setUserId] = useState(null)
   const [html, setHtml] = useState("")
   context.setNotify(() => toast.current.notify)
   context.setUserCallbacks(() => user, setUser)
+  context.setUserIdCallbacks(() => userId, setUserId)
   context.setHtmlCallbacks(() => html, setHtml)
 
 
@@ -48,6 +52,7 @@ const App = () => {
           context.fetchLists()
         ])
         setShowLoading(false)
+        setUserId((await getUserDetails()).id)
       } else {
         context.setTags([])
         context.setTasks([])
