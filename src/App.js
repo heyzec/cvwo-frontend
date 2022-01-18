@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import Main from 'pages/Main'
 import Auth from 'pages/Auth'
+import Settings from 'pages/Settings'
 import Sandbox from 'pages/Sandbox'
 import Loading from 'components/Loading'
 import { ToastContainer } from 'components/Toasts'
@@ -25,6 +26,8 @@ const App = () => {
   context.setTasksCallbacks(() => tasks, setTasks)
   context.setTagsCallbacks(() => tags, setTags)
   context.setListsCallbacks(() => lists, setLists)
+  const [currentList, setCurrentList] = useState(null)
+  context.setCurrentListCallbacks(() => currentList, setCurrentList)
   
   const toast = useRef(null)  // Allows us to access functions in the components
   const [user, setUser] = useState("")
@@ -91,6 +94,7 @@ const App = () => {
           <Route path="sandbox" element={<Sandbox context={context} />} />
           <Route path="signin" element={<Auth context={context} type="signin" />} />
           <Route path="signup" element={<Auth context={context} type="signup" />} />
+          <Route path="settings" element={<Settings context={context} />} />
           <Route path="auth" element={<Auth context={context} type="auth" />} />
           <Route path="*" element={<h1>Oops, page don't exist!</h1>} />
         </Routes>

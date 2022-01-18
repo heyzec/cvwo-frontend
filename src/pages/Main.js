@@ -25,12 +25,11 @@ const Main = ({ context }) => {
   const tasks = context.getTasks()
   const lists = context.getLists()
   const tags = context.getTags()
-  const [currentList, setCurrentList] = useState(null)
-  context.setCurrentListCallbacks(() => currentList, setCurrentList)
   const [searchValue, setSearchValue] = useState("")
   context.setSearchValueCallbacks(() => searchValue, setSearchValue)
   const [searchBools, setSearchBools] = useState([])
   context.setSearchBoolsCallbacks(() => searchBools, setSearchBools)
+  const [currentList, setCurrentList] = [context.getCurrentList(), context.setCurrentList]
 
 
   /***** Create states for use within this file (exclude search; that's below) *****/

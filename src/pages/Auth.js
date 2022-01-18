@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { BsGithub } from 'react-icons/bs'
 import { FcGoogle } from 'react-icons/fc'
 
-import { signIn, signUp } from 'utils/auth'
+import { authGithubRedirect, authGoogleRedirect, signIn, signUp } from 'utils/auth'
 import TextField from 'material/TextField'
 import Button from 'material/Button'
 import Paper from 'material/Paper'
@@ -57,27 +57,13 @@ const Auth = ({ type, context }) => {
   const shadowClicked = (e) => navigate('/')
 
   const extAuthGithubClicked = (e) => {
-    const githubAuthoriseUrl = 'https://github.com/login/oauth/authorize'
-
     e.preventDefault()  // This line is necessary
-    const params = {
-      scope: 'user:email',
-      client_id: process.env.REACT_APP_AUTH_GITHUB_CLIENT_ID
-    }
-    window.location.href = `${githubAuthoriseUrl}?${new URLSearchParams(params).toString()}`
+    authGithubRedirect()
   }
 
   const extAuthGoogleClicked = (e) => {
-    const googleAuthoriseUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
-
     e.preventDefault()
-    const params = {
-      response_type: 'code',
-      scope: 'openid email',
-      client_id: process.env.REACT_APP_AUTH_GOOGLE_CLIENT_ID,
-      redirect_uri: `${process.env.REACT_APP_BACKEND_URL}/auth/google`
-    }
-    window.location.href = `${googleAuthoriseUrl}?${new URLSearchParams(params).toString()}`
+    authGoogleRedirect()
   }
 
   const headerText = type === "signin" ? "Sign in" : type === "signup" ? "Let's get started!" : null

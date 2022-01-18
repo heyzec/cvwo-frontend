@@ -3,21 +3,22 @@ import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 
 import { FaClipboardList } from 'react-icons/fa'
+import { BsFillGearFill } from 'react-icons/bs'
 
 import { signOut } from 'utils/auth.js'
 import Searchbar from 'components/Searchbar'
+import IconButton from 'material/IconButton'
 import Button from 'material/Button'
 
 import 'components/Header.css'
 
 const Header = ({ context }) => {
 
-  const navigate = useNavigate()
-
   const [searchActive, setSearchActive] = useState(false)
 
   const [nowString, setNowString] = useState(dayjs().format("dddd, DD MMMM YYYY, HH:mm"))
 
+  const navigate = useNavigate()
 
   /***** Make the clock update itself every second *****/
   useEffect(() => {
@@ -53,7 +54,13 @@ const Header = ({ context }) => {
       <div id="header__date" className={`header-elem${searchActive ? " header__date--hidden" : ""}`}>
         <span>{nowString}</span>
       </div>
-      <Searchbar context={context} searchActive={searchActive} setSearchActive={setSearchActive} />
+    {
+      // Removed temporarily
+      // <Searchbar context={context} searchActive={searchActive} setSearchActive={setSearchActive} />
+      }
+      <IconButton onClick={() => navigate('/settings')}>
+        <BsFillGearFill />
+      </IconButton>
       <div id="header__nav">
         {context.getUser()
           ? (

@@ -1,0 +1,16 @@
+.settings {
+  text-align: initial;
+  max-width: 80%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.settings__close-acc {
+  color: darkred;
+}
+
+.settings__input {
+  max-width: 30rem;
+}

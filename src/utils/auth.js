@@ -1,5 +1,8 @@
 import { httpGet, httpPost } from 'utils/network.js'
 
+const githubAuthoriseUrl = 'https://github.com/login/oauth/authorize'
+const googleAuthoriseUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
+
 
 export const getUser = async () => {
   const r = await httpGet("/status")
@@ -49,4 +52,22 @@ export const signIn = async (context, navigate, email, password) => {
 export const signOut = async () => {
   const dir = "/signout"
   await httpGet(dir)
+}
+
+export const authGithubRedirect = () => {
+  const params = {
+    scope: 'user:email',
+    client_id: process.env.REACT_APP_AUTH_GITHUB_CLIENT_ID
+  }
+  window.location.href = `${githubAuthoriseUrl}?${new URLSearchParams(params).toString()}`
+}
+
+export const authGoogleRedirect = () => {
+  const params = {
+    response_type: 'code',
+    scope: 'openid email',
+    client_id: process.env.REACT_APP_AUTH_GOOGLE_CLIENT_ID,
+    redirect_uri: `${process.env.REACT_APP_BACKEND_URL}/auth/google`
+  }
+  window.location.href = `${googleAuthoriseUrl}?${new URLSearchParams(params).toString()}`
 }
