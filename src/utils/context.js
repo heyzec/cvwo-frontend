@@ -26,7 +26,7 @@ class Context {
   setTasksCallbacks = this.#prepState("tasks")
   setTagsCallbacks = this.#prepState("tags")
   setListsCallbacks = this.#prepState("lists")
-  setCurrentListCallbacks = this.#prepState("currentList")
+  setSelectedListIdCallbacks = this.#prepState("selectedListId")
   setHtmlCallbacks = this.#prepState("html")
   setSearchValueCallbacks = this.#prepState("searchValue")
   setSearchBoolsCallbacks = this.#prepState("searchBools")

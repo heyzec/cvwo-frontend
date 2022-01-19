@@ -1,8 +1,10 @@
-#task-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.main__import-notice {
+  font-size: large;
+  background-color: rgb(184, 184, 184);
+  padding: 1rem 5rem;
+  box-sizing: border-box;
+  width: 80%;
+  margin: 0.5rem auto;
 }
 
 .main__list-name {
@@ -12,6 +14,28 @@
 
 .main__menu {
   position: relative;
+}
+
+.main__share {
+  position: relative;
+  display: inline-block;
+}
+
+.main__share-popup {
+  display: inline-flex;
+  padding: 0.5rem;
+  width: 25rem;
+  position: absolute;
+  transform: translateY(100%);
+  right: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.main__share-link {
+  flex: 1;
+  font-size: 0.8rem;
+  color: black;
 }
 
 .main__float {
@@ -26,4 +50,11 @@
 
 .main__float--show {
   display: initial;
+}
+
+#task-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

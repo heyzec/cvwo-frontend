@@ -17,7 +17,6 @@
   display: flex;
 }
 
-
 .page__menu-icon {
   display: none;
 }
@@ -29,8 +28,7 @@
 }
 
 .page__content {
-  flex-grow: 1;
-  overflow: scroll;
+  overflow: auto;
 }
 
 /* Small screens - breakpoint for mobile */

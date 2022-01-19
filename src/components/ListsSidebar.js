@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { FaPlus } from 'react-icons/fa'
 import Button from 'material/Button'
 import SelectableList from 'material/SelectableList'
@@ -8,7 +9,9 @@ const ListsSidebar = ({ context }) => {
 
   /***** Retrieve states from context object *****/
   const lists = context.getLists()
-  const [currentList, setCurrentList] = [context.getCurrentList(), context.setCurrentList]
+  const [selectedListId, setSelectedListId] = [context.getSelectedListId(), context.setSelectedListId]
+  
+  const navigate = useNavigate()
 
 
   /***** Event handlers *****/
@@ -20,7 +23,12 @@ const ListsSidebar = ({ context }) => {
     const newList = await context.addList({
       "text": userInput
     })
-    setCurrentList(newList.id)
+    setSelectedListId(newList.id)
+  }
+  
+  const genListClicked = (list) => (e) => {
+    setSelectedListId(list.id)
+    navigate('/')
   }
 
 
@@ -42,8 +50,8 @@ const ListsSidebar = ({ context }) => {
         {
           lists.map((list) => (
             <SelectableListItem
-              onClick={(e) => setCurrentList(list.id)}
-              selected={list.id === currentList}
+              onClick={genListClicked(list)}
+              selected={list.id === selectedListId}
             >
               {list.text}
             </SelectableListItem>

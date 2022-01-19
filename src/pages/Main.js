@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
+import { BsClipboard, BsClipboardCheck } from 'react-icons/bs'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
 import { ImSortAlphaAsc, ImSortAlphaDesc, ImSortNumericAsc, ImSortNumbericDesc } from 'react-icons/im'
+import { IoShareSocial } from 'react-icons/io5'
 
 import Header from 'components/Header'
 import ListsSidebar from 'components/ListsSidebar'
@@ -11,6 +14,7 @@ import TagsSidebar from 'components/TagsSidebar'
 import Task from 'components/Task'
 
 import Button from 'material/Button'
+import TextField from 'material/TextField'
 import IconButton from 'material/IconButton'
 import Paper from 'material/Paper'
 import SelectableList from 'material/SelectableList'
@@ -18,6 +22,8 @@ import SelectableListItem from 'material/SelectableListItem'
 import Tooltip from 'material/Tooltip'
 
 import 'pages/Main.css'
+
+import { httpGet, httpPost } from 'utils/network'
 
 const Main = ({ context }) => {
 
@@ -29,25 +35,60 @@ const Main = ({ context }) => {
   context.setSearchValueCallbacks(() => searchValue, setSearchValue)
   const [searchBools, setSearchBools] = useState([])
   context.setSearchBoolsCallbacks(() => searchBools, setSearchBools)
-  const [currentList, setCurrentList] = [context.getCurrentList(), context.setCurrentList]
+  const [selectedListId, setSelectedListId] = [context.getSelectedListId(), context.setSelectedListId]
+
+
+
+
+  const [shareLink, setShareLink] = useState(null)
+  const [shareClipboardClicked, setShareClipboardClicked] = useState(false)
+  const [imports, setImports] = useState(null)
+  const { hash } = useParams()
+  const navigate = useNavigate()
+
+
+  // If URL is a share, retrieve the list and tasks, but only after component renders (because we need to await)
+  useEffect(async () => {
+    if (hash) {
+      const r = await httpGet(`/share/${hash}`)
+      if (r.status !== 200) {
+        context.notify("Invalid link")
+        navigate('/')
+        return
+      }
+      const output = await r.json()
+      setImports(output)
+    }
+  }, [selectedListId])
+
+
+  let currentList, currentListTasks
+  if (imports) {
+    currentList = imports.list
+    currentListTasks = imports.tasks
+  } else {
+    currentList = (context.getLists().find((list) => list.id === selectedListId))
+    currentListTasks = (tasks.filter((task) => task.list_id === selectedListId))
+  }
+
+
+
 
 
   /***** Create states for use within this file (exclude search; that's below) *****/
   const [nextPage, setNextPage] = useState(false)
   const [editListOpen, setEditListOpen] = useState(false)
-  
+
 
   /***** Define some useful variables *****/
   let currentListName = null;
-  let currentListTasks = null;
   if (currentList) {
-    currentListName = context.getLists().find((list) => list.id === currentList).text
-    currentListTasks = tasks.filter((task) => task.list_id === currentList)
+    currentListName = currentList.text
   }
   let getTasksFromList = (list) => tasks.filter((task) => (task.list_id) == list.id)
-  
 
-  /***** General event handlers *****/
+
+  /***** Event handlers - Editing list data *****/
   const changePageClicked = (e) => setNextPage(!nextPage)  // This state is for the SlidingDrawer
 
   const dotsIconClicked = (e) => {
@@ -62,11 +103,11 @@ const Main = ({ context }) => {
     }
     setEditListOpen(!editListOpen)
   }
-  
+
   const editListClicked = (e) => {
     const userInput = prompt("Please enter name of list", currentListName)
     if (userInput) {
-      context.editList(currentList, {
+      context.editList(selectedListId, {
         "text": userInput
       })
     }
@@ -77,11 +118,41 @@ const Main = ({ context }) => {
     if (!window.confirm(prompt)) {
       return
     }
-    context.deleteList(currentList)
-    setCurrentList(null)
+    context.deleteList(selectedListId)
+    setSelectedListId(null)
     // Also delete tasks locally?
   }
 
+  
+  /***** Event handlers - Sharing and importing lists *****/
+  const acceptShareClicked = async (e) => {
+    const r = await httpPost(`/share/${hash}`)
+    context.notify("Okay!")
+    navigate('/')
+    document.location.reload()
+  }
+
+  const shareClicked = async (e) => {
+    if (!shareLink) {
+      window.addEventListener('click', function handler(ev) {
+        if (e.nativeEvent === ev || ev.target.closest(".main__share-popup")) {
+          return
+        }
+        setShareLink(null)
+        ev.currentTarget.removeEventListener(ev.type, handler)
+      }, { capture: true })  // Use capture so that the window's event listener fires first
+    }
+
+    const r = await httpPost(`/lists/${selectedListId}/share`)
+    const hash = await r.text()
+    setShareLink(`${process.env.REACT_APP_FRONTEND_URL}/share/${hash}`)
+    setShareClipboardClicked(false)
+  }
+
+  const onShareClipboardClicked = (e) => {
+    setShareClipboardClicked(true)
+    navigator.clipboard.writeText(shareLink)
+  }
 
   /***** Search/Filter/Sort - Prepare states and sort/filtering functions *****/
   const [SORT_AZ_ASC, SORT_AZ_DSC, SORT_TIME_ASC, SORT_TIME_DSC] = [1, 2, 3, 4]
@@ -152,7 +223,7 @@ const Main = ({ context }) => {
   let tasksContents
 
   if (!searchValue) {
-    if (!currentList) {
+    if (!currentList || !currentListTasks) {
       tasksContents = null
     } else {
       tasksContents = <>
@@ -168,7 +239,7 @@ const Main = ({ context }) => {
     let fromOthers = []
     for (let i = 0; i < lists.length; i++) {
       const list = lists[i]
-      if (list.id === currentList) {
+      if (list.id === selectedListId) {
         continue
       }
       const theseTasks = getTasksFromList(list).filter(filt).sort(sor)
@@ -202,7 +273,9 @@ const Main = ({ context }) => {
           </>
         )
     )
+
   }
+
 
 
   return (
@@ -227,12 +300,40 @@ const Main = ({ context }) => {
         </span>
         <div>
           {
-            currentList
-              ?
-              <>
+            !currentList
+              ? <span>Pick a list!</span>
+              : <>
+                {
+                  hash ? (
+                    <div className="main__import-notice">
+                      <span>Import this list?</span>
+                      <Button variant="contained" onClick={acceptShareClicked}>Yes</Button>
+
+                    </div>
+                  ) : null
+                }
                 <div>
                   <span className="main__list-name">{currentListName}</span>
                   <span className="main__menu">
+                    <div className="main__share">
+                      <Tooltip text="Generate a unique URL to share with other users!">
+                        <IconButton onClick={shareClicked}>
+                          <IoShareSocial size="22" />
+                        </IconButton>
+                      </Tooltip>
+                      <Paper className={`main__share-popup${shareLink ? "" : " hidden"}`}>
+                        <TextField className="main__share-link" value={shareLink} />
+                        <Tooltip text={shareClipboardClicked ? "Copied!" : "Copy to clipboard"}>
+                          <IconButton onClick={onShareClipboardClicked}>
+                            {
+                              shareClipboardClicked
+                                ? <BsClipboardCheck size="18" />
+                                : <BsClipboard size="18" />
+                            }
+                          </IconButton>
+                        </Tooltip>
+                      </Paper>
+                    </div>
                     <Tooltip text="More options">
                       <IconButton onClick={dotsIconClicked}>
                         <HiOutlineDotsVertical size="22" />
@@ -249,8 +350,6 @@ const Main = ({ context }) => {
                       </SelectableList>
                     </Paper>
                   </span>
-                  {
-                  }
                 </div>
                 <div>
                   <Button
@@ -263,7 +362,6 @@ const Main = ({ context }) => {
                   <Button
                     variant={[SORT_TIME_ASC, SORT_TIME_DSC].includes(sortMethod) ? "contained" : "outlined"}
                     startIcon={sortMethod !== SORT_TIME_DSC ? <ImSortNumericAsc /> : <ImSortNumbericDesc />}
-            
                     onClick={sortTimeClicked}
                   >
                     Sort: Time
@@ -273,7 +371,6 @@ const Main = ({ context }) => {
                   {tasksContents}
                 </div>
               </>
-              : <span>Pick a list!</span>
           }
         </div>
       </>
