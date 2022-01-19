@@ -27,13 +27,13 @@ const colorPalatte = [
 ]
 
 const TagsSidebar = ({ context }) => {
-  
+
   /***** Retrieve states from context object *****/
   const tags = context.getTags()
   const tasks = context.getTasks()
-  
-  
-  
+
+
+
   /***** Initialise states and refs *****/
   const [tagText, setTagText] = useState("")            // For input elem in editor
   const [colorValue, setColorValue] = useState("")      // For input elem in editor
@@ -44,8 +44,8 @@ const TagsSidebar = ({ context }) => {
 
   const colorRef = useRef(null)                         // A ref to the invisible color picker input elem
   const floatRef = useRef(null)                         // Ref to the floating menu
-  
-  
+
+
 
   /***** Event handlers *****/
   const colorValueChanged = (e) => setColorValue(e.target.value)
@@ -56,7 +56,7 @@ const TagsSidebar = ({ context }) => {
     setColorValue(colorPalatte[0])
     setEditorOpen(true)
   }
-  
+
   const menuEditClicked = (e) => {
     e.stopPropagation()
     const tagId = selectedTag
@@ -148,17 +148,22 @@ const TagsSidebar = ({ context }) => {
 
   return (
     <div id="tags-sidebar">
-      <div id="tags-sidebar__tags" >
-        <span id="tags-sidebar__label">Your tags</span>
+      <div id="tags-sidebar__main" >
+        <div className="tags-sidebar__head">
+          <span>Your tags</span>
+          <hr />
+        </div>
         <Button
           className="tags-sidebar__add-tag"
           variant="contained"
           startIcon={<FaPlus />}
           onClick={createTagClicked}
         >
-          Create tag
+          New tag
         </Button>
-        {tagItems}
+        <div className="tags-sidebar__tags">
+          {tagItems}
+        </div>
         <div ref={floatRef} className={`tags-sidebar__float${selectedTag ? "" : " remove"}`}>
           <Paper>
             <SelectableList>
@@ -172,7 +177,8 @@ const TagsSidebar = ({ context }) => {
           </Paper>
         </div>
       </div>
-      <div id="tags-sidebar__editor" className={editorOpen ? "tags--editing" : ""} >
+    
+    <Paper elevation="2" className={`tags-sidebar__editor${editorOpen ? " tags--editing" : ""}`}>
         <input id="tags-sidebar__hidden-color" ref={colorRef} type="color" value={colorValue} onChange={colorValueChanged} />
         <div id="tags-sidebar__preview-wrapper">
           <Tag tag={{ "color": colorValue, "text": tagText }} />
@@ -188,7 +194,8 @@ const TagsSidebar = ({ context }) => {
         <Button variant="contained" onClick={doneButtonClicked}>
           Done
         </Button>
-      </div>
+    </Paper>
+    
     </div>
   )
 }

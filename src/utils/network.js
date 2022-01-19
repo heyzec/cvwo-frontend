@@ -39,6 +39,26 @@ export const httpPost = async (dir, data) => {
   return await res.text()
 }
 
+
+export const httpPostFile = async (dir, file) => {
+  const data = new FormData();
+  data.append('photo',  file);
+
+  const endpoint = `${BACKEND_URL}${dir}`
+  console.log(file)
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      // 'Content-type': 'application/json',
+    },
+    body: data,
+    credentials: 'include'
+    
+  })
+  return res
+  
+}
+
 export const httpDelete = async (dir) => {
   const endpoint = `${BACKEND_URL}${dir}`
   const res = await fetch(endpoint, {

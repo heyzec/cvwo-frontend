@@ -1,8 +1,8 @@
 import 'material/SelectableList.css'
 
-const SelectableList = ({ children }) => {
+const SelectableList = ({ className, children }) => {
   return (
-    <div className="list">
+    <div className={`list${className ? " " + className : ""}`}>
       {children}
     </div>
   )

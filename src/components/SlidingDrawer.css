@@ -4,6 +4,7 @@
   height: 100%;
 
   background-color: var(--theme-gray);  /* To relocate */
+  text-align: initial;  /* Temporary */
 }
 
 .slider__page1 {
@@ -40,5 +41,5 @@
 }
 
 .slider__button-wrapper {
-  margin: 10px;
+  margin: 0.8rem auto;
 }

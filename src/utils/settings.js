@@ -1,4 +1,4 @@
-import { httpGet, httpPost } from 'utils/network.js'
+import { httpGet, httpPost, httpPostFile } from 'utils/network.js'
 
 export const deleteAccount = async () => {
   const r = await httpPost("/closeaccount", {})
@@ -7,6 +7,11 @@ export const deleteAccount = async () => {
     return
   }
 }
+
+/* export const submitAvatar = async (avatar) => { */
+/*   const r = await httpPostFile("/changeavatar", avatar */
+/*   ) */
+/* } */
 
 export const getUserDetails = async () => {
   const r = await httpGet("/user")

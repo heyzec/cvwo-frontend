@@ -134,6 +134,7 @@ const Settings = ({ context }) => {
 
 
   const tabAccount = <>
+    <Button onClick={getAvatar}>HEHE</Button>
     <div>
       <h1>Change display name</h1>
       <span>Your current name is blank</span>

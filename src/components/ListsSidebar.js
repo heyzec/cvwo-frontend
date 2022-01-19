@@ -26,16 +26,19 @@ const ListsSidebar = ({ context }) => {
 
   return (
     <div id="lists-sidebar">
-      <span id="lists-sidebar__label">Your Lists</span>
+      <div className="lists-sidebar__head">
+        <span>Your lists</span>
+        <hr />
+      </div>
       <Button
-        className="lists-sidebar__new-list"
+        className="lists-sidebar__add-list"
         variant="contained"
         startIcon={<FaPlus />}
         onClick={addListClicked}
       >
-        Create list
+        New list
       </Button>
-      <SelectableList>
+      <SelectableList className="lists-sidebar__lists">
         {
           lists.map((list) => (
             <SelectableListItem
