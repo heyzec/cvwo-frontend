@@ -9,7 +9,7 @@ import { equals, rand32 } from 'utils/funcs'
 // edit   -> UPDATE -> PATCH  -> update
 // delete -> DELETE -> DELETE -> destroy
 
-/*** READ ****/
+/***** READ *****/
 
 export const fetchObjCallback = (res, updateServer, setState) => async () => {
   if (updateServer) {
@@ -23,7 +23,7 @@ export const fetchObjCallback = (res, updateServer, setState) => async () => {
 }
 
 
-/*** CREATE ****/
+/***** CREATE *****/
 
 const addObjServer = async (res, data) => {
   const location = res === "tasks" ? `/lists/${data.list_id}/create` : `/${res}`
@@ -54,7 +54,7 @@ export const addObjCallback = (res, updateServer, setState) => async (data) => {
 }
 
 
-/*** DELETE ****/
+/***** DELETE *****/
 
 const deleteObjServer = async (res, id) => await httpDelete(`/${res}/${id}`)
 
@@ -73,7 +73,7 @@ export const deleteObjCallback = (res, updateServer, setState) => async (id) => 
 }
 
 
-/*** UPDATE ****/
+/***** UPDATE *****/
 
 const editObjServer = async (res, id, data) => await httpPatch(`/${res}/${id}`, data)
 
@@ -97,7 +97,7 @@ export const editObjCallback = (res, updateServer, setState) => async (id, data)
 }
 
 
-/*** Functions for syncing (local to server) after connection restored ****/
+/***** Functions for syncing (local to server) after connection restored *****/
 
 const objSortComparer = (obj1, obj2) => obj1.id < obj2.id ? -1 : 1
 
@@ -112,22 +112,18 @@ const addObjServerSync = async (res, data, mappings) => {
   return newObj
 }
 
-export const syncResource = async (res, setState, mapping) => {
+export const syncResource = async (res, value, setValue, idMappings) => {
 
   // Get array of objs from local state via useState's setter function
-  let localData
-  setState((state) => {
-    localData = [...state]
-    return state
-  })
+  const localData = value
 
   for (let i = 0; i < localData.length; i++) {
     const obj = localData[i]
-    if (mapping.has(obj.id)) {
-      obj.id = mapping.get(obj.id)
+    if (idMappings.has(obj.id)) {
+      obj.id = idMappings.get(obj.id)
     }
-    if (mapping.has(obj.list_id)) {
-      obj.list_id = mapping.get(obj.list_id)
+    if (idMappings.has(obj.list_id)) {
+      obj.list_id = idMappings.get(obj.list_id)
     }
   }
 
@@ -148,7 +144,7 @@ export const syncResource = async (res, setState, mapping) => {
 
     if (idLocal < idServer) {
       // Found obj present in local but not server, need to add to server
-      localData[iLocal] = await addObjServerSync(res, localData[iLocal], mapping)
+      localData[iLocal] = await addObjServerSync(res, localData[iLocal], idMappings)
       iLocal++
     } else if (idLocal > idServer) {
       // Found obj present in server but not local, need to delete from server
@@ -169,7 +165,7 @@ export const syncResource = async (res, setState, mapping) => {
     if (iLocal !== localData.length) {
       // Excess elems in local array needs to be added to server
       for (let i = iLocal; i < localData.length; i++) {
-        localData[i] = await addObjServerSync(res, localData[i], mapping)
+        localData[i] = await addObjServerSync(res, localData[i], idMappings)
       }
     } else {
       // Excess elems in server array needs to be deleted from server
@@ -179,12 +175,33 @@ export const syncResource = async (res, setState, mapping) => {
     }
   }
 
-  setState(localData)
+  setValue(localData)
+}
+  
+// Returns the most updated state from a setter of useState
+const extractValue = (setValue) => {
+  let valueToExtract
+  const func = (val) => {
+    valueToExtract = val
+    return val
+  }
+  setValue(func)
+  return valueToExtract
 }
 
 export const syncResources = async (setLists, setTasks, setTags) => {
-  const mappings = new Map()
-  await syncResource('lists', setLists, mappings)
-  await syncResource('tasks', setTasks, mappings)
-  await syncResource('tags', setTags, mappings)
+  const lists = extractValue(setLists)
+  const tasks = extractValue(setTasks)
+  const tags = extractValue(setTags)
+  
+  // No clobber protection - refuse to sync if user data is empty
+  if (lists.length + tasks.length + tags.length === 0) {
+    return
+  }
+  
+  const idMappings = new Map()  // A map to translate temp ids to final ids obtained from server
+  // Lists before tasks because tasks have .list_id attr which needs to be mapped
+  await syncResource('lists', lists, setLists, idMappings)
+  await syncResource('tasks', tasks, setTasks, idMappings)
+  await syncResource('tags', tags, setTags, idMappings)
 }

@@ -1,5 +1,5 @@
-import NewIdenticon from 'identicon.js'
 import md5 from 'md5'
+import NewIdenticon from 'identicon.js'
 
 const Identicon = ({ className, context, size }) => {
   const user = context.getUser()
@@ -11,11 +11,11 @@ const Identicon = ({ className, context, size }) => {
     data = "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
   } else {
     const message = `heyzec-cvwo${user.id}`
-    data = new NewIdenticon(md5(message), 420).toString();
+    data = new NewIdenticon(md5(message), 420).toString()
   }
 
   return (
-    <img className={className} width={size} height={size} src={`data:image/png;base64,${data}`} />
+    <img className={className} width={size} height={size} src={`data:image/png;base64,${data}`} alt="identicon" />
   )
 }
 export default Identicon

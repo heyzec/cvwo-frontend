@@ -13,7 +13,7 @@ import { useState } from 'react'
 **/
 
 const useStorageState = (key, defaultValue) => {
-  
+
   const [value, setValue] = useState(() => {
     try {
       const item = window.localStorage.getItem(key)
@@ -28,8 +28,7 @@ const useStorageState = (key, defaultValue) => {
     setValue(valueToStore)
     window.localStorage.setItem(key, JSON.stringify(valueToStore))
   }
-    
-  
+
   return [value, wrappedSetValue]
 }
 export default useStorageState

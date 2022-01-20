@@ -17,7 +17,7 @@ const Task = ({ context, task, isCreated }) => {
 
   /***** Retrieve states from context object *****/
   const tags = context.getTags()
-  
+
   /***** Define other states and refs required *****/
   const [readOnly, setReadOnly] = useState(isCreated)
   const [isOpen, setIsOpen] = useState(false)
@@ -73,14 +73,7 @@ const Task = ({ context, task, isCreated }) => {
     // e.stopPropagation()  // Prevent dropdown from closing upon tag selected
     // const tagId = parseInt(e.currentTarget.attributes["data-tag-id"].value)
     // const tagId = tag.id
-    
-    context.editTask(task.id, {
-      "tags": [...task.tags, tagId]
-    })
-  }
-  const dropdownTagClicked = (e) => {
-    e.stopPropagation()
-    const tagId = parseInt(e.currentTarget.attributes["data-tag-id"].value)
+
     context.editTask(task.id, {
       "tags": [...task.tags, tagId]
     })
@@ -168,7 +161,10 @@ const Task = ({ context, task, isCreated }) => {
           </Tooltip>
         </div>
         <div className="task__text" >
-          <input readOnly={readOnly} className={`themed-input${isCreated && task.done ? " task--strikethrough" : ""}`} value={textValue}
+          <input
+            className={`themed-input${isCreated && task.done ? " task--strikethrough" : ""}`}
+            readOnly={readOnly}
+            value={textValue}
             onChange={textChanged} placeholder={isCreated ? "" : "Add a task here"}
             onBlur={taskBlurred} ref={inputRef} />
         </div>
@@ -218,7 +214,7 @@ const Task = ({ context, task, isCreated }) => {
       <div className={`task__dropdown-wrapper${isOpen ? "" : " remove"}`}>
         {
           task
-            ? <TagsSelector tags={tags.filter(tag => !task.tags.includes(tag.id))} genOnClick={genDropdownTagClicked} />
+            ? <TagsSelector tags={tags.filter((tag) => !task.tags.includes(tag.id))} genOnClick={genDropdownTagClicked} />
             : null
         }
       </div>

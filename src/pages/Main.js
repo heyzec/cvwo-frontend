@@ -3,7 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { BsClipboard, BsClipboardCheck } from 'react-icons/bs'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
-import { ImSortAlphaAsc, ImSortAlphaDesc, ImSortNumericAsc, ImSortNumbericDesc } from 'react-icons/im'
+import {
+  ImSortAlphaAsc,
+  ImSortAlphaDesc,
+  ImSortNumericAsc,
+  ImSortNumbericDesc
+} from 'react-icons/im'
 import { IoShareSocial } from 'react-icons/io5'
 
 import Header from 'components/Header'
@@ -47,18 +52,23 @@ const Main = ({ context }) => {
   const navigate = useNavigate()
 
 
-  // If URL is a share, retrieve the list and tasks, but only after component renders (because we need to await)
-  useEffect(async () => {
-    if (hash) {
-      const r = await httpGet(`/share/${hash}`)
-      if (r.status !== 200) {
-        context.notify("Invalid link")
-        navigate('/')
-        return
+  // If URL is a share, retrieve the list and tasks, but only after component renders
+  // (because we need to await)
+
+  useEffect(() => {
+    const asyncToDo = async () => {  // React's useEffect dislikes async functions
+      if (hash) {
+        const r = await httpGet(`/share/${hash}`)
+        if (r.status !== 200) {
+          context.notify("Invalid link")
+          navigate('/')
+          return
+        }
+        const output = await r.json()
+        setImports(output)
       }
-      const output = await r.json()
-      setImports(output)
     }
+    asyncToDo()
   }, [selectedListId])
 
 
@@ -81,11 +91,11 @@ const Main = ({ context }) => {
 
 
   /***** Define some useful variables *****/
-  let currentListName = null;
+  let currentListName = null
   if (currentList) {
     currentListName = currentList.text
   }
-  let getTasksFromList = (list) => tasks.filter((task) => (task.list_id) == list.id)
+  let getTasksFromList = (list) => tasks.filter((task) => (task.list_id) === list.id)
 
 
   /***** Event handlers - Editing list data *****/
@@ -114,16 +124,18 @@ const Main = ({ context }) => {
   }
 
   const deleteListClicked = (e) => {
-    const prompt = `You are about to permenantly delete this list containing ${currentListTasks.length} tasks. Continue?`
-    if (!window.confirm(prompt)) {
-      return
+    if (currentListTasks.length !== 0) {
+      const prompt = `You are about to permenantly delete this list containing ${currentListTasks.length} tasks. Continue?`
+      if (!window.confirm(prompt)) {
+        return
+      }
     }
     context.deleteList(selectedListId)
     setSelectedListId(null)
     // Also delete tasks locally?
   }
 
-  
+
   /***** Event handlers - Sharing and importing lists *****/
   const acceptShareClicked = async (e) => {
     const r = await httpPost(`/share/${hash}`)

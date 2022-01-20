@@ -40,11 +40,14 @@ const Header = ({ context }) => {
 
   /***** Make the clock update itself every second *****/
   useEffect(() => {
-    const timerId = setInterval(() => setNowString(dayjs().format("dddd, DD MMMM YYYY, HH:mm")), 1000);
+    const timerId = setInterval(
+      () => setNowString(dayjs().format("dddd, DD MMMM YYYY, HH:mm")),
+      1000
+    )
 
     // Return cleanup function when component unmounts
     return () => {
-      clearInterval(timerId);
+      clearInterval(timerId)
     }
   }, [])
 
@@ -60,7 +63,7 @@ const Header = ({ context }) => {
   const signoutButtonClicked = async (e) => {
     await signOut(context, navigate)
   }
-  
+
 
 
   return (
@@ -85,8 +88,12 @@ const Header = ({ context }) => {
             </IconButton>
           ) : (
             <>
-              <Button className="header__signin" onClick={signinButtonClicked}>Sign in</Button>
-              <Button className="header__signup" variant="contained" onClick={signupButtonClicked}>Sign up!</Button>
+              <Button className="header__signin" onClick={signinButtonClicked}>
+                Sign in
+              </Button>
+              <Button className="header__signup" variant="contained" onClick={signupButtonClicked}>
+                Sign up!
+              </Button>
             </>
           )}
       </div>

@@ -10,7 +10,7 @@ import Loading from 'components/Loading'
 import { ToastContainer } from 'components/Toasts'
 
 import { Context } from 'utils/context'
-import { getUser } from "utils/user"
+import { getUser } from 'utils/user'
 import { syncResources } from 'utils/resource'
 import { objectHashed } from 'utils/funcs'
 import useStorageState from 'utils/useStorageState'
@@ -20,7 +20,7 @@ import 'App.css'
 console.log(`This is a ${process.env.NODE_ENV} environment`)
 
 if (!process.env.REACT_APP_FRONTEND_URL) {
-  throw "No environmental variables found."
+  throw new Error("No environmental variables found.")
 }
 
 const App = () => {
@@ -80,7 +80,7 @@ const App = () => {
       if (raw) {
         parsed = JSON.parse(raw)
       } else {
-        throw "error"
+        throw new Error()
       }
     } catch (ex) {
       parsed = { lists: [], tasks: [], tags: [] }
@@ -99,25 +99,28 @@ const App = () => {
       { lists, tasks, tags }
     ))
   }
-  
 
-  
+
+
   /***** useEffect hooks ****/
 
   // Run once only on component load
-  useEffect(async () => {
-    const userDetails = await getUser()
-    setUser(userDetails)
-    loadFromStorage(user, setLists, setTasks, setTags)
-    if (!user) {
-      return
-    }
+  useEffect(() => {
+    const asyncToDo = async () => {  // React's useEffect dislikes async functions
+      const userDetails = await getUser()
+      setUser(userDetails)
+      loadFromStorage(user, setLists, setTasks, setTags)
+      if (!user) {
+        return
+      }
 
-    fetchAllData()  // Async function but not awaiting
-    window.addEventListener("offline", () => {
-      setInternet(false)
-      context.notify("You are offline!", "firebrick", 4000)
-    })
+      fetchAllData()  // Async function but not awaiting
+      window.addEventListener("offline", () => {
+        setInternet(false)
+        context.notify("You are offline!", "firebrick", 4000)
+      })
+    }
+    asyncToDo()
   }, [])
 
   // On data changes, update local storage and check if need to sync with server

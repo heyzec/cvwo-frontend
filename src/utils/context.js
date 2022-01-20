@@ -1,4 +1,4 @@
-import { 
+import {
   fetchObjCallback,
   addObjCallback,
   deleteObjCallback,
@@ -7,13 +7,13 @@ import {
 
 
 class Context {
-  
+
   #prepState = (stateName) => (getState, setState) => {
-    const name = stateName.charAt(0).toUpperCase() + stateName.slice(1);
+    const name = stateName.charAt(0).toUpperCase() + stateName.slice(1)
     this[`get${name}`] = getState
     this[`set${name}`] = setState
   }
-  
+
 
   setUserCallbacks = this.#prepState("user")
   setTasksCallbacks = this.#prepState("tasks")
@@ -32,11 +32,11 @@ class Context {
   setMagic = (callback) => {
     this.magic = callback
   }
-  
-  
+
+
   // Function to check if need to update both server and local, or just locally
   updateServer = () => this.getInternet() && !!this.getUser()
-  
+
 
   fetchLists = async () => {
     await fetchObjCallback("lists", this.updateServer(), this.setLists)()

@@ -32,7 +32,7 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
       window.addEventListener('click', function handler(e) {
 
         // Obtain the updated values of searchValue and searchBools via setters of useState
-        let searchValue = null, searchBools = null;
+        let searchValue = null, searchBools = null
         setSearchValue((value) => {
           searchValue = value
           return value

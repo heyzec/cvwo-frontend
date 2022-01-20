@@ -25,8 +25,8 @@ export const httpPost = async (dir, data) => {
 
 
 export const httpPostFile = async (dir, file) => {
-  const data = new FormData();
-  data.append('photo', file);
+  const data = new FormData()
+  data.append('photo', file)
 
   const endpoint = `${BACKEND_URL}${dir}`
   console.log(file)

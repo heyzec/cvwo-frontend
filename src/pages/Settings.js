@@ -40,13 +40,16 @@ const Settings = ({ context }) => {
 
 
   /***** Check for user details, but only after component is loaded *****/
-  useEffect(async () => {
-    const user = await getUser()
-    if (!user) {
-      return
+  useEffect(() => {
+    const asyncToDo = async () => {  // React's useEffect dislikes async functions
+      const user = await getUser()
+      if (!user) {
+        return
+      }
+      setGoogleLinked(Boolean(user.google_id))
+      setGithubLinked(Boolean(user.github_id))
     }
-    setGoogleLinked(Boolean(user.google_id))
-    setGithubLinked(Boolean(user.github_id))
+    asyncToDo()
   }, [])
 
 
@@ -153,8 +156,20 @@ const Settings = ({ context }) => {
     </div>
     <div>
       <h1>Change password</h1>
-      <TextField className="settings__input" type="password" label="Old password" value={oldPasswordValue} onChange={oldPasswordValueChanged} />
-      <TextField className="settings__input" type="password" label="New password" value={newPasswordValue} onChange={newPasswordValueChanged} />
+      <TextField
+        className="settings__input"
+        type="password"
+        label="Old password"
+        value={oldPasswordValue}
+        onChange={oldPasswordValueChanged}
+      />
+      <TextField
+        className="settings__input"
+        type="password"
+        label="New password"
+        value={newPasswordValue}
+        onChange={newPasswordValueChanged}
+      />
       <Button variant="outlined" onClick={changePasswordClicked}>Submit</Button>
     </div>
     <div>

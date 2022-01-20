@@ -177,15 +177,27 @@ const TagsSidebar = ({ context }) => {
           </Paper>
         </div>
       </div>
-    
-    <Paper elevation="2" className={`tags-sidebar__editor${editorOpen ? " tags--editing" : ""}`}>
-        <input id="tags-sidebar__hidden-color" ref={colorRef} type="color" value={colorValue} onChange={colorValueChanged} />
+
+      <Paper elevation="2" className={`tags-sidebar__editor${editorOpen ? " tags--editing" : ""}`}>
+        <input
+          id="tags-sidebar__hidden-color"
+          ref={colorRef}
+          type="color"
+          value={colorValue}
+          onChange={colorValueChanged}
+        />
         <div id="tags-sidebar__preview-wrapper">
           <Tag tag={{ "color": colorValue, "text": tagText }} />
         </div>
         <TextField label="Tag name" value={tagText} onChange={tagTextChanged} />
         <div className="tags-sidebar__input-wrapper">
-          <img className="clickable" src={svgColorWheel} alt="color wheel" width="20px" onClick={() => colorRef.current.click()} />
+          <img
+            className="clickable"
+            src={svgColorWheel}
+            alt="color wheel"
+            width="20px"
+            onClick={() => colorRef.current.click()}
+          />
           <span>
             <input id="tags-sidebar__input-color" className={`themed-input${validateColor(colorValue) ? "" : " red"}`}
               maxLength={7} value={colorValue} placeholder="Color (hex value)" onChange={colorValueChanged} />
@@ -194,8 +206,8 @@ const TagsSidebar = ({ context }) => {
         <Button variant="contained" onClick={doneButtonClicked}>
           Done
         </Button>
-    </Paper>
-    
+      </Paper>
+
     </div>
   )
 }
