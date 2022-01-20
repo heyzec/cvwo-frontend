@@ -1,18 +1,10 @@
 import { 
-  fetchTasksCallback,
-  fetchTagsCallback,
-  fetchListsCallback,
-  addTaskCallback,
-  addTagCallback,
-  addListCallback,
-  deleteTaskCallback,
-  deleteTagCallback,
-  deleteListCallback,
-  editTaskCallback,
-  editTagCallback,
-  editListCallback
+  fetchObjCallback,
+  addObjCallback,
+  deleteObjCallback,
+  editObjCallback
 } from 'utils/resource'
-import { httpPost } from "utils/network"
+
 
 class Context {
   
@@ -21,16 +13,17 @@ class Context {
     this[`get${name}`] = getState
     this[`set${name}`] = setState
   }
+  
 
   setUserCallbacks = this.#prepState("user")
   setTasksCallbacks = this.#prepState("tasks")
   setTagsCallbacks = this.#prepState("tags")
   setListsCallbacks = this.#prepState("lists")
   setSelectedListIdCallbacks = this.#prepState("selectedListId")
-  setHtmlCallbacks = this.#prepState("html")
   setSearchValueCallbacks = this.#prepState("searchValue")
   setSearchBoolsCallbacks = this.#prepState("searchBools")
   setUserIdCallbacks = this.#prepState("userId")
+  setInternetCallbacks = this.#prepState("internet")
 
   setNotify = (notifyCallback) => {
     this.notify = (...args) => notifyCallback()(...args)
@@ -40,24 +33,48 @@ class Context {
     this.magic = callback
   }
   
-  fetchTasks = () => fetchTasksCallback(this.setTasks)
-  fetchTags = () => fetchTagsCallback(this.setTags)
-  fetchLists = () => fetchListsCallback(this.setLists)
-  addTag = (data) => addTagCallback(this.setTags, data)
-  addList = (data) => addListCallback(this.setLists, data)
-  deleteTask = (id) => deleteTaskCallback(this.setTasks, id)
-  deleteTag = (id) => deleteTagCallback(this.setTags, id)
-  deleteList = (id) => deleteListCallback(this.setLists, id)
-  editTask = (id, data) => editTaskCallback(this.setTasks, id, data)
-  editTag = (id, data) => editTagCallback(this.setTags, id, data)
-  editList = (id, data) => editListCallback(this.setLists, id, data)
+  
 
+  fetchLists = async () => {
+    await fetchObjCallback("lists", this.getInternet, this.setLists)()
+  }
+  fetchTasks = async () => {
+    await fetchObjCallback("tasks", this.getInternet, this.setTasks)()
+  }
+  fetchTags = async () => {
+    await (fetchObjCallback("tags", this.getInternet, this.setTags))()
+  }
+
+  addList = async (data) => {
+    return await addObjCallback("lists", this.getInternet, this.setLists)(data)
+  }
   addTask = async (list_id, data) => {
-    const r = await httpPost(`/lists/${list_id}/create`, data)
-    if (r.ok) {
-      const obj = await r.json()
-      this.setTasks((state) => [...state, obj])
-    }
+    return await addObjCallback("tasks", this.getInternet, this.setTasks)(
+      { list_id, ...data }
+    )
+  }
+  addTag = async (data) => {
+    return await addObjCallback("tags", this.getInternet, this.setTags)(data)
+  }
+
+  deleteList = async (id) => {
+    await deleteObjCallback("lists", this.getInternet, this.setLists)(id)
+  }
+  deleteTask = async (id) => {
+    await deleteObjCallback("tasks", this.getInternet, this.setTasks)(id)
+  }
+  deleteTag = async (id) => {
+    await deleteObjCallback("tags", this.getInternet, this.setTags)(id)
+  }
+
+  editList = async (id, data) => {
+    await editObjCallback("lists", this.getInternet, this.setLists)(id, data)
+  }
+  editTask = async (id, data) => {
+    await editObjCallback("tasks", this.getInternet, this.setTasks)(id, data)
+  }
+  editTag = async (id, data) => {
+    await editObjCallback("tags", this.getInternet, this.setTags)(id, data)
   }
 
 }

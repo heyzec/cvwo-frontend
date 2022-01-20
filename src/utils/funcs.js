@@ -13,3 +13,9 @@ export const isBright = (rgb) => (
 )
 
 export const validateColor = (str) => str.match(/^#([\dA-F]{3}|[\dA-F]{6})$/i)
+
+
+export const rand32 = () => crypto.getRandomValues(new Uint32Array(1))[0]
+
+  // Requires dictionaries to have the same order
+export const equals = (obj1, obj2) => JSON.stringify(obj1) == JSON.stringify(obj2)

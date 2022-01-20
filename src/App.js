@@ -10,10 +10,16 @@ import { ToastContainer } from 'components/Toasts'
 import { Context } from 'utils/context'
 import { getUser } from 'utils/auth'
 import { getUserDetails } from "utils/settings"
+import { syncResource } from 'utils/resource'
 
 import 'App.css'
 
 console.log(`This is a ${process.env.NODE_ENV} environment`)
+
+
+if (!process.env.REACT_APP_FRONTEND_URL) {
+  throw "No environmental variables found."
+}
 
 const App = () => {
   
@@ -29,16 +35,21 @@ const App = () => {
   context.setListsCallbacks(() => lists, setLists)
   const [selectedListId, setSelectedListId] = useState(null)
   context.setSelectedListIdCallbacks(() => selectedListId, setSelectedListId)
+  
+  const [internet, setInternet] = useState(navigator.onLine)
+  context.setInternetCallbacks(() => internet, setInternet)
 
   
   const toast = useRef(null)  // Allows us to access functions in the components
   const [user, setUser] = useState("")
   const [userId, setUserId] = useState(null)
-  const [html, setHtml] = useState("")
   context.setNotify(() => toast.current.notify)
   context.setUserCallbacks(() => user, setUser)
   context.setUserIdCallbacks(() => userId, setUserId)
-  context.setHtmlCallbacks(() => html, setHtml)
+  
+  
+  // The Loading components requires a state too  
+  const [showLoading, setShowLoading] = useState(false)
 
 
   /***** Update tasks, tags and lists whenever user changes *****/
@@ -74,17 +85,28 @@ const App = () => {
       context.setUser(user)
     }
     asyncToDo()
+    window.addEventListener('online', () => {
+      setInternet(true)
+      context.notify("You're back online! We'll now sync with the server...", "lightgreen", 4000)
+      syncResource('lists', context.setLists)
+      syncResource('tasks', context.setTasks)
+      syncResource('tags', context.setTags)
+    })
+
+    window.addEventListener("offline", () => {
+      setInternet(false)
+      context.notify("You are offline!", "firebrick", 4000)
+      context.internetStatus = "offline"
+    })
   }, [])
 
 
   /***** Misc *****/
-  // The Loading components requires a state too  
-  const [showLoading, setShowLoading] = useState(false)
   // Function for testing purposes, triggered upon right clicking of app icon
   const magic = async (e) => {
-    context.notify(`lists is now ${lists}`, "lightgreen", 2000)
+    context.notify(`internet is ${internet}`)
     console.log(lists)
-    context.setSelectedListId(1)
+
   }
   context.setMagic(magic)
 

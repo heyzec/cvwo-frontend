@@ -3,26 +3,16 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL
 
 export const httpGet = async (dir) => {
   const endpoint = `${BACKEND_URL}${dir}`
-  const res = await fetch(endpoint, {
-      method: 'GET',
-      credentials: 'include'
+  const r = await fetch(endpoint, {
+    method: 'GET',
+    credentials: 'include'
   })
-  return res
-  return {status: res.status, raw: await res.text()}
-  if (res.status === 401) {
-    console.log("Unauthorized")
-    return
-  }
-  // if (res.status !== 200) {
-  //   alert("An error has occured :(")
-  //   return
-  // }
-  return await res.text()
+  return r
 }
 
 export const httpPost = async (dir, data) => {
   const endpoint = `${BACKEND_URL}${dir}`
-  const res = await fetch(endpoint, {
+  const r = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
@@ -30,53 +20,40 @@ export const httpPost = async (dir, data) => {
     body: JSON.stringify(data),
     credentials: 'include'
   })
-  return res
-  return {status: res.status, raw: await res.text()}
-  if (res.status !== 201) {
-    alert("An error has occured :(")
-    return
-  }
-  return await res.text()
+  return r
 }
 
 
 export const httpPostFile = async (dir, file) => {
   const data = new FormData();
-  data.append('photo',  file);
+  data.append('photo', file);
 
   const endpoint = `${BACKEND_URL}${dir}`
   console.log(file)
-  const res = await fetch(endpoint, {
+  const r = await fetch(endpoint, {
     method: 'POST',
     headers: {
       // 'Content-type': 'application/json',
     },
     body: data,
     credentials: 'include'
-    
+
   })
-  return res
-  
+  return r
 }
 
 export const httpDelete = async (dir) => {
   const endpoint = `${BACKEND_URL}${dir}`
-  const res = await fetch(endpoint, {
+  const r = await fetch(endpoint, {
     method: 'DELETE',
     credentials: 'include'
   })
-  return res
-  return {status: res.status, raw: await res.text()}
-  if (res.status !== 200 && res.status !== 204) {
-    alert("An error has occured :(")
-    return
-  }
-  return true
+  return r
 }
 
 export const httpPatch = async (dir, data) => {
   const endpoint = `${BACKEND_URL}${dir}`
-  const res = await fetch(endpoint, {
+  const r = await fetch(endpoint, {
     method: 'PATCH',
     headers: {
       'Content-type': 'application/json',
@@ -84,11 +61,5 @@ export const httpPatch = async (dir, data) => {
     body: JSON.stringify(data),
     credentials: 'include'
   })
-  return res
-  return {status: res.status, raw: await res.text()}
-  if (res.status !== 200) {
-    alert("An error has occured")
-    return
-  }
-  return await res.text()
+  return r
 }

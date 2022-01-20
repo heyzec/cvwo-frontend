@@ -106,7 +106,7 @@ const Task = ({ context, task, isCreated }) => {
       })
       setReadOnly(true)
     } else {
-      await context.addTask(context.getCurrentList(), {
+      await context.addTask(context.getSelectedListId(), {
         "text": textValue,
         "day": datetime.toISOString(),
         "tags": []
