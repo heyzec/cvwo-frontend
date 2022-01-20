@@ -11,8 +11,8 @@ import { equals, rand32 } from 'utils/funcs'
 
 /*** READ ****/
 
-export const fetchObjCallback = (res, getInternet, setState) => async () => {
-  if (getInternet()) {
+export const fetchObjCallback = (res, updateServer, setState) => async () => {
+  if (updateServer) {
     // "res" for resource, "r" for response
     const r = await httpGet(`/${res}`)
     if (r.ok) {
@@ -30,8 +30,8 @@ const addObjServer = async (res, data) => {
   return await httpPost(location, data)
 }
 
-export const addObjCallback = (res, getInternet, setState) => async (data) => {
-  if (getInternet()) {
+export const addObjCallback = (res, updateServer, setState) => async (data) => {
+  if (updateServer) {
 
     // During normal operation, only update local if req was successful
     const r = await addObjServer(res, data)
@@ -44,9 +44,10 @@ export const addObjCallback = (res, getInternet, setState) => async (data) => {
   }
   // If internet is down, create object locally with a randomised temp id.
   // We'll update the id with the server when internet is back.
+  const tempId = rand32()
   const obj = {
     ...data,
-    id: rand32()
+    id: tempId,
   }
   setState((state) => [...state, obj])
   return obj
@@ -61,8 +62,8 @@ const deleteObjLocal = (setState, id) => {
   setState((state) => state.filter((obj) => obj.id !== id))
 }
 
-export const deleteObjCallback = (res, getInternet, setState) => async (id) => {
-  if (getInternet()) {
+export const deleteObjCallback = (res, updateServer, setState) => async (id) => {
+  if (updateServer) {
     const r = await deleteObjServer(res, id)
     if (r.ok) {
       deleteObjLocal(setState, id)
@@ -82,10 +83,10 @@ const editObjLocal = (setState, id, data) => {
   ))])
 }
 
-export const editObjCallback = (res, getInternet, setState) => async (id, data) => {
-  if (getInternet()) {
+export const editObjCallback = (res, updateServer, setState) => async (id, data) => {
+  if (updateServer) {
     // During normal operation, only update local if req was successful
-    const r = editObjServer(res, id, data)
+    const r = await editObjServer(res, id, data)
     if (r.ok) {
       editObjLocal(setState, id, data)
     }
@@ -98,9 +99,20 @@ export const editObjCallback = (res, getInternet, setState) => async (id, data) 
 
 /*** Functions for syncing (local to server) after connection restored ****/
 
-const objSortComparer = (task1, task2) => task1.id < task2.id ? -1 : 1
+const objSortComparer = (obj1, obj2) => obj1.id < obj2.id ? -1 : 1
 
-export const syncResource = async (res, setState) => {
+const addObjServerSync = async (res, data, mappings) => {
+  const oldId = data.id
+  const r = await addObjServer(res, data)
+  const newObj = await r.json()
+  const newId = newObj.id
+  if (oldId !== newId) {
+    mappings.set(oldId, newId)
+  }
+  return newObj
+}
+
+export const syncResource = async (res, setState, mapping) => {
 
   // Get array of objs from local state via useState's setter function
   let localData
@@ -108,6 +120,17 @@ export const syncResource = async (res, setState) => {
     localData = [...state]
     return state
   })
+
+  for (let i = 0; i < localData.length; i++) {
+    const obj = localData[i]
+    if (mapping.has(obj.id)) {
+      obj.id = mapping.get(obj.id)
+    }
+    if (mapping.has(obj.list_id)) {
+      obj.list_id = mapping.get(obj.list_id)
+    }
+  }
+
 
   // Get array of objs from server
   const r = await httpGet(`/${res}`)
@@ -125,8 +148,7 @@ export const syncResource = async (res, setState) => {
 
     if (idLocal < idServer) {
       // Found obj present in local but not server, need to add to server
-      const r = await addObjServer(res, localData[iLocal])
-      localData[iLocal] = await r.json()
+      localData[iLocal] = await addObjServerSync(res, localData[iLocal], mapping)
       iLocal++
     } else if (idLocal > idServer) {
       // Found obj present in server but not local, need to delete from server
@@ -147,8 +169,7 @@ export const syncResource = async (res, setState) => {
     if (iLocal !== localData.length) {
       // Excess elems in local array needs to be added to server
       for (let i = iLocal; i < localData.length; i++) {
-        const r = await addObjServer(res, localData[i])
-        localData[i] = await r.json()
+        localData[i] = await addObjServerSync(res, localData[i], mapping)
       }
     } else {
       // Excess elems in server array needs to be deleted from server
@@ -159,4 +180,11 @@ export const syncResource = async (res, setState) => {
   }
 
   setState(localData)
+}
+
+export const syncResources = async (setLists, setTasks, setTags) => {
+  const mappings = new Map()
+  await syncResource('lists', setLists, mappings)
+  await syncResource('tasks', setTasks, mappings)
+  await syncResource('tags', setTags, mappings)
 }

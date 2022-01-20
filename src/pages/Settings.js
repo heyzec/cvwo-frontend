@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { BsGithub } from 'react-icons/bs'
 import { FcGoogle } from 'react-icons/fc'
 
-import { changePassword, getUserDetails, changeEmail, deleteAccount, submitAvatar } from 'utils/settings'
-import { authGithubRedirect, authGoogleRedirect } from 'utils/auth'
+import { changePassword, changeEmail, deleteAccount, submitAvatar } from 'utils/settings'
+import { getUser, authGithubRedirect, authGoogleRedirect } from 'utils/user'
 import { httpGet } from 'utils/network'
 
 import ResponsivePage from 'components/ResponsivePage'
@@ -21,14 +21,14 @@ import 'pages/Settings.css'
 
 const Settings = ({ context }) => {
 
-  const [userId, setUserId] = [context.getUserId(), context.setUserId]
+  const [user, setUser] = [context.getUser(), context.setUser]
 
   const [emailValue, setEmailValue] = useState("")
   const [oldPasswordValue, setOldPasswordValue] = useState("")
   const [newPasswordValue, setNewPasswordValue] = useState("")
 
-  const [githubLinked, setGithubLinked] = useState(false)
-  const [googleLinked, setGoogleLinked] = useState(false)
+  const [githubLinked, setGithubLinked] = useState(null)
+  const [googleLinked, setGoogleLinked] = useState(null)
 
   const [currentTab, setCurrentTab] = useState(0)
 
@@ -41,18 +41,12 @@ const Settings = ({ context }) => {
 
   /***** Check for user details, but only after component is loaded *****/
   useEffect(async () => {
-    const user = await getUserDetails()
+    const user = await getUser()
     if (!user) {
       return
     }
-    if (user.google_id) {
-      setGoogleLinked(true)
-    }
-    if (user.github_id) {
-      setGithubLinked(true)
-    }
-
-    setUserId(user.id)
+    setGoogleLinked(Boolean(user.google_id))
+    setGithubLinked(Boolean(user.github_id))
   }, [])
 
 
@@ -153,7 +147,7 @@ const Settings = ({ context }) => {
     </div>
     <div>
       <h1>Change email</h1>
-      <span>Your current email is {context.getUser()}</span>
+      <span>Your current email is {user.email}</span>
       <TextField className="settings__input" label="New email" value={emailValue} onChange={emailValueChanged} />
       <Button variant="outlined" onClick={changeEmailClicked}>Submit</Button>
     </div>
@@ -227,7 +221,7 @@ const Settings = ({ context }) => {
   </>
 
   // Remove the accounts tab if user has not created an account
-  const allTabs = context.getUser() ? [tabPersonalisation, tabAccount] : [tabPersonalisation]
+  const allTabs = user ? [tabPersonalisation, tabAccount] : [tabPersonalisation]
 
   return (
     <ResponsivePage

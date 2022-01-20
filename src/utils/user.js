@@ -5,18 +5,12 @@ const googleAuthoriseUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
 
 
 export const getUser = async () => {
-  const r = await httpGet("/status")
-  return r.text()
+  const r = await httpGet("/user")
+  return r.json()
 }
 
 export const signUp = async (context, navigate, email, password) => {
   const r = await httpPost("/signup", { user: { email, password } })
-
-  // For testing only
-  /* if (r.status >= 500) { */
-  /*   context.setHtml(await r.text()) */
-  /*   return */
-  /* } */
 
   if (r.status !== 200) {
     const msg = r.status === 400 ? await r.text() : "Unknown error"
@@ -27,16 +21,11 @@ export const signUp = async (context, navigate, email, password) => {
   context.notify("Successfully created your account!!", "lightgreen", 1000)
   context.setUser(await getUser())
   navigate("/")
+  window.location.reload()
 }
 
 export const signIn = async (context, navigate, email, password) => {
   const r = await httpPost("/signin", { user: { email, password } })
-
-  // For testing only
-  /* if (r.status >= 500) { */
-  /*   context.setHtml(await r.text()) */
-  /*   return */
-  /* } */
 
   if (r.status !== 200) {
     const msg = r.status === 401 ? "Invalid email or password" : "Unknown error"
@@ -47,11 +36,16 @@ export const signIn = async (context, navigate, email, password) => {
   context.notify("Successfully logged in!", "lightgreen", 1000)
   context.setUser(await getUser())
   navigate("/")
+  window.location.reload()
 }
 
-export const signOut = async () => {
-  const dir = "/signout"
-  await httpGet(dir)
+export const signOut = async (context, navigate) => {
+  await httpGet("/signout")
+  context.setUser(null)
+  window.localStorage.removeItem('user_data')
+  context.notify("Logged out!", "lightgreen", 1000)
+  navigate("/")
+  window.location.reload()
 }
 
 export const authGithubRedirect = () => {

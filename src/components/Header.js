@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 
 import { FaClipboardList } from 'react-icons/fa'
 
-import { signOut } from 'utils/auth.js'
+import { signOut } from 'utils/user'
 import IconButton from 'material/IconButton'
 import Paper from 'material/Paper'
 import Button from 'material/Button'
@@ -17,13 +17,12 @@ import 'components/Header.css'
 const Header = ({ context }) => {
 
   const [searchActive, setSearchActive] = useState(false)
-
   const [nowString, setNowString] = useState(dayjs().format("dddd, DD MMMM YYYY, HH:mm"))
-
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   const navigate = useNavigate()
 
+  const user = context.getUser()
 
   const userImageClicked = (e) => {
     if (!userMenuOpen) {
@@ -55,16 +54,13 @@ const Header = ({ context }) => {
 
   /***** Other event handlers *****/
   const appIconClicked = (e) => navigate("/")
-  const signinIconClicked = (e) => navigate("/signin")
-  const signupIconClicked = (e) => navigate("/signup")
+  const signinButtonClicked = (e) => navigate("/signin")
+  const signupButtonClicked = (e) => navigate("/signup")
 
-  const signoutIconClicked = async (e) => {
-    await signOut()
-    context.setUser("")
-    context.notify("Logged out!", "lightgreen", 1000)
-    setUserMenuOpen(false)
-    navigate("/")
+  const signoutButtonClicked = async (e) => {
+    await signOut(context, navigate)
   }
+  
 
 
   return (
@@ -79,28 +75,28 @@ const Header = ({ context }) => {
       </div>
       {
         // Removed temporarily
-        // <Searchbar context={context} searchActive={searchActive} setSearchActive={setSearchActive} />
+        <Searchbar context={context} searchActive={searchActive} setSearchActive={setSearchActive} />
       }
       <div id="header__nav">
-        {context.getUser()
+        {user
           ? (
             <IconButton onClick={userImageClicked}>
               <Identicon className="header__avatar" context={context} size="30" />
             </IconButton>
           ) : (
             <>
-              <Button className="header__signin" onClick={signinIconClicked}>Sign in</Button>
-              <Button className="header__signup" variant="contained" onClick={signupIconClicked}>Sign up!</Button>
+              <Button className="header__signin" onClick={signinButtonClicked}>Sign in</Button>
+              <Button className="header__signup" variant="contained" onClick={signupButtonClicked}>Sign up!</Button>
             </>
           )}
       </div>
       <Paper className={`header__user-menu${userMenuOpen ? " header__user-menu--active" : ""}`}>
         <Identicon className="header__avatar" context={context} size="60" />
         <div className="header__email">
-          {context.getUser()}
+          {user ? user.email : null}
         </div>
         <Button variant="outlined" onClick={settingsClicked}>Settings</Button>
-        <Button variant="outlined" onClick={signoutIconClicked}>Sign out</Button>
+        <Button variant="outlined" onClick={signoutButtonClicked}>Sign out</Button>
       </Paper>
     </header>
   )

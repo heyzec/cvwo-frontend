@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { BsGithub } from 'react-icons/bs'
 import { FcGoogle } from 'react-icons/fc'
 
-import { authGithubRedirect, authGoogleRedirect, signIn, signUp } from 'utils/auth'
+import { signIn, signUp, authGithubRedirect, authGoogleRedirect } from 'utils/user'
 import TextField from 'material/TextField'
 import Button from 'material/Button'
 import Paper from 'material/Paper'
