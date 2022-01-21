@@ -5,6 +5,7 @@ import { BsGithub } from 'react-icons/bs'
 import { FcGoogle } from 'react-icons/fc'
 
 import { signIn, signUp, authGithubRedirect, authGoogleRedirect } from 'utils/user'
+import { Spinner } from 'modules/Loading'
 import TextField from 'material/TextField'
 import Button from 'material/Button'
 import Paper from 'material/Paper'
@@ -16,6 +17,8 @@ const Auth = ({ type, context }) => {
 
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
+
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
 
@@ -46,12 +49,14 @@ const Auth = ({ type, context }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setLoading(true)
 
     if (type === "signin") {
       await signIn(context, navigate, email, password)
     } else if (type === "signup") {
       await signUp(context, navigate, email, password)
     }
+    setLoading(false)
   }
 
   const shadowClicked = (e) => navigate('/')
@@ -89,7 +94,13 @@ const Auth = ({ type, context }) => {
             value={password}
             onChange={passwordChanged}
           />
-          <Button className="auth__submit" variant="contained" onClick={handleSubmit}>Let's go!</Button>
+          <Button className="auth__submit" variant="contained" onClick={handleSubmit}>
+            {
+              loading
+                ? <Spinner size="18" />
+                : "Let's go!"
+            }
+          </Button>
           <div className="auth__external">
             <Button
               className="auth__ext-button"

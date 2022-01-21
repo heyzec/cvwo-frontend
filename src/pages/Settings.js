@@ -8,7 +8,7 @@ import { changePassword, changeEmail, deleteAccount, submitAvatar } from 'utils/
 import { getUser, authGithubRedirect, authGoogleRedirect } from 'utils/user'
 import { httpGet } from 'utils/network'
 
-import ResponsivePage from 'components/ResponsivePage'
+import ResponsivePage from 'modules/ResponsivePage'
 import Header from 'components/Header'
 import Identicon from 'components/Identicon'
 
@@ -99,7 +99,7 @@ const Settings = ({ context }) => {
   }
 
   const closeAccountClicked = async (e) => {
-    const prompt = `You are going to delete your account. THIS ACTION IS IRREVERSIBLE!`
+    const prompt = "You are going to delete your account. THIS ACTION IS IRREVERSIBLE!"
     if (!window.confirm(prompt)) {
       return
     }
@@ -129,7 +129,7 @@ const Settings = ({ context }) => {
 
   /***** Tabs *****/
 
-  const tabPersonalisation = (
+  const personalisationTab = (
     <div>
       <h1>Dark mode</h1>
       <span>Dark mode is currently {darkMode ? "enabled" : "disabled"}.</span>
@@ -143,7 +143,7 @@ const Settings = ({ context }) => {
     </div>
   )
 
-  const tabAccount = <>
+  const getAccountTab = () =>  <>
     <Button onClick={getAvatar}>HEHE</Button>
     <div>
       <h1>Change display name</h1>
@@ -249,7 +249,7 @@ const Settings = ({ context }) => {
   </>
 
   // Remove the accounts tab if user has not created an account
-  const allTabs = user ? [tabPersonalisation, tabAccount] : [tabPersonalisation]
+  const allTabs = user ? [personalisationTab, getAccountTab()] : [personalisationTab]
 
   return (
     <ResponsivePage
@@ -267,12 +267,18 @@ const Settings = ({ context }) => {
             >
               Personalisation
             </SelectableListItem>
-            <SelectableListItem
-              onClick={() => setCurrentTab(1)}
-              selected={currentTab === 1}
-            >
-              Account
-            </SelectableListItem>
+            {
+              user
+                ? (
+                  <SelectableListItem
+                    onClick={() => setCurrentTab(1)}
+                    selected={currentTab === 1}
+                  >
+                    Account
+                  </SelectableListItem>
+                )
+                : null
+            }
           </SelectableList>
         </div>
       }

@@ -13,10 +13,11 @@ import { IoShareSocial } from 'react-icons/io5'
 
 import Header from 'components/Header'
 import ListsSidebar from 'components/ListsSidebar'
-import ResponsivePage from 'components/ResponsivePage'
-import SlidingDrawer from 'components/SlidingDrawer'
 import TagsSidebar from 'components/TagsSidebar'
 import Task from 'components/Task'
+
+import ResponsivePage from 'modules/ResponsivePage'
+import SlidingDrawer from 'modules/SlidingDrawer'
 
 import Button from 'material/Button'
 import TextField from 'material/TextField'

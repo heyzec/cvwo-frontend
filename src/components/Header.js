@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import dayjs from 'dayjs'
 
 import { FaClipboardList } from 'react-icons/fa'
+import { BsFillGearFill } from 'react-icons/bs'
 
 import { signOut } from 'utils/user'
 import IconButton from 'material/IconButton'
@@ -38,7 +39,6 @@ const Header = ({ context }) => {
     }
     setUserMenuOpen(!userMenuOpen)
   }
-  
 
   const showSearchIcon = location.pathname === '/'
 
@@ -57,8 +57,6 @@ const Header = ({ context }) => {
   }, [])
 
 
-  const settingsClicked = (e) => navigate('/settings')
-
 
   /***** Other event handlers *****/
   const appIconClicked = (e) => navigate("/")
@@ -69,6 +67,7 @@ const Header = ({ context }) => {
     await signOut(context, navigate)
   }
 
+  const settingsClicked = (e) => navigate('/settings')
 
 
   return (
@@ -96,6 +95,9 @@ const Header = ({ context }) => {
             </IconButton>
           ) : (
             <>
+              <IconButton onClick={settingsClicked}>
+                <BsFillGearFill />
+              </IconButton>
               <Button className="header__signin" onClick={signinButtonClicked}>
                 Sign in
               </Button>

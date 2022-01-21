@@ -124,26 +124,29 @@ const Task = ({ context, task, isCreated }) => {
   )
 
 
+  const genCrossClicked = (tag) => (e) => {
+    e.stopPropagation()
+    const tagId = tag.id
+    context.editTask(task.id, {
+      "tags": task.tags.filter((id) => id !== tagId)
+    })
+  }
+
   /***** Function to be called in the block below *****/
   const generateTagElems = () => {
     if (!task.tags) {
       return null
     }
-    const handler = (e) => {
-      e.stopPropagation()
-      const tagId = parseInt(e.currentTarget.closest(".tag").attributes["data-tag-id"].value)
-      context.editTask(task.id, {
-        "tags": task.tags.filter(id => id !== tagId)
-      })
-    }
 
-    // Bug here
-    const cross = isOpen ? <FaTimes className="tag-icon clickable" size="12" onClick={handler} /> : null
-    return (task.tags.map((id) => {
-      const tag = tags.find(x => x.id === id)
+    return task.tags.map((id) => {
+      const tag = tags.find((tag) => tag.id === id)
+      const cross = (
+        isOpen
+          ? <FaTimes className="clickable" size="12" onClick={genCrossClicked(tag)} />
+          : null
+      )
       return tag ? <Tag clickables={cross} key={tag.id} tag={tag} /> : null
     })
-    )
   }
 
 

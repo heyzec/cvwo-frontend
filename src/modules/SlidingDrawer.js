@@ -1,6 +1,6 @@
 import { BsChevronLeft, BsChevronRight } from 'react-icons/bs'
 import Button from 'material/Button'
-import 'components/SlidingDrawer.css'
+import 'modules/SlidingDrawer.css'
 
 const SlidingDrawer = ({ drawer1, drawer2, label1, label2, nextPage, changePageClicked }) => {
   return (

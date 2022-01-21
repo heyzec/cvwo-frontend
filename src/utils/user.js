@@ -6,7 +6,7 @@ const googleAuthoriseUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
 
 export const getUser = async () => {
   const r = await httpGet("/user")
-  return r.json()
+  return await r.json()
 }
 
 export const signUp = async (context, navigate, email, password) => {
@@ -32,9 +32,10 @@ export const signIn = async (context, navigate, email, password) => {
     context.toasts.error(msg)
     return
   }
-
-  context.toasts.delayedSuccess("Successfully logged in!")
-  context.setUser(await getUser())
+  
+  const user = await getUser()
+  context.setUser(user)
+  context.toasts.delayedSuccess(`Welcome back ${user.email}!`)
   navigate("/")
   window.location.reload()
 }

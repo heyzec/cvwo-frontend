@@ -6,14 +6,14 @@ import Auth from 'pages/Auth'
 import Settings from 'pages/Settings'
 import Sandbox from 'pages/Sandbox'
 
-import Loading from 'components/Loading'
-import { ToastContainer } from 'components/Toasts'
-
 import { Context } from 'utils/context'
 import { getUser } from 'utils/user'
 import { syncResources } from 'utils/resource'
 import { objectHashed } from 'utils/funcs'
-import useStorageState from 'utils/useStorageState'
+
+import useStorageState from 'modules/useStorageState'
+import Loading from 'modules/Loading'
+import { ToastContainer } from 'modules/Toasts'
 
 import 'App.css'
 
@@ -64,16 +64,6 @@ const App = () => {
 
   /***** Helper functions ****/
 
-  const fetchAllData = async () => {
-    setShowLoading(true)
-    await Promise.all([
-      context.fetchTags(),
-      context.fetchTasks(),
-      context.fetchLists()
-    ])
-    setShowLoading(false)
-  }
-
   const loadFromStorage = (user, setLists, setTasks, setTags) => {
     const storageDataKey = user ? "user_data" : "guest_data"
     let parsed
@@ -109,14 +99,20 @@ const App = () => {
   // Run once only on component load
   useEffect(() => {
     const asyncToDo = async () => {  // React's useEffect dislikes async functions
+      setShowLoading(true)
       const userDetails = await getUser()
       setUser(userDetails)
       loadFromStorage(user, setLists, setTasks, setTags)
       if (!user) {
+        setShowLoading(false)
         return
       }
-
-      fetchAllData()  // Async function but not awaiting
+      await Promise.all([
+        context.fetchTags(),
+        context.fetchTasks(),
+        context.fetchLists()
+      ])
+      setShowLoading(false)
       window.addEventListener("offline", () => {
         setInternet(false)
         context.toasts.error("You are offline!")
@@ -138,11 +134,16 @@ const App = () => {
       }
       setInternet(true)
       let msg = "You're back online!"
+      let duration = 2000
       if (lastHash !== objectHashed({ lists, tasks, tags })) {
-        msg += " We'll now sync with the server."
-        syncResources(setLists, setTasks, setTags)  // Async function but not awaiting
+        msg += " We'll now sync changes with the server."
+        duration = 4000
+        setShowLoading(true)
+        syncResources(setLists, setTasks, setTags).then(
+          () => setShowLoading(false)
+        )
       }
-      context.toasts.success(msg)
+      context.toasts.success(msg, duration)
     }
 
     if (user) {
@@ -160,7 +161,7 @@ const App = () => {
     context.toasts.delayedSuccess("I'm a delayed toast!")
   }
   context.setMagic(magic)
-  
+
   const keyPressed = (e) => {
     if (e.key == 'x') {
       if (!darkMode) {
@@ -174,10 +175,11 @@ const App = () => {
   }
 
 
+
   return (
     <div className={`App${darkMode ? " dark" : ""}`} onKeyPress={keyPressed} tabIndex="-1">
-      <Loading show={showLoading} />
       <ToastContainer ref={toastRef} />
+      <Loading show={showLoading} />
       <Router>
         <Routes>
           <Route path="/" element={<Main context={context} />} />

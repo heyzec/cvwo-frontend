@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef, forwardRef, useImperativeHandle } from 'react'
 import { rand32 } from 'utils/funcs'
-import useStorageState from 'utils/useStorageState'
+import useStorageState from 'modules/useStorageState'
 import Paper from 'material/Paper'
-import 'components/Toasts.css'
-import { AiFillAccountBook } from 'react-icons/ai'
+import 'modules/Toasts.css'
 
 const Toast = ({ text, color, duration }) => {
   const [shrinking, setShrinking] = useState(false)
@@ -60,12 +59,12 @@ const ToastContainer = forwardRef((props, ref) => {
     showToast: showToast,
     success: (message, duration) => showToast({ message, duration: duration || 2000, color: 'lightgreen' }),
     error: (message, duration) => showToast({ message, duration: duration || 4000, color: 'pink' }),
-    info: (message, duration) => showToast({ message, duration: duration || 4000, color: 'white' }),
+    info: (message, duration) => showToast({ message, duration: duration || 1000, color: 'white' }),
 
     delayedToast: delayedToast,
     delayedSuccess: (message, duration) => delayedToast({ message, duration: duration || 2000, color: 'lightgreen' }),
     delayedError: (message, duration) => delayedToast({ message, duration: duration || 4000, color: 'pink' }),
-    delayedInfo: (message, duration) => delayedToast({ message, duration: duration || 4000, color: 'white' }),
+    delayedInfo: (message, duration) => delayedToast({ message, duration: duration || 1000, color: 'white' }),
   }))
 
 

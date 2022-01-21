@@ -1,4 +1,4 @@
-import ResponsivePage from 'components/ResponsivePage'
+import ResponsivePage from 'modules/ResponsivePage'
 
 import { HiPencil } from 'react-icons/hi'
 import IconButton from 'material/IconButton'
