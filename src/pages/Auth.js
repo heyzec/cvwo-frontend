@@ -25,12 +25,12 @@ const Auth = ({ type, context }) => {
 
     if (searchParams.get("success") === 'true') {
       if (searchParams.has("message")) {
-        context.notify(searchParams.get("message"), 'lightgreen', 3000)
+        context.toasts.success(searchParams.get("message"))
       } else {
-        context.notify("Logged in successfully", 'lightgreen', 2000)
+        context.toasts.success("Logged in successfully.")
       }
     } else {
-      context.notify(searchParams.get("message"), 'pink', 4000)
+      context.toasts.error(searchParams.get("message"))
     }
     navigate('/')
 

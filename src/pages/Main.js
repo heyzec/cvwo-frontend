@@ -60,7 +60,7 @@ const Main = ({ context }) => {
       if (hash) {
         const r = await httpGet(`/share/${hash}`)
         if (r.status !== 200) {
-          context.notify("Invalid link")
+          context.toasts.error("Invalid link")
           navigate('/')
           return
         }
@@ -139,7 +139,7 @@ const Main = ({ context }) => {
   /***** Event handlers - Sharing and importing lists *****/
   const acceptShareClicked = async (e) => {
     const r = await httpPost(`/share/${hash}`)
-    context.notify("Okay!")
+    context.toasts.delayedSuccess("Imported!")
     navigate('/')
     document.location.reload()
   }

@@ -55,8 +55,8 @@ const App = () => {
   const [showLoading, setShowLoading] = useState(false)              // The Loading components requires a state too  
 
 
-  const toast = useRef(null)                                         // Allows us to access functions in the components
-  context.setNotify(() => toast.current.notify)
+  const toastRef = useRef(null)                                         // Allows us to access functions in the Toasts component
+  context.setToastRef(() => toastRef)
   
   const [darkMode, setDarkMode] = useState(false)
   context.setDarkModeCallbacks(() => darkMode, setDarkMode)
@@ -119,7 +119,7 @@ const App = () => {
       fetchAllData()  // Async function but not awaiting
       window.addEventListener("offline", () => {
         setInternet(false)
-        context.notify("You are offline!", "firebrick", 4000)
+        context.toasts.error("You are offline!")
       })
     }
     asyncToDo()
@@ -142,7 +142,7 @@ const App = () => {
         msg += " We'll now sync with the server."
         syncResources(setLists, setTasks, setTags)  // Async function but not awaiting
       }
-      context.notify(msg, "lightgreen", 4000)
+      context.toasts.success(msg)
     }
 
     if (user) {
@@ -156,13 +156,8 @@ const App = () => {
   /***** Misc *****/
   // Function for testing purposes, triggered upon right clicking of app icon
   const magic = async (e) => {
-    console.log("Lists")
-    console.log([...lists])
-    console.log("Tasks")
-    console.log([...tasks])
-
-    // setTest(test + 1)
-
+    context.toasts.success("You've created a delayed toast")
+    context.toasts.delayedSuccess("I'm a delayed toast!")
   }
   context.setMagic(magic)
   
@@ -170,10 +165,10 @@ const App = () => {
     if (e.key == 'x') {
       if (!darkMode) {
         setDarkMode(true)
-        context.notify("Dark mode enabled!")
+        context.toasts.info("Dark mode enabled!")
       } else {
         setDarkMode(false)
-        context.notify("Dark mode disabled.")
+        context.toasts.info("Dark mode disabled.")
       }
     }
   }
@@ -182,7 +177,7 @@ const App = () => {
   return (
     <div className={`App${darkMode ? " dark" : ""}`} onKeyPress={keyPressed} tabIndex="-1">
       <Loading show={showLoading} />
-      <ToastContainer ref={toast} />
+      <ToastContainer ref={toastRef} />
       <Router>
         <Routes>
           <Route path="/" element={<Main context={context} />} />

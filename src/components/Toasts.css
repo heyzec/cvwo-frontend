@@ -17,16 +17,8 @@
   position: relative;
   max-width: 70vw;
   
-  /* Animations */
-  max-height: 0px;
-  margin: 0px;
-  padding: 0 10px;
-  opacity: 0;
-  transition-property: max-height, margin, padding, opacity;
-  transition-duration: 400ms;
-  
   /* Visual appeals */
-  overflow: hidden;
+  overflow: clip;
   font-size: small;
   background-color: blueviolet;
   border-radius: 10px;
@@ -36,12 +28,42 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  animation: toast-in 400ms forwards;
 }
 
-.toast-box.toast-show {
-  /* Animations */
-  max-height: 2rem;
-  margin: 5px;
-  padding: 10px 10px;
-  opacity: 1;
+.toast-box.toast-shrinking {
+  animation: toast-out 400ms forwards;
+  /* Not sure why below doesn't work */
+  /* animation: none; */
+  /* animation: toast-in 400ms reverse backwards; */
+}
+
+@keyframes toast-in {
+  from {
+    max-height: 0;
+    margin: 0;
+    padding: 0 10px;
+    opacity: 0;
+  }
+  to {
+    max-height: 2rem;
+    margin: 5px;
+    padding: 10px 10px;
+    opacity: 1;
+  }
+}
+
+@keyframes toast-out {
+  from {
+    max-height: 2rem;
+    margin: 5px;
+    padding: 10px 10px;
+    opacity: 1;
+  }
+  to {
+    max-height: 0;
+    margin: 0;
+    padding: 0 10px;
+    opacity: 0;
+  }
 }

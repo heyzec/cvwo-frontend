@@ -69,7 +69,7 @@ const Settings = ({ context }) => {
   const changeEmailClicked = async (e) => {
     const r = await changeEmail(emailValue)
     if (r.status !== 200) {
-      context.notify("Email is invalid.")
+      context.toasts.error("Email is invalid.")
       return
     }
     alert("Email changed successfully.")
@@ -78,10 +78,10 @@ const Settings = ({ context }) => {
 
   const changePasswordClicked = async (e) => {
     if (!oldPasswordValue || !newPasswordValue) {
-      context.notify("Please fill in both fields.")
+      context.toasts.error("Please fill in both fields.")
       return
     } else if (oldPasswordValue === newPasswordValue) {
-      context.notify("Both old and new passwords are the same, no changes made.")
+      context.toasts.error("Both old and new passwords are the same, no changes made.")
       return
     }
 
@@ -91,10 +91,11 @@ const Settings = ({ context }) => {
       return
     }
     if (r.status === 401) {
-      context.notify("Wrong password")
+      context.toasts.error("Wrong password")
       return
     }
-    context.notify(await r.text())
+    const message = await r.text()
+    context.toasts.delayedSuccess(message)
   }
 
   const closeAccountClicked = async (e) => {
@@ -104,8 +105,10 @@ const Settings = ({ context }) => {
     }
     await deleteAccount()
     context.setUser("")
-    context.notify("Your account has been deleted. Goodbye!")
+    const message = "Your account has been deleted. Goodbye!"
+    context.toasts.delayedSuccess(message)
     navigate('/')
+    window.location.reload()
   }
 
   const extAuthGithubClicked = (e) => {

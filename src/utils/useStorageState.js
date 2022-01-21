@@ -12,11 +12,14 @@ import { useState } from 'react'
   of event listener method instead.
 **/
 
-const useStorageState = (key, defaultValue) => {
+// This hook can set either sessionStorage or localStorage
+const useStorageState = (key, defaultValue, useSession = false) => {
+  
+  const storage = useSession ? window.sessionStorage : window.localStorage
 
   const [value, setValue] = useState(() => {
     try {
-      const item = window.localStorage.getItem(key)
+      const item = storage.getItem(key)
       return item ? JSON.parse(item) : defaultValue
     } catch (ex) {
       return defaultValue
@@ -26,7 +29,7 @@ const useStorageState = (key, defaultValue) => {
   const wrappedSetValue = (newValue) => {
     const valueToStore = typeof newValue === "function" ? newValue(value) : newValue
     setValue(valueToStore)
-    window.localStorage.setItem(key, JSON.stringify(valueToStore))
+    storage.setItem(key, JSON.stringify(valueToStore))
   }
 
   return [value, wrappedSetValue]

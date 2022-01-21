@@ -14,11 +14,11 @@ export const signUp = async (context, navigate, email, password) => {
 
   if (r.status !== 200) {
     const msg = r.status === 400 ? await r.text() : "Unknown error"
-    context.notify(msg, "pink", 2000)
+    context.toasts.error(msg)
     return
   }
 
-  context.notify("Successfully created your account!!", "lightgreen", 1000)
+  context.toasts.delayedSuccess("Successfully created your account!")
   context.setUser(await getUser())
   navigate("/")
   window.location.reload()
@@ -29,11 +29,11 @@ export const signIn = async (context, navigate, email, password) => {
 
   if (r.status !== 200) {
     const msg = r.status === 401 ? "Invalid email or password" : "Unknown error"
-    context.notify(msg, "pink", 2000)
+    context.toasts.error(msg)
     return
   }
 
-  context.notify("Successfully logged in!", "lightgreen", 1000)
+  context.toasts.delayedSuccess("Successfully logged in!")
   context.setUser(await getUser())
   navigate("/")
   window.location.reload()
@@ -44,7 +44,7 @@ export const signOut = async (context, navigate) => {
   window.localStorage.removeItem('user_data')
   navigate("/")
   context.setUser(null)
-  context.notify("Logged out!", "lightgreen", 1000)
+  context.toasts.delayedSuccess("Logged out!")
   window.location.reload()
 }
 

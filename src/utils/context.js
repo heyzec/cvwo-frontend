@@ -26,8 +26,11 @@ class Context {
   setInternetCallbacks = this.#prepState("internet")
   setDarkModeCallbacks = this.#prepState("darkMode")
 
-  setNotify = (notifyCallback) => {
-    this.notify = (...args) => notifyCallback()(...args)
+  setToastRef = (toastRefCallback) => {
+    this.toastRefCallback = toastRefCallback
+  }
+  get toasts() {
+    return this.toastRefCallback().current
   }
 
   setMagic = (callback) => {
