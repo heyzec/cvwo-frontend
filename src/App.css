@@ -5,22 +5,60 @@
   --drawer-width: 160px;
   --header-height: 55px;
   
+  --off-white: #fafafa;
+  --off-black: #303030;
+  --black-gray: #424242;
+
+  --theme-bluegray: #566175;
   --theme-gray: #f4f4f4;
   --theme-orange: orange;
-  --gray-primary: #566175;
-  --text-primary-light: rgb(255, 255, 255, 0.87);  /* Material defaults */
-  --text-primary-dark: rgb(0, 0, 0, 0.87);         /* Material defaults */
-  --divider-color: rgba(0, 0, 0, 0.12);      /* Material defaults */
+
+  /* Material default colors for text */
+  --translucent-white:  rgb(255, 255, 255, 0.87);
+  --translucent-black: rgb(0, 0, 0, 0.87);
   
-  --background-default: #fafafa;             /* Material defaults */
-  --background-paper: white;                 /* Material defaults */
+  /* Material default colors */
+  --divider-color: rgba(0, 0, 0, 0.12);
 }
 
+
+.App {
+  --background-base: var(--off-white);
+  --background-default: var(--theme-gray);
+  --background-popup: white;
+  
+  --text-primary-light: var(--translucent-white);
+  --text-primary-dark: var(--translucent-black);
+  --text-themed: var(--theme-bluegray);              /* only applied to text within background colors */
+}
+
+.App.dark {
+  --background-base: var(--off-black);
+  --background-default: var(--black-gray);
+  --background-popup: var(--black-gray);
+  
+  --text-primary-light: var(--translucent-black);
+  --text-primary-dark: var(--translucent-white);
+  --text-themed: var(--theme-gray);
+}
+
+.App {
+  color: var(--text-primary-dark);
+  background-color: var(--background-base);
+  transition: background-color 300ms;
+  font-family: var(--app-font);
+  
+  text-align: center;       /* To remove soon */
+  flex-direction: column;
+}
 
 * {
   margin: 0;
   padding: 0;
 }
+
+
+/* ----------------------- App defaults and reusable css START ------------------------ */
 
 input {
   font: inherit; /* font-family: var(--app-font); */
@@ -37,6 +75,20 @@ button {
   color: inherit;  /* By browser default, button elems have a color of black */
 }
 
+kbd {
+  display: inline-block;
+  padding: 2px 4px;
+
+  color: var(--theme-bluegray);
+  background-color: var(--off-white);
+  border-radius: 4px;
+  border: 1px solid #b4b4b4;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 2px 0 0 rgba(255, 255, 255, .7) inset;
+
+  font-weight: bold;
+  white-space: nowrap;
+ }
+
 .clickable {
   cursor: pointer;
 }
@@ -49,23 +101,7 @@ button {
   display: none !important;
 }
 
-.lower {
-  z-index: -1;
-}
-
-
-/*  -----------------------SPECIAL CSS END------------------------ */
-
-.App {
-  text-align: center;
-  flex-direction: column;
-}
-
-body {
-  font-family: var(--app-font);
-  color: var(--text-primary-dark);
-  background-color: var(--background-default);
-}
+/* ----------------------- App defaults and reusable css END ------------------------ */
 
 
 #page {

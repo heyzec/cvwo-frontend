@@ -9,6 +9,7 @@
   align-items: center;
   
   z-index: 9;
+  pointer-events: none;
 }
 
 .toast-box {
@@ -29,7 +30,7 @@
   font-size: small;
   background-color: blueviolet;
   border-radius: 10px;
-  /* box-shadow: 0px 2px 5px #888888; */
+  color: var(--translucent-black);
   
   /* Aligning contents */
   display: flex;

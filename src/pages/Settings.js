@@ -31,6 +31,8 @@ const Settings = ({ context }) => {
   const [googleLinked, setGoogleLinked] = useState(null)
 
   const [currentTab, setCurrentTab] = useState(0)
+  
+  const [darkMode, setDarkMode] = [context.getDarkMode(), context.setDarkMode]
 
 
   // const fileSelected = (e) => setSelectedFile(e.target.files[0])
@@ -119,16 +121,24 @@ const Settings = ({ context }) => {
   const getAvatar = (e) => {
     httpGet('/getavatar')
   }
+  
 
 
   /***** Tabs *****/
 
-  const tabPersonalisation = <>
-    <h1>Dark mode</h1>
-    <span>Hi</span>
-    <Button variant="contained">Enable</Button>
-  </>
-
+  const tabPersonalisation = (
+    <div>
+      <h1>Dark mode</h1>
+      <span>Dark mode is currently {darkMode ? "enabled" : "disabled"}.</span>
+      <br />
+      <span>Protip: Press <kbd>x</kbd> to toggle on or off!</span>
+      <Button
+        onClick={() => setDarkMode((darkMode) => !darkMode)}
+        variant="contained">
+        {darkMode ? "Enable" : "Disable"}
+      </Button>
+    </div>
+  )
 
   const tabAccount = <>
     <Button onClick={getAvatar}>HEHE</Button>
@@ -242,20 +252,26 @@ const Settings = ({ context }) => {
     <ResponsivePage
       header={<Header context={context} />}
       drawer={
-        <SelectableList>
-          <SelectableListItem
-            onClick={() => setCurrentTab(0)}
-            selected={currentTab === 0}
-          >
-            Personalisation
-          </SelectableListItem>
-          <SelectableListItem
-            onClick={() => setCurrentTab(1)}
-            selected={currentTab === 1}
-          >
-            Account
-          </SelectableListItem>
-        </SelectableList>
+        <div className="settings__drawer">
+          <div className="settings__head">
+            <span>Settings</span>
+            <hr />
+          </div>
+          <SelectableList>
+            <SelectableListItem
+              onClick={() => setCurrentTab(0)}
+              selected={currentTab === 0}
+            >
+              Personalisation
+            </SelectableListItem>
+            <SelectableListItem
+              onClick={() => setCurrentTab(1)}
+              selected={currentTab === 1}
+            >
+              Account
+            </SelectableListItem>
+          </SelectableList>
+        </div>
       }
     >
       <div className="settings">

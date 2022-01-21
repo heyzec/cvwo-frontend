@@ -137,6 +137,7 @@ const Task = ({ context, task, isCreated }) => {
       })
     }
 
+    // Bug here
     const cross = isOpen ? <FaTimes className="tag-icon clickable" size="12" onClick={handler} /> : null
     return (task.tags.map((id) => {
       const tag = tags.find(x => x.id === id)
@@ -193,17 +194,17 @@ const Task = ({ context, task, isCreated }) => {
               ? <>
                 <Tooltip text="Edit tags">
                   <IconButton onClick={tagIconClicked}>
-                    <BsTagsFill size="15" className="clickable" />
+                    <BsTagsFill size="15" />
                   </IconButton>
                 </Tooltip>
                 <Tooltip text="Edit task">
                   <IconButton onClick={pencilIconClicked}>
-                    <HiPencil size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
+                    <HiPencil size="15" className={isCreated ? "" : " hidden"} />
                   </IconButton>
                 </Tooltip>
                 <Tooltip text="Delete task">
                   <IconButton onClick={crossIconClicked}>
-                    <FaTimes size="15" className={`clickable${isCreated ? "" : " hidden"}`} />
+                    <FaTimes size="15" className={isCreated ? "" : " hidden"} />
                   </IconButton>
                 </Tooltip>
               </>

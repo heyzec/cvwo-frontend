@@ -19,6 +19,9 @@
   width: 100%;
   padding: 0 1rem;
   text-align: center;
+  
+  font-weight: 800;
+  color: var(--text-themed);
 }
 
 .tags-sidebar__add-tag {
@@ -42,11 +45,14 @@
   flex: 1;
 }
 
-.tags-sidebar__float {
+.tags-sidebar__float-wrap {
   position: fixed;
-  background-color: red;
   z-index: 1;
   animation: dropin 150ms forwards;  /* Defined in App.css */
+}
+
+.tags-sidebar__float {
+  background-color: var(--background-popup);
 }
 
 .tags-sidebar__editor {
@@ -56,7 +62,7 @@
   bottom: 0;
 
   overflow: hidden;
-  background-color: var(--theme-gray);
+  background-color: var(--background-popup);
 
   display: flex;
   flex-direction: column;
@@ -89,7 +95,7 @@
   margin: 20px;
   padding: 5px;
 
-  border: 1px solid grey;
+  border: 1px solid gray;
   border-radius: 5px;
   white-space: nowrap;
 

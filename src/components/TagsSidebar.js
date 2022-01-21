@@ -164,8 +164,8 @@ const TagsSidebar = ({ context }) => {
         <div className="tags-sidebar__tags">
           {tagItems}
         </div>
-        <div ref={floatRef} className={`tags-sidebar__float${selectedTag ? "" : " remove"}`}>
-          <Paper>
+        <div ref={floatRef} className={`tags-sidebar__float-wrap${selectedTag ? "" : " remove"}`}>
+          <Paper className="tags-sidebar__float">
             <SelectableList>
               <SelectableListItem onClick={menuEditClicked}>
                 Edit

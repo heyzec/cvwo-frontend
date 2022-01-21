@@ -41,7 +41,6 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
         <div>
           <TiTick className={bools && bools[i] ? "" : "hidden"} />
           <Tag
-            className="clickable"
             key={tag.id}
             tag={tag}
           />

@@ -57,7 +57,9 @@ const App = () => {
 
   const toast = useRef(null)                                         // Allows us to access functions in the components
   context.setNotify(() => toast.current.notify)
-
+  
+  const [darkMode, setDarkMode] = useState(false)
+  context.setDarkModeCallbacks(() => darkMode, setDarkMode)
 
 
   /***** Helper functions ****/
@@ -163,10 +165,22 @@ const App = () => {
 
   }
   context.setMagic(magic)
+  
+  const keyPressed = (e) => {
+    if (e.key == 'x') {
+      if (!darkMode) {
+        setDarkMode(true)
+        context.notify("Dark mode enabled!")
+      } else {
+        setDarkMode(false)
+        context.notify("Dark mode disabled.")
+      }
+    }
+  }
 
 
   return (
-    <div className="App">
+    <div className={`App${darkMode ? " dark" : ""}`} onKeyPress={keyPressed} tabIndex="-1">
       <Loading show={showLoading} />
       <ToastContainer ref={toast} />
       <Router>

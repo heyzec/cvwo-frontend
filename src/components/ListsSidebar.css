@@ -13,6 +13,9 @@
   text-align: center;
   width: 100%;
   padding: 0 1rem;
+
+  font-weight: 800;
+  color: var(--text-themed);
 }
 
 .lists-sidebar__add-list {

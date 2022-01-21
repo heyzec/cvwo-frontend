@@ -3,10 +3,6 @@
   align-items: center;
 }
 
-.searchbar__icon {
-  color: var(--text-primary-light);
-}
-
 .searchbar__box {
   width: 0;
   transition: width 200ms ease-in-out;

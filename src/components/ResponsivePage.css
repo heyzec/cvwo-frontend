@@ -11,8 +11,8 @@
   align-items: center;
   gap: 10px;
 
-  color: var(--text-primary-light);
-  background-color: var(--gray-primary);
+  color: var(--translucent-white);   /** To relocate **/
+  background-color: var(--theme-bluegray);
   
   display: flex;
 }

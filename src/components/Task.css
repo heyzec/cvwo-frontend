@@ -14,7 +14,7 @@
   padding: 10px;
 
   text-align: left;
-  background-color: var(--theme-gray);
+  background-color: var(--background-default);
 
   grid-template-columns: max-content 2fr 12ch 5ch 1fr max-content;
   align-items: center;

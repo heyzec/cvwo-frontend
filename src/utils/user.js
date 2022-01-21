@@ -41,10 +41,10 @@ export const signIn = async (context, navigate, email, password) => {
 
 export const signOut = async (context, navigate) => {
   await httpGet("/signout")
-  context.setUser(null)
   window.localStorage.removeItem('user_data')
-  context.notify("Logged out!", "lightgreen", 1000)
   navigate("/")
+  context.setUser(null)
+  context.notify("Logged out!", "lightgreen", 1000)
   window.location.reload()
 }
 

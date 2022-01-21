@@ -7,6 +7,26 @@
   gap: 1rem;
 }
 
+.settings__drawer {
+  height: 100%;
+  background-color: var(--background-default);
+}
+
+.settings__head {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 1rem;
+  text-align: center;
+  
+  font-size: large;
+  font-weight: bold;
+  color: var(--text-themed);
+}
+
+.settings h1 {
+  color: var(--text-themed);
+}
+
 .settings__close-acc {
   color: darkred;
 }

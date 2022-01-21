@@ -326,7 +326,7 @@ const Main = ({ context }) => {
                 }
                 <div>
                   <span className="main__list-name">{currentListName}</span>
-                  <span className="main__menu">
+                  <div className="main__menu">
                     <div className="main__share">
                       <Tooltip text="Generate a unique URL to share with other users!">
                         <IconButton onClick={shareClicked}>
@@ -361,7 +361,7 @@ const Main = ({ context }) => {
                         </SelectableListItem>
                       </SelectableList>
                     </Paper>
-                  </span>
+                  </div>
                 </div>
                 <div>
                   <Button

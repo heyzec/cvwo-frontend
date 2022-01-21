@@ -3,7 +3,7 @@
   padding: 5px;
 
   color: black;  /* For icons inside to inherit */
-  background-color: var(--background-default);
+  background-color: var(--background-popup);
   border: 1px solid var(--divider-color);
 
   flex-direction: column;

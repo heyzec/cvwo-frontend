@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import dayjs from 'dayjs'
 
 import { FaClipboardList } from 'react-icons/fa'
@@ -13,6 +13,7 @@ import Searchbar from 'components/Searchbar'
 import Identicon from 'components/Identicon'
 
 import 'components/Header.css'
+import Tooltip from 'material/Tooltip'
 
 const Header = ({ context }) => {
 
@@ -21,6 +22,7 @@ const Header = ({ context }) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   const navigate = useNavigate()
+  const location = useLocation()
 
   const user = context.getUser()
 
@@ -36,6 +38,9 @@ const Header = ({ context }) => {
     }
     setUserMenuOpen(!userMenuOpen)
   }
+  
+
+  const showSearchIcon = location.pathname === '/'
 
 
   /***** Make the clock update itself every second *****/
@@ -68,17 +73,20 @@ const Header = ({ context }) => {
 
   return (
     <header id="header">
-      <FaClipboardList id="header__icon" className="clickable" size="25" onClick={appIconClicked}
-        onContextMenu={(e) => { e.preventDefault(); context.magic() }}
-      />
+      <Tooltip text="Go home">
+        <FaClipboardList id="header__icon" className="clickable" size="25" onClick={appIconClicked}
+          onContextMenu={(e) => { e.preventDefault(); context.magic() }}
+        />
+      </Tooltip>
       <h1 id="header__title">Your To Dos</h1>
       <div id="header__spacer"></div>
       <div id="header__date" className={`header-elem${searchActive ? " header__date--hidden" : ""}`}>
         <span>{nowString}</span>
       </div>
       {
-        // Removed temporarily
-        <Searchbar context={context} searchActive={searchActive} setSearchActive={setSearchActive} />
+        showSearchIcon
+          ? <Searchbar context={context} searchActive={searchActive} setSearchActive={setSearchActive} />
+          : null
       }
       <div id="header__nav">
         {user

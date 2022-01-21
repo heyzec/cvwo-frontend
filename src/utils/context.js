@@ -24,6 +24,7 @@ class Context {
   setSearchBoolsCallbacks = this.#prepState("searchBools")
   setUserIdCallbacks = this.#prepState("userId")
   setInternetCallbacks = this.#prepState("internet")
+  setDarkModeCallbacks = this.#prepState("darkMode")
 
   setNotify = (notifyCallback) => {
     this.notify = (...args) => notifyCallback()(...args)

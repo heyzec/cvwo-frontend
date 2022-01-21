@@ -9,11 +9,13 @@
 
 .main__list-name {
   font-size: 2.5rem;
-  color: var(--gray-primary);
+  color: var(--text-themed);
 }
 
 .main__menu {
   position: relative;
+  display: inline-block;
+  color: var(--text-themed)
 }
 
 .main__share {
@@ -30,6 +32,8 @@
   right: 0;
   top: 0;
   z-index: 1;
+  
+  background-color: var(--background-popup);
 }
 
 .main__share-link {
@@ -44,6 +48,8 @@
   left: 2rem;
   overflow: hidden;
   z-index: 1;
+  
+  background-color: var(--background-popup);
   animation: dropin 150ms forwards;  /* Defined in App.css */
   display: none;
 }
