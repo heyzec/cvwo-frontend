@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import ResponsivePage from 'modules/ResponsivePage'
 
 import { HiPencil } from 'react-icons/hi'
@@ -9,17 +10,18 @@ import Tooltip from 'material/Tooltip'
 import Button from 'material/Button'
 import Paper from 'material/Paper'
 
+import { MuiDatePicker, MuiTimePicker } from 'components/MuiPickers'
 import 'pages/Sandbox.css'
 
-const Sandbox = ({ context }) => {
+const Box = ({ children }) => {
+  return (
+    <div className="sandbox__box">
+      {children}
+    </div>
+  )
+}
 
-  const Box = ({ children }) => {
-    return (
-      <div className="sandbox__box">
-        {children}
-      </div>
-    )
-  }
+const Sandbox = ({ context }) => {
 
   return (
     <>
@@ -59,6 +61,12 @@ const Sandbox = ({ context }) => {
           <Paper elevation="3">Hello</Paper>
           <Paper elevation="4">Hello</Paper>
           <Paper elevation="5">Hello</Paper>
+        </Box>
+        <Box>
+          <MuiDatePicker />
+        </Box>
+        <Box>
+          <MuiTimePicker />
         </Box>
       </ResponsivePage>
     </>
