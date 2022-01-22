@@ -4,8 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import { BsGithub } from 'react-icons/bs'
 import { FcGoogle } from 'react-icons/fc'
 
-import { changePassword, changeEmail, deleteAccount, submitAvatar } from 'utils/settings'
-import { getUser, authGithubRedirect, authGoogleRedirect } from 'utils/user'
+import { changePassword, changeEmail, submitAvatar } from 'utils/settings'
+import { getUser, deleteAccount, authGithubRedirect, authGoogleRedirect } from 'utils/user'
 import { httpGet } from 'utils/network'
 
 import ResponsivePage from 'modules/ResponsivePage'
@@ -103,12 +103,7 @@ const Settings = ({ context }) => {
     if (!window.confirm(prompt)) {
       return
     }
-    await deleteAccount()
-    context.setUser("")
-    const message = "Your account has been deleted. Goodbye!"
-    context.toasts.delayedSuccess(message)
-    navigate('/')
-    window.location.reload()
+    await deleteAccount(context, navigate)
   }
 
   const extAuthGithubClicked = (e) => {

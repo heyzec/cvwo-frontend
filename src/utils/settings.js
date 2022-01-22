@@ -1,12 +1,5 @@
 import { httpPost } from 'utils/network.js'
 
-export const deleteAccount = async () => {
-  const r = await httpPost("/closeaccount", {})
-  if (r.status !== 200) {
-    const msg = r.status === 400 ? await r.text() : "Unknown error"
-    return
-  }
-}
 
 /* export const submitAvatar = async (avatar) => { */
 /*   const r = await httpPostFile("/changeavatar", avatar */

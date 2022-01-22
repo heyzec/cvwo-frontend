@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 
 import { BsGithub } from 'react-icons/bs'
 import { FcGoogle } from 'react-icons/fc'
@@ -12,30 +12,47 @@ import Paper from 'material/Paper'
 import Main from 'pages/Main'
 
 import 'pages/Auth.css'
+import { httpGet } from 'utils/network'
 
 const Auth = ({ type, context }) => {
 
+  const [buttonLoading, setButtonLoading] = useState(false)
+  const [showLoading, setShowLoading] = [context.getShowLoading(), context.setShowLoading]
+
+  const { provider } = useParams()
+  const location = useLocation()
   const navigate = useNavigate()
-  const [searchParams, setSearchParams] = useSearchParams()
 
-  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
+  useEffect(async () => {
+    if (type === 'callback') {
+      navigate(`/auth/callback/${provider}`)
+      setShowLoading(true)
+      context.toasts.info("Please hold on, logging you in...", 3000)
+      const params = location.search.substring(1)
+      const r = await httpGet(`/auth/${provider}?${params}`)
 
-    if (type !== 'auth') {
-      return
-    }
-
-    if (searchParams.get("success") === 'true') {
-      if (searchParams.has("message")) {
-        context.toasts.success(searchParams.get("message"))
+      let data
+      if (r.ok) {
+        data = await r.json()
       } else {
-        context.toasts.success("Logged in successfully.")
+        data = { success: false, message: "An error has occurred."}
       }
-    } else {
-      context.toasts.error(searchParams.get("message"))
+
+      if (data.success) {
+        if (data.message) {
+          context.toasts.delayedSuccess(data.message)
+        } else {
+          context.toasts.delayedSuccess("Logged in successfully.")
+        }
+        navigate('/')
+        window.location.reload()
+      } else {
+        context.toasts.error(data.message)
+        setShowLoading(false)
+        navigate('/signin')
+      }
     }
-    navigate('/')
 
   }, [])
 
@@ -49,14 +66,14 @@ const Auth = ({ type, context }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoading(true)
+    setButtonLoading(true)
 
     if (type === "signin") {
       await signIn(context, navigate, email, password)
     } else if (type === "signup") {
       await signUp(context, navigate, email, password)
     }
-    setLoading(false)
+    setButtonLoading(false)
   }
 
   const shadowClicked = (e) => navigate('/')
@@ -96,7 +113,7 @@ const Auth = ({ type, context }) => {
           />
           <Button className="auth__submit" variant="contained" onClick={handleSubmit}>
             {
-              loading
+              buttonLoading
                 ? <Spinner size="18" />
                 : "Let's go!"
             }

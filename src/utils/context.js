@@ -14,7 +14,6 @@ class Context {
     this[`set${name}`] = setState
   }
 
-
   setUserCallbacks = this.#prepState("user")
   setTasksCallbacks = this.#prepState("tasks")
   setTagsCallbacks = this.#prepState("tags")
@@ -25,6 +24,7 @@ class Context {
   setUserIdCallbacks = this.#prepState("userId")
   setInternetCallbacks = this.#prepState("internet")
   setDarkModeCallbacks = this.#prepState("darkMode")
+  setShowLoadingCallbacks = this.#prepState("showLoading")
 
   setToastRef = (toastRefCallback) => {
     this.toastRefCallback = toastRefCallback

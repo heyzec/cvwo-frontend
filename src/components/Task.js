@@ -83,7 +83,14 @@ const Task = ({ context, task, isCreated }) => {
     if (!isCreated && !isCreating) {
       attachListener({
         target: window,
-        preRemoval: save,
+        preRemoval: () => {
+          const textValue = getUpdatedValue(setTextValue)
+          if (!textValue) {
+            setIsCreating(false)
+            return false
+          }
+          return save()
+        },
         postRemoval: () => {
           setIsCreating(false)
           setTextValue("")
@@ -234,28 +241,22 @@ const Task = ({ context, task, isCreated }) => {
         <div className="tag-container">
           {isCreated ? generateTagElems() : null}
         </div>
-        <div className="task__options">
-          {
-            isCreated || 1 == 1
-              ? <>
-                <Tooltip text="Edit tags">
-                  <IconButton onClick={tagIconClicked}>
-                    <BsTagsFill size="15" />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip text="Edit task">
-                  <IconButton onClick={pencilIconClicked}>
-                    <HiPencil size="15" className={isCreated ? "" : " hidden"} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip text="Delete task">
-                  <IconButton onClick={crossIconClicked}>
-                    <FaTimes size="15" className={isCreated ? "" : " hidden"} />
-                  </IconButton>
-                </Tooltip>
-              </>
-              : null
-          }
+        <div className={`task__options${isCreated ? "" : " hidden"}`}>
+          <Tooltip text="Edit tags">
+            <IconButton onClick={tagIconClicked}>
+              <BsTagsFill size="15" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip text="Edit task">
+            <IconButton onClick={pencilIconClicked}>
+              <HiPencil size="15" className={isCreated ? "" : " hidden"} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip text="Delete task">
+            <IconButton onClick={crossIconClicked}>
+              <FaTimes size="15" className={isCreated ? "" : " hidden"} />
+            </IconButton>
+          </Tooltip>
         </div>
       </Paper>
       <div className={`task__dropdown-wrapper${tagsOpen ? "" : " remove"}`}>

@@ -49,6 +49,19 @@ export const signOut = async (context, navigate) => {
   window.location.reload()
 }
 
+export const deleteAccount = async (context, navigate) => {
+  const r = await httpPost("/closeaccount", {})
+  if (r.status !== 200) {
+    const msg = r.status === 400 ? await r.text() : "Unknown error"
+    return
+  }
+  context.setUser(null)
+  const message = "Your account has been deleted. Goodbye!"
+  context.toasts.delayedSuccess(message)
+  navigate('/')
+  window.location.reload()
+}
+
 export const authGithubRedirect = () => {
   const params = {
     scope: 'user:email',
@@ -62,7 +75,7 @@ export const authGoogleRedirect = () => {
     response_type: 'code',
     scope: 'openid email',
     client_id: process.env.REACT_APP_AUTH_GOOGLE_CLIENT_ID,
-    redirect_uri: `${process.env.REACT_APP_BACKEND_URL}/auth/google`
+    redirect_uri: `${process.env.REACT_APP_FRONTEND_URL}/auth/callback/google`
   }
   window.location.href = `${googleAuthoriseUrl}?${new URLSearchParams(params).toString()}`
 }
