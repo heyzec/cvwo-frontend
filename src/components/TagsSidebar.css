@@ -1,40 +1,68 @@
 #tags-sidebar {
   width: 100%;
   height: 100%;
-
-  overflow-y: scroll;
+  overflow: hidden;
+  flex: 1;
 }
 
-#tags-sidebar__tags {
-  padding: 20px;
-
+#tags-sidebar__main {
   display: flex;
+
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  overflow-y: scroll;
+  align-items: center;
+  gap: 1rem;
+  height: 100%;
 }
 
-
-#tags-sidebar__label {
-  width: 80%;
-  padding: 2px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid black;
+.tags-sidebar__head {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 1rem;
+  text-align: center;
+  
+  font-weight: 800;
+  color: var(--text-themed);
 }
 
 .tags-sidebar__add-tag {
   color: var(--theme-orange);
 }
 
-#tags-sidebar__editor {
+.tags-sidebar__tags {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 1rem 0 1.5rem;
+  overflow-y: auto;
+}
+
+.tags-sidebar__row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.tags-sidebar__spacer {
+  flex: 1;
+}
+
+.tags-sidebar__float-wrap {
+  position: fixed;
+  z-index: 1;
+  animation: dropin 150ms forwards;  /* Defined in App.css */
+}
+
+.tags-sidebar__float {
+  background-color: var(--background-popup);
+}
+
+.tags-sidebar__editor {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
 
   overflow: hidden;
-  background-color: var(--theme-gray);
+  background-color: var(--background-popup);
 
   display: flex;
   flex-direction: column;
@@ -47,7 +75,7 @@
   transition-duration: 400ms, 400ms;
 }
 
-#tags-sidebar__editor.tags--editing {
+.tags-sidebar__editor.tags--editing {
   height: 50%;
   opacity: 1;
 }
@@ -67,7 +95,7 @@
   margin: 20px;
   padding: 5px;
 
-  border: 1px solid grey;
+  border: 1px solid gray;
   border-radius: 5px;
   white-space: nowrap;
 
@@ -79,21 +107,4 @@
   width: 100%;
   min-width: 8rem;
   font-size: small;
-}
-
-.tags-sidebar__row {
-  display: flex;
-  width: 100%;
-  align-items: center;
-}
-
-.tags-sidebar__spacer {
-  flex: 1;
-}
-
-.tags-sidebar__float {
-  position: fixed;
-  background-color: red;
-  z-index: 1;
-  animation: dropin 150ms forwards;  /* Defined in App.css */
 }

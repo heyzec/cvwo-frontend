@@ -5,7 +5,9 @@ import { HiOutlineDotsVertical } from 'react-icons/hi'
 import svgColorWheel from 'resources/colorwheel.png'
 
 import { validateColor } from 'utils/funcs'
+import { attachListener } from 'utils/helpers'
 import Tag from 'components/Tag'
+
 import Button from 'material/Button'
 import IconButton from 'material/IconButton'
 import TextField from 'material/TextField'
@@ -16,36 +18,37 @@ import Paper from 'material/Paper'
 import 'components/TagsSidebar.css'
 
 const colorPalatte = [
-  "#f2777a",
-  "#f99157",
-  "#0f0c06",
-  "#090c09",
-  "#060c0c",
-  "#06090c",
-  "#0c090c",
-  "#d27b53"
+  "#f5714d",
+  "#b7758c",
+  "#7cabc9",
+  "#f0e6e7",
+  "#e8b689",
+  "#ed9ec9",
+  "#f0d9b2",
+  "#fcca65",
+  "#bde0ed",
 ]
 
 const TagsSidebar = ({ context }) => {
-  
+
   /***** Retrieve states from context object *****/
   const tags = context.getTags()
   const tasks = context.getTasks()
-  
-  
-  
+
+
+
   /***** Initialise states and refs *****/
   const [tagText, setTagText] = useState("")            // For input elem in editor
   const [colorValue, setColorValue] = useState("")      // For input elem in editor
 
   const [tagEditMode, setTagEditMode] = useState("")    // Whether tag is being created or edited
   const [editorOpen, setEditorOpen] = useState(false)   // Keeps track whether sidebar shows tags or editor
-  const [selectedTag, setSelectedTag] = useState(null)  // Which tag's menu icon was clicked
+  const [selectedTagId, setSelectedTag] = useState(null)  // Which tag's menu icon was clicked
 
   const colorRef = useRef(null)                         // A ref to the invisible color picker input elem
   const floatRef = useRef(null)                         // Ref to the floating menu
-  
-  
+
+
 
   /***** Event handlers *****/
   const colorValueChanged = (e) => setColorValue(e.target.value)
@@ -53,35 +56,33 @@ const TagsSidebar = ({ context }) => {
 
   const createTagClicked = () => {
     setTagEditMode("create")
-    setColorValue(colorPalatte[0])
+    setColorValue(colorPalatte[Math.floor(Math.random() * colorPalatte.length)])
     setEditorOpen(true)
   }
-  
+
   const menuEditClicked = (e) => {
-    e.stopPropagation()
-    const tagId = selectedTag
-    const tag = tags.filter(tag => tag.id === tagId)[0]
+    const tag = tags.find((tag) => tag.id === selectedTagId)
+
     setTagText(tag.text)
     setColorValue(tag.color)
-    setTagEditMode(`edit${tagId}`)
+    setTagEditMode(`edit${selectedTagId}`)
     setEditorOpen(true)
   }
 
   const menuDeleteClicked = async (e) => {
-    e.stopPropagation()
-    const tagId = selectedTag
+    const tag = tags.find((tag) => tag.id === selectedTagId)
+
+    const tagText = tag.text
     const routines = []
     tasks.forEach((task) => {
-      if (task.tags.includes(tagId)) {
+      if (task.tags.includes(tagText)) {
         routines.push(async () => {
           await context.editTask(task.id, {
-            "tags": task.tags.filter(id => id !== tagId)
+            "tags": task.tags.filter((text) => text !== tagText)
           })
         })
       }
     })
-
-    const tag = tags.filter((tag) => tag.id === tagId)[0]
 
     if (routines.length !== 0) {
       const prompt = `The tag '${tag.text}' will be removed from ${routines.length} tasks. Continue?`
@@ -90,7 +91,7 @@ const TagsSidebar = ({ context }) => {
       }
     }
     routines.forEach(routine => routine())
-    context.deleteTag(tagId)
+    context.deleteTag(tagText)
   }
 
   const doneButtonClicked = async () => {
@@ -105,7 +106,35 @@ const TagsSidebar = ({ context }) => {
     } else if (tagEditMode.match(/^edit\d+$/)) {
       const tagId = parseInt(tagEditMode.match(/\d+/)[0])
 
-      // Bug here, to fix
+      const tag = tags.find((tag) => tag.id === tagId)
+
+      const [routinesLocal, routinesShared] = [[], []]
+      tasks.forEach((task) => {
+        if (task.tags.includes(tag.text)) {
+          const routine = async () => {
+            await context.editTask(task.id, {
+              "tags": task.tags.map((text) => text === tag.text ? tagText : text)
+            })
+          }
+          if (task.shared) {
+            routinesShared.push(routine)
+          } else {
+            routinesLocal.push(routine)
+          }
+        }
+      })
+
+      const totalLength = routinesLocal.length + routinesShared.length
+      if (totalLength) {
+        const prompt = `The tag '${tag.text}' will be renamed for ${totalLength} tasks (${routinesShared.length} shared). Continue?`
+        if (!window.confirm(prompt)) {
+          return
+        }
+      }
+      routinesLocal.forEach(routine => routine())
+      routinesShared.forEach(routine => routine())
+
+
       await context.editTag(tagId, {
         "text": tagText,
         "color": colorValue
@@ -117,20 +146,23 @@ const TagsSidebar = ({ context }) => {
   }
 
 
-  // Not an event handler, but generates an event handler
+  // Not an event handler, but generates an event handler. This event handler
+  // opens and moves a menu to the location of the button user clicked. Menu is
+  // closed only if user clicks elsewhere.
   const genDotsClicked = (tag) => (e) => {
+    console.log(e.currentTarget)
 
-    floatRef.current.style.top = `${e.pageY - 140}px`
-    floatRef.current.style.left = `${e.pageX - 50}px`
+    const { left, top } = e.currentTarget.getBoundingClientRect()
 
-    if (!selectedTag) {
-      window.addEventListener('click', function handler(ev) {
-        if (e.nativeEvent === ev || ev.target.closest(".tags-sidebar__float")) {
-          return
-        }
-        setSelectedTag(null)
-        ev.currentTarget.removeEventListener(ev.type, handler)
-      }, { capture: true })  // Use capture so that the window's event listener fires first
+    floatRef.current.style.top = `${top - 120}px`
+    floatRef.current.style.left = `${left - 30}px`
+
+    if (!selectedTagId) {
+      attachListener({
+        target: window,
+        preRemoval: () => setSelectedTag(null),
+        exclusionSelector: ".tags-sidebar__float",
+      })
     }
     setSelectedTag(tag.id)
   }
@@ -148,38 +180,56 @@ const TagsSidebar = ({ context }) => {
 
   return (
     <div id="tags-sidebar">
-      <div id="tags-sidebar__tags" >
-        <span id="tags-sidebar__label">Your tags</span>
+      <div id="tags-sidebar__main" >
+        <div className="tags-sidebar__head">
+          <span>Your tags</span>
+          <hr />
+        </div>
         <Button
           className="tags-sidebar__add-tag"
           variant="contained"
           startIcon={<FaPlus />}
           onClick={createTagClicked}
         >
-          Create tag
+          New tag
         </Button>
-        {tagItems}
-        <div ref={floatRef} className={`tags-sidebar__float${selectedTag ? "" : " remove"}`}>
-          <Paper>
+        <div className="tags-sidebar__tags">
+          {tagItems}
+        </div>
+        <div ref={floatRef} className={`tags-sidebar__float-wrap${selectedTagId ? "" : " remove"}`}>
+          <Paper className="tags-sidebar__float">
             <SelectableList>
-              <SelectableListItem onClick={menuEditClicked}>
+              <SelectableListItem key="1" onClick={menuEditClicked}>
                 Edit
               </SelectableListItem>
-              <SelectableListItem onClick={menuDeleteClicked}>
+              <SelectableListItem key="2" onClick={menuDeleteClicked}>
                 Delete
               </SelectableListItem>
             </SelectableList>
           </Paper>
         </div>
       </div>
-      <div id="tags-sidebar__editor" className={editorOpen ? "tags--editing" : ""} >
-        <input id="tags-sidebar__hidden-color" ref={colorRef} type="color" value={colorValue} onChange={colorValueChanged} />
+
+      <Paper elevation="2" className={`tags-sidebar__editor${editorOpen ? " tags--editing" : ""}`}>
+        <input
+          id="tags-sidebar__hidden-color"
+          ref={colorRef}
+          type="color"
+          value={colorValue}
+          onChange={colorValueChanged}
+        />
         <div id="tags-sidebar__preview-wrapper">
           <Tag tag={{ "color": colorValue, "text": tagText }} />
         </div>
         <TextField label="Tag name" value={tagText} onChange={tagTextChanged} />
         <div className="tags-sidebar__input-wrapper">
-          <img className="clickable" src={svgColorWheel} alt="color wheel" width="20px" onClick={() => colorRef.current.click()} />
+          <img
+            className="clickable"
+            src={svgColorWheel}
+            alt="color wheel"
+            width="20px"
+            onClick={() => colorRef.current.click()}
+          />
           <span>
             <input id="tags-sidebar__input-color" className={`themed-input${validateColor(colorValue) ? "" : " red"}`}
               maxLength={7} value={colorValue} placeholder="Color (hex value)" onChange={colorValueChanged} />
@@ -188,7 +238,8 @@ const TagsSidebar = ({ context }) => {
         <Button variant="contained" onClick={doneButtonClicked}>
           Done
         </Button>
-      </div>
+      </Paper>
+
     </div>
   )
 }

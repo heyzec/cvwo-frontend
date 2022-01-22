@@ -4,6 +4,13 @@
 
 .tooltip__content {
   width: fit-content;
+  /* 
+    For .tooltip__text to be directly below .tooltip__content
+    Problem visble when placed in flexboxes
+    (.tool_tip text can have height 0px but still not stick
+    directly below without this)
+  */
+  line-height: 0;
 }
 
 .tooltip__text-wrapper {

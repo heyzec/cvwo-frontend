@@ -16,7 +16,7 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
     (bools && !tags) ||
     (bools && bools.length !== 0 && tags.length !== bools.length)
   ) {
-    console.warn("Invalid input")
+    console.warn("Invalid input received by TagsSelector component.")
   }
 
   const [searchValue, setSearchValue] = useState("")
@@ -41,7 +41,6 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
         <div>
           <TiTick className={bools && bools[i] ? "" : "hidden"} />
           <Tag
-            className="clickable"
             key={tag.id}
             tag={tag}
           />
@@ -53,10 +52,18 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
 
   return (
     <Paper elevation="4" className="tags-selector" >
-      <TextField value={searchValue} onChange={valueChanged} />
-      <SelectableList>
-        {tableContents}
-      </SelectableList>
+      {
+        tags.length !== 0
+          ? (
+            <>
+              <TextField value={searchValue} onChange={valueChanged} />
+              <SelectableList>
+                {tableContents}
+              </SelectableList>
+            </>
+          )
+          : "No tags available."
+      }
     </Paper>
   )
 }

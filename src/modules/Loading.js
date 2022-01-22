@@ -1,9 +1,19 @@
 import { useState, useEffect } from 'react'
-import 'components/Loading.css'
+import 'modules/Loading.css'
+
+export const Spinner = ({ size = 32 }) => {
+  const style = {
+    width: `${size}px`,
+    height: `${size}px`,
+    borderWidth: `${size / 8}px`
+  }
+
+  return <div className="lds-dual-ring" style={style}></div>
+}
 
 const Loading = ({ show, ref }) => {
 
-  const TRANSITION_DURATION = 100
+  const TRANSITION_DURATION = 150
   const [SHOW, FADE, REMOVE] = [0, 1, 2]
   const [state, setState] = useState(REMOVE)
 
@@ -26,8 +36,8 @@ const Loading = ({ show, ref }) => {
   }
 
   return (
-    <div className={`loading-screen${state === SHOW ? "" : " loading-screen--hide"}`}>
-      <div className="lds-dual-ring"></div>
+    <div className={`loading${state === SHOW ? "" : " loading--hide"}`}>
+      <Spinner size="64" />
     </div>
   )
 }

@@ -9,15 +9,12 @@
 .page__header {
   grid-column: 1 / 3;
   align-items: center;
-  gap: 10px;
 
-  padding: 0 20px;
-  color: var(--text-primary-light);
-  background-color: var(--gray-primary);
+  color: var(--translucent-white);   /** To relocate **/
+  background-color: var(--theme-bluegray);
   
   display: flex;
 }
-
 
 .page__menu-icon {
   display: none;
@@ -30,8 +27,7 @@
 }
 
 .page__content {
-  flex-grow: 1;
-  overflow: scroll;
+  overflow: auto;
 }
 
 /* Small screens - breakpoint for mobile */
@@ -39,6 +35,7 @@
   .page__menu-icon {
     display: inline;
     cursor: pointer;
+    margin: 0 0.5rem 0 1rem;
   }
 
   .page__drawer {

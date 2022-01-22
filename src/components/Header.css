@@ -4,23 +4,24 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  position: relative;
   
-  color: white;
-  color: var(--text-primary-light);
+  /* color: var(--text-primary-light); */
   white-space: nowrap;
   left:0;
   width: 100%;
   gap: 10px;
+  padding: 0 15px;
 }
 
 .header__signin {
-  color: var(--text-primary-light);
+  /* color: var(--text-primary-light); */
 }
 .header__signup {
   color: blue;
 }
 .header__signout {
-  color: var(--text-primary-light);
+  /* color: var(--text-primary-light); */
 }
 
 
@@ -50,6 +51,39 @@
 #header__nav {
   display: flex;
   align-items: center;
+}
+
+.header__user-menu {
+  position: absolute;
+  width: 15rem;
+  /* height: 5rem; */
+  background-color: var(--background-default);
+  color: var(--text-primary-dark);
+  right: 0;
+  top: var(--header-height);
+  padding: 1rem;
+  display: none;
+  z-index: 1;
+}
+
+.header__user-menu--active {
+  display: initial;
+  animation: dropin 150ms forwards;  /* Defined in App.css */
+}
+
+.header__avatar {
+  /* width: 3rem; */
+  /* height: 3rem; */
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.541);
+}
+
+.header__email {
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  /* overflow: hidden; */
+  width: 100%;
+  overflow: hidden;
 }
 
 

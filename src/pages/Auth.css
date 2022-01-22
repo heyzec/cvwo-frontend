@@ -49,6 +49,20 @@
   color: cornflowerblue;
 }
 
+.auth__external {
+  display: flex;
+  width: 100%;
+}
+
+.auth__spacer {
+  width: 1rem;
+  flex: 1;
+}
+
+.auth__external {
+  flex: 1;
+}
+
 @keyframes fade-in {
   to {
     background-color: rgb(0, 0, 0, 0.3);

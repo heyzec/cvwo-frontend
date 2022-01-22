@@ -3,6 +3,7 @@ import { useState, useRef } from 'react'
 import { GoSearch } from 'react-icons/go'
 import { BsFillTagsFill } from 'react-icons/bs'
 
+import { attachListener, getUpdatedValue } from 'utils/helpers'
 import TagsSelector from 'components/TagsSelector'
 import IconButton from 'material/IconButton'
 import TextField from 'material/TextField'
@@ -22,45 +23,33 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const refSearchBar = useRef(null)
+  
+  // Opens the searchbar. Close it back only if the search params is empty and no tags were added.
   const searchIconClicked = (e) => {
 
     if (!searchActive) {
-      e.stopPropagation()
-
       refSearchBar.current.focus()
 
-      window.addEventListener('click', function handler(e) {
-
-        // Obtain the updated values of searchValue and searchBools via setters of useState
-        let searchValue = null, searchBools = null;
-        setSearchValue((value) => {
-          searchValue = value
-          return value
-        })
-        setSearchBools((value) => {
-          searchBools = value
-          return value
-        })
-
-        if (
-          (searchValue || searchBools.some((x) => !!x)) ||
-          (e.target.closest(".searchbar__box, .searchbar__dropdown-wrapper"))
-        ) {
-          return
-        }
-
-        setSearchActive(false)
-        e.currentTarget.removeEventListener(e.type, handler)
+      const preRemoval = () => {
+        const searchValue = getUpdatedValue(setSearchValue)
+        const searchBools = getUpdatedValue(setSearchBools)
+        return !Boolean(searchValue || searchBools.some(((x) => !!x)))
+      }
+      attachListener({
+        target: window,
+        preRemoval,
+        postRemoval: () => setSearchActive(false),
+        exclusionSelector: ".searchbar__box, .searchbar__dropdown-wrapper"
       })
     }
     setSearchActive(!searchActive)
-
     setSearchBools(tags.map(() => false))
   }
 
 
   const genOnClick = (tagId) => {
     const index = tags.findIndex((tag) => tag.id === tagId)
+    // Flip the index-th bool in the array
     setSearchBools((bools) => {
       bools = [...bools]  // Create a new array first
       bools[index] = !bools[index]
@@ -68,17 +57,13 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
     })
   }
 
-  const searchTagsChooser = (e) => {
-    e.stopPropagation()
-
-    window.addEventListener('click', function handler(e) {
-      if (e.target.closest(".searchbar__dropdown-wrapper")) {
-        return
-      }
-      setIsOpen(false)
-      e.currentTarget.removeEventListener(e.type, handler)
+  // Opens menu for user to choose tags. Close it only if the user clicks elsewhere.
+  const tagsIconClicked = (e) => {
+    attachListener({
+      target: window,
+      preRemoval: () => setIsOpen(false),
+      exclusionSelector: ".searchbar__dropdown-wrapper"
     })
-
     setIsOpen(!isOpen)
   }
 
@@ -97,7 +82,7 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
           className={`searchbar__input`}
         />
         <div className="searchbar__tags">
-          <IconButton onClick={searchTagsChooser}>
+          <IconButton onClick={tagsIconClicked}>
             <BsFillTagsFill />
           </IconButton>
           <div className={`searchbar__dropdown-wrapper${isOpen ? "" : " remove"}`}>
