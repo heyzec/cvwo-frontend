@@ -158,7 +158,7 @@ const Task = ({ context, task, isCreated }) => {
       attachListener({
         target: window,
         postRemoval: () => setTagsOpen(false),
-        exclusionSelector: ".task__dropdown-wrapper"
+        exclusionSelector: ".task__dropdown-wrapper, .tag__clickables"
       })
     }
     setTagsOpen(!tagsOpen)
@@ -168,18 +168,21 @@ const Task = ({ context, task, isCreated }) => {
 
   /***** Helper functions for rendering *****/
 
+  // If a tag is clicked in the TagsSelector component, add tag to list.
   const genDropdownTagClicked = (tagId) => {
+    const tag = tags.find((tag) => tag.id === tagId)
     context.editTask(task.id, {
-      "tags": [...task.tags, tagId]
+      "tags": [...task.tags, tag.text]
     })
   }
 
   // Required by generateTagElems
+  // If a tag's cross icon is clicked, remove tag from list.
   const genCrossClicked = (tag) => (e) => {
     e.stopPropagation()
-    const tagId = tag.id
+    const tagToRemove = tag
     context.editTask(task.id, {
-      "tags": task.tags.filter((id) => id !== tagId)
+      "tags": task.tags.filter((tag) => tag !== tagToRemove.text)
     })
   }
 
@@ -188,8 +191,8 @@ const Task = ({ context, task, isCreated }) => {
       return null
     }
 
-    return task.tags.map((id) => {
-      const tag = tags.find((tag) => tag.id === id)
+    return task.tags.map((text) => {
+      const tag = tags.find((tag) => tag.text === text)
       const cross = (
         tagsOpen
           ? <FaTimes className="clickable" size="12" onClick={genCrossClicked(tag)} />
@@ -222,7 +225,8 @@ const Task = ({ context, task, isCreated }) => {
             value={textValue}
             onChange={textChanged}
             placeholder={isCreated ? "" : "Add a task here"}
-            ref={inputRef} />
+            ref={inputRef}
+            />
         </div>
         <div className="task__date">
           {
@@ -261,9 +265,13 @@ const Task = ({ context, task, isCreated }) => {
       </Paper>
       <div className={`task__dropdown-wrapper${tagsOpen ? "" : " remove"}`}>
         {
-          task
-            ? <TagsSelector tags={tags.filter((tag) => !task.tags.includes(tag.id))} genOnClick={genDropdownTagClicked} />
-            : null
+          !task ? null
+            : (
+              <TagsSelector
+                tags={tags.filter((tag) => !task.tags.includes(tag.text))}
+                genOnClick={genDropdownTagClicked}
+              />
+            )
         }
       </div>
     </div>
