@@ -50,6 +50,7 @@ const ListsSidebar = ({ context }) => {
         {
           lists.map((list) => (
             <SelectableListItem
+              key={list.id}
               onClick={genListClicked(list)}
               selected={list.id === selectedListId}
             >

@@ -24,36 +24,38 @@ const Auth = ({ type, context }) => {
   const navigate = useNavigate()
 
 
-  useEffect(async () => {
-    if (type === 'callback') {
-      navigate(`/auth/callback/${provider}`)
-      setShowLoading(true)
-      context.toasts.info("Please hold on, logging you in...", 3000)
-      const params = location.search.substring(1)
-      const r = await httpGet(`/auth/${provider}?${params}`)
+  useEffect(() => {
+    const asyncToDo = async () => {  // React's useEffect dislikes async functions
+      if (type === 'callback') {
+        navigate(`/auth/callback/${provider}`)
+        setShowLoading(true)
+        context.toasts.info("Please hold on, logging you in...", 3000)
+        const params = location.search.substring(1)
+        const r = await httpGet(`/auth/${provider}?${params}`)
 
-      let data
-      if (r.ok) {
-        data = await r.json()
-      } else {
-        data = { success: false, message: "An error has occurred."}
-      }
-
-      if (data.success) {
-        if (data.message) {
-          context.toasts.delayedSuccess(data.message)
+        let data
+        if (r.ok) {
+          data = await r.json()
         } else {
-          context.toasts.delayedSuccess("Logged in successfully.")
+          data = { success: false, message: "An error has occurred." }
         }
-        navigate('/')
-        window.location.reload()
-      } else {
-        context.toasts.error(data.message)
-        setShowLoading(false)
-        navigate('/signin')
+
+        if (data.success) {
+          if (data.message) {
+            context.toasts.delayedSuccess(data.message)
+          } else {
+            context.toasts.delayedSuccess("Logged in successfully.")
+          }
+          navigate('/')
+          window.location.reload()
+        } else {
+          context.toasts.error(data.message)
+          setShowLoading(false)
+          navigate('/signin')
+        }
       }
     }
-
+    asyncToDo()
   }, [])
 
 

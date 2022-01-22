@@ -17,8 +17,6 @@ import { ToastContainer } from 'modules/Toasts'
 
 import 'App.css'
 
-console.log(`This is a ${process.env.NODE_ENV} environment`)
-
 if (!process.env.REACT_APP_FRONTEND_URL) {
   throw new Error("No environmental variables found.")
 }
@@ -98,7 +96,6 @@ const App = () => {
 
   // Run once only on component load
   useEffect(() => {
-    console.log(window)
     if (window.location.href.includes('auth/callback')) {
       return
     }
@@ -167,7 +164,7 @@ const App = () => {
   context.setMagic(magic)
 
   const keyPressed = (e) => {
-    if (e.key == 'x') {
+    if (e.key === 'x') {
       if (!darkMode) {
         setDarkMode(true)
         context.toasts.info("Dark mode enabled!")

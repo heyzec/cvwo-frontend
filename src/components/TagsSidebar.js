@@ -199,10 +199,10 @@ const TagsSidebar = ({ context }) => {
         <div ref={floatRef} className={`tags-sidebar__float-wrap${selectedTagId ? "" : " remove"}`}>
           <Paper className="tags-sidebar__float">
             <SelectableList>
-              <SelectableListItem onClick={menuEditClicked}>
+              <SelectableListItem key="1" onClick={menuEditClicked}>
                 Edit
               </SelectableListItem>
-              <SelectableListItem onClick={menuDeleteClicked}>
+              <SelectableListItem key="2" onClick={menuDeleteClicked}>
                 Delete
               </SelectableListItem>
             </SelectableList>

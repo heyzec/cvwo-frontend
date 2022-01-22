@@ -226,7 +226,7 @@ const Task = ({ context, task, isCreated }) => {
             onChange={textChanged}
             placeholder={isCreated ? "" : "Add a task here"}
             ref={inputRef}
-            />
+          />
         </div>
         <div className="task__date">
           {

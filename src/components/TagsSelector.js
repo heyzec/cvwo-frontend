@@ -53,7 +53,7 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
   return (
     <Paper elevation="4" className="tags-selector" >
       {
-        tags.length != 0
+        tags.length !== 0
           ? (
             <>
               <TextField value={searchValue} onChange={valueChanged} />
