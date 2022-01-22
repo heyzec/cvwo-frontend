@@ -16,7 +16,7 @@
   text-align: left;
   background-color: var(--background-default);
 
-  grid-template-columns: max-content 2fr 12ch 5ch 1fr max-content;
+  grid-template-columns: max-content 2fr 9rem 6.5rem 5rem max-content;
   align-items: center;
   gap: 10px;
 }
@@ -24,13 +24,10 @@
 .task__checkbox {
   display: flex;
 
-  flex: initial;
   align-items: center;
 }
 
 .task__text {
-  flex: 2;
-
   font-size: large;
   font-weight: bold;
 }
@@ -41,17 +38,14 @@
 }
 
 .task__date {
-  flex: initial;
-  width: 12ch;
+  /* width: 12ch; */
 }
 
 .task__time {
-  flex: initial;
-  width: 5ch;
+  /* width: 5ch; */
 }
 
 .tag-container {
-  flex: 1;
   max-height: 50px;  /* not sure why 100% not working */
 }
 

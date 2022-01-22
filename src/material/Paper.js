@@ -1,6 +1,6 @@
 import 'material/Paper.css'
 
-const Paper = ({ className, children, elevation, style }) => {
+const Paper = ({ className, children, elevation, ...otherProps }) => {
   
   elevation = elevation ? parseInt(elevation) : 1  // Elevation defaults to 1
   
@@ -10,7 +10,7 @@ const Paper = ({ className, children, elevation, style }) => {
 
 
   return (
-    <div className={`paper paper--${elevation}${className ? " " + className : ""}`} style={style}>
+    <div className={`paper paper--${elevation}${className ? " " + className : ""}`} {...otherProps} >
       {children}
     </div>
   )

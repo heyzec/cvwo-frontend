@@ -22,6 +22,9 @@ const Box = ({ children }) => {
 }
 
 const Sandbox = ({ context }) => {
+  
+  const [time, setTime] = useState(null)
+  const [date, setDate] = useState(new Date())
 
   return (
     <>
@@ -63,10 +66,11 @@ const Sandbox = ({ context }) => {
           <Paper elevation="5">Hello</Paper>
         </Box>
         <Box>
-          <MuiDatePicker />
+          {date?.toString()}
+          <MuiDatePicker value={date} setValue={setDate} />
         </Box>
         <Box>
-          <MuiTimePicker />
+          <MuiTimePicker value={time} setValue={setTime} />
         </Box>
       </ResponsivePage>
     </>

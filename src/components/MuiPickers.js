@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import AdapterDayjs from '@mui/lab/AdapterDayjs'
 import LocalizationProvider from '@mui/lab/LocalizationProvider'
 import DatePicker from '@mui/lab/DatePicker'
@@ -8,9 +6,7 @@ import TimePicker from '@mui/lab/TimePicker'
 import TextField from 'material/TextField'
 import 'components/MuiPickers.css'
 
-export const MuiDatePicker = () => {
-  const [value, setValue] = useState(new Date())
-
+export const MuiDatePicker = ( { value, setValue }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
@@ -31,9 +27,7 @@ export const MuiDatePicker = () => {
   )
 }
 
-export const MuiTimePicker = () => {
-  const [value, setValue] = useState(null)
-
+export const MuiTimePicker = ({ value, setValue }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <TimePicker

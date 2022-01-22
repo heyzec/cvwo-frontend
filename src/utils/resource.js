@@ -1,5 +1,6 @@
 import { httpGet, httpPost, httpDelete, httpPatch } from 'utils/network'
 import { equals, rand32 } from 'utils/funcs'
+import getUpdatedValue from 'utils/getUpdatedValue'
 
 
 // verb      CRUD      HTTP      Rails action
@@ -177,22 +178,11 @@ export const syncResource = async (res, value, setValue, idMappings) => {
 
   setValue(localData)
 }
-  
-// Returns the most updated state from a setter of useState
-const extractValue = (setValue) => {
-  let valueToExtract
-  const func = (val) => {
-    valueToExtract = val
-    return val
-  }
-  setValue(func)
-  return valueToExtract
-}
 
 export const syncResources = async (setLists, setTasks, setTags) => {
-  const lists = extractValue(setLists)
-  const tasks = extractValue(setTasks)
-  const tags = extractValue(setTags)
+  const lists = getUpdatedValue(setLists)
+  const tasks = getUpdatedValue(setTasks)
+  const tags = getUpdatedValue(setTags)
   
   // No clobber protection - refuse to sync if user data is empty
   if (lists.length + tasks.length + tags.length === 0) {

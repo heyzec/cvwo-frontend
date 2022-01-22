@@ -1,5 +1,10 @@
 .picker__wrap {
   display: flex;
   align-items: center;
-  width: 12rem;
+  position: relative;
+}
+
+.picker__wrap > *:nth-child(2) {
+  position: absolute;
+  right: 0.8rem;
 }

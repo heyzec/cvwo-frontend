@@ -23,3 +23,13 @@ export const rand32 = () => crypto.getRandomValues(new Uint32Array(1))[0]
 export const equals = (obj1, obj2) => JSON.stringify(obj1) === JSON.stringify(obj2)
 
 export const objectHashed = (obj) => md5(JSON.stringify(obj))
+
+// Useful function for debugging - https://stackoverflow.com/a/8729274
+export const traverseForParents = (elem) => {
+  var parents = [];
+  while (elem) {
+    parents.unshift(elem);
+    elem = elem.parentNode;
+  }
+  return parents
+}
