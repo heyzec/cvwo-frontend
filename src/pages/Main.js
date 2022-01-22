@@ -16,6 +16,7 @@ import ListsSidebar from 'components/ListsSidebar'
 import TagsSidebar from 'components/TagsSidebar'
 import Task from 'components/Task'
 
+import { attachListener } from 'utils/helpers'
 import ResponsivePage from 'modules/ResponsivePage'
 import SlidingDrawer from 'modules/SlidingDrawer'
 
@@ -102,14 +103,12 @@ const Main = ({ context }) => {
   /***** Event handlers - Editing list data *****/
   const changePageClicked = (e) => setNextPage(!nextPage)  // This state is for the SlidingDrawer
 
+  // Opens menu for user to make changes to the list.
   const dotsIconClicked = (e) => {
     if (!editListOpen) {
-      window.addEventListener('click', function handler(ev) {
-        if (e.nativeEvent === ev || ev.target.closest(".searchbar__dropdown-wrapper")) {
-          return
-        }
-        setEditListOpen(false)
-        ev.currentTarget.removeEventListener(ev.type, handler)
+      attachListener({
+        target: window,
+        postRemoval: () => setEditListOpen(false),
       })
     }
     setEditListOpen(!editListOpen)
@@ -147,13 +146,11 @@ const Main = ({ context }) => {
 
   const shareClicked = async (e) => {
     if (!shareLink) {
-      window.addEventListener('click', function handler(ev) {
-        if (e.nativeEvent === ev || ev.target.closest(".main__share-popup")) {
-          return
-        }
-        setShareLink(null)
-        ev.currentTarget.removeEventListener(ev.type, handler)
-      }, { capture: true })  // Use capture so that the window's event listener fires first
+      attachListener({
+        target: window,
+        postRemoval: () => setShareLink(null),
+        exclusionSelector: ".main__share-popup"
+      })
     }
 
     const r = await httpPost(`/lists/${selectedListId}/share`)

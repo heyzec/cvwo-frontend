@@ -5,7 +5,9 @@ import { HiOutlineDotsVertical } from 'react-icons/hi'
 import svgColorWheel from 'resources/colorwheel.png'
 
 import { validateColor } from 'utils/funcs'
+import { attachListener } from 'utils/helpers'
 import Tag from 'components/Tag'
+
 import Button from 'material/Button'
 import IconButton from 'material/IconButton'
 import TextField from 'material/TextField'
@@ -117,20 +119,20 @@ const TagsSidebar = ({ context }) => {
   }
 
 
-  // Not an event handler, but generates an event handler
+  // Not an event handler, but generates an event handler. This event handler
+  // opens and moves a menu to the location of the button user clicked. Menu is
+  // closed only if user clicks elsewhere.
   const genDotsClicked = (tag) => (e) => {
 
     floatRef.current.style.top = `${e.pageY - 140}px`
     floatRef.current.style.left = `${e.pageX - 50}px`
 
     if (!selectedTag) {
-      window.addEventListener('click', function handler(ev) {
-        if (e.nativeEvent === ev || ev.target.closest(".tags-sidebar__float")) {
-          return
-        }
-        setSelectedTag(null)
-        ev.currentTarget.removeEventListener(ev.type, handler)
-      }, { capture: true })  // Use capture so that the window's event listener fires first
+      attachListener({
+        target: window,
+        preRemoval: () => setSelectedTag(null),
+        exclusionSelector: ".tags-sidebar__float",
+      })
     }
     setSelectedTag(tag.id)
   }

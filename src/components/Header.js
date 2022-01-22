@@ -6,6 +6,7 @@ import { FaClipboardList } from 'react-icons/fa'
 import { BsFillGearFill } from 'react-icons/bs'
 
 import { signOut } from 'utils/user'
+import { attachListener } from 'utils/helpers'
 import IconButton from 'material/IconButton'
 import Paper from 'material/Paper'
 import Button from 'material/Button'
@@ -26,16 +27,16 @@ const Header = ({ context }) => {
   const location = useLocation()
 
   const user = context.getUser()
+ 
 
+  // Opens user profile menu. Close it only if the user clicks elsewhere.
   const userImageClicked = (e) => {
     if (!userMenuOpen) {
-      window.addEventListener('click', function handler(ev) {
-        if (e.nativeEvent === ev || ev.target.closest(".header__user-menu")) {
-          return
-        }
-        setUserMenuOpen(false)
-        ev.currentTarget.removeEventListener(ev.type, handler)
-      }, { capture: true })  // Use capture so that the window's event listener fires first
+      attachListener({
+        target: window,
+        postRemoval: () => setUserMenuOpen(false),
+        exclusionSelector: ".header__user-menu"
+      })
     }
     setUserMenuOpen(!userMenuOpen)
   }

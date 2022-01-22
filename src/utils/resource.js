@@ -1,6 +1,6 @@
 import { httpGet, httpPost, httpDelete, httpPatch } from 'utils/network'
 import { equals, rand32 } from 'utils/funcs'
-import getUpdatedValue from 'utils/getUpdatedValue'
+import { getUpdatedValue } from 'utils/helpers'
 
 
 // verb      CRUD      HTTP      Rails action

@@ -13,7 +13,7 @@ import Tooltip from 'material/Tooltip'
 import IconButton from 'material/IconButton'
 import Paper from 'material/Paper'
 
-import getUpdatedValue from 'utils/getUpdatedValue'
+import { getUpdatedValue, attachListener } from 'utils/helpers'
 
 import 'components/Task.css'
 
@@ -81,24 +81,18 @@ const Task = ({ context, task, isCreated }) => {
   // (Only applicable to the uncreated task) Start the creation phase
   const paperClicked = (e) => {
     if (!isCreated && !isCreating) {
-      window.addEventListener('click', function handler(ev) {
-
-        if (e.nativeEvent === ev || ev.target.closest(".task, .MuiCalendarPicker-root, .MuiPaper-root")) {
-          return
-        }
-
-        if (!save()) {
-          return
-        }
-
-        ev.currentTarget.removeEventListener(ev.type, handler, { capture: true })
-
-        setIsCreating(false)
-        setTextValue("")
-        setDate(null)
-        setTime(null)
-
-      }, { capture: true })  // Use capture so that the window's event listener fires first
+      attachListener({
+        target: window,
+        preRemoval: save,
+        postRemoval: () => {
+          setIsCreating(false)
+          setTextValue("")
+          setDate(null)
+          setTime(null)
+        },
+        // exclusionEvent: e,
+        exclusionSelector: ".task, .MuiCalendarPicker-root, .MuiPaper-root",
+      })
       inputRef.current.focus()
       setIsCreating(true)
     }
@@ -108,18 +102,13 @@ const Task = ({ context, task, isCreated }) => {
   // (Only applicable to created tasks) Start the editing phase
   const pencilIconClicked = (e) => {
     if (!isEditing) {
-      window.addEventListener('click', function handler(ev) {
-        if (e.nativeEvent === ev || ev.target.closest(".task, .MuiCalendarPicker-root, .MuiPaper-root")) {
-          return
-        }
-        if (!save()) {
-          return
-        }
-        window.removeEventListener(ev.type, handler, { capture: true })    // Fix others: Adding capture here is CRUCIAL
-
-
-        setIsEditing(false)
-      }, { capture: true })  // Use capture so that the window's event listener fires first
+      attachListener({
+        target: window,
+        preRemoval: save,
+        postRemoval: () => setIsEditing(false),
+        // exclusionEvent: e,
+        exclusionSelector: ".task, .MuiCalendarPicker-root, .MuiPaper-root",
+      })
       inputRef.current.focus()
     }
     setIsEditing(!isEditing)
@@ -158,14 +147,11 @@ const Task = ({ context, task, isCreated }) => {
   }
 
   const tagIconClicked = (e) => {
-    e.stopPropagation()
     if (!tagsOpen) {
-      window.addEventListener('click', function handler(e) {
-        if (e.target.closest(".task__dropdown-wrapper")) {
-          return
-        }
-        setTagsOpen(false)
-        e.currentTarget.removeEventListener(e.type, handler)
+      attachListener({
+        target: window,
+        postRemoval: () => setTagsOpen(false),
+        exclusionSelector: ".task__dropdown-wrapper"
       })
     }
     setTagsOpen(!tagsOpen)
