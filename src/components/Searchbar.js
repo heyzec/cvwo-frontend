@@ -1,18 +1,19 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 import { GoSearch } from 'react-icons/go'
 import { BsFillTagsFill } from 'react-icons/bs'
 
-import { attachListener, getUpdatedValue } from 'utils/helpers'
+import { attachListener, getUpdatedValue, vimAddListener, vimRemoveListener } from 'utils/helpers'
 import TagsSelector from 'components/TagsSelector'
 import IconButton from 'material/IconButton'
 import TextField from 'material/TextField'
+
 
 import 'components/Searchbar.css'
 
 const Searchbar = ({ context, searchActive, setSearchActive }) => {
 
-  /***** Retrieve states from context object *****/
+  // ---------------- Retrieve states from context object  ----------------
   const tags = context.getTags()
 
   // Value of input elem in searchbar
@@ -22,13 +23,16 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
 
   const [isOpen, setIsOpen] = useState(false)
 
-  const refSearchBar = useRef(null)
+  const searchBarRef = useRef(null)
   
-  // Opens the searchbar. Close it back only if the search params is empty and no tags were added.
+  const [keyMappings, setKeyMappings] = [context.getKeyMappings(), context.setKeyMappings]
+
+
+  /** Opens the searchbar. Close it back only if the search params is empty and no tags were added. */
   const searchIconClicked = (e) => {
 
     if (!searchActive) {
-      refSearchBar.current.focus()
+      searchBarRef.current.focus()
 
       const preRemoval = () => {
         const searchValue = getUpdatedValue(setSearchValue)
@@ -57,7 +61,7 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
     })
   }
 
-  // Opens menu for user to choose tags. Close it only if the user clicks elsewhere.
+  /** Opens menu for user to choose tags. Close it only if the user clicks elsewhere. */
   const tagsIconClicked = (e) => {
     attachListener({
       target: window,
@@ -67,6 +71,27 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
     setIsOpen(!isOpen)
   }
 
+  const inputKeyDowned = (e) => {
+    if (!searchActive) {
+      return
+    }
+    if (['Esc', 'Escape'].includes(e.key)) {
+      e.stopPropagation()
+      setSearchValue("")
+      setSearchBools(tags.map(() => false))
+      setSearchActive(false)
+      searchBarRef.current.blur()  // Remove focus so that keyboard shortcuts are available again
+    }
+  }
+
+  // Pressing '/' also triggers search
+  useEffect(() => {
+    const obj = vimAddListener(keyMappings, '/', (e) => {
+      e.preventDefault()
+      searchIconClicked(true)
+    })
+    return () => vimRemoveListener(obj)
+  }, [])
 
   return (
     <div className="searchbar">
@@ -75,10 +100,11 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
       </IconButton>
       <div className={`searchbar__box${searchActive ? " searchbar__box--active" : ""}`}>
         <TextField
-          inputRef={refSearchBar}
+          inputRef={searchBarRef}
           label="Search"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          onKeyDown={inputKeyDowned}
           className={`searchbar__input`}
         />
         <div className="searchbar__tags">

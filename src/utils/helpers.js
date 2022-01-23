@@ -1,5 +1,7 @@
-// Returns the most updated state from a setter of useState
-// Useful when needed to access state from an attached event listener
+/**
+ * Returns the most updated state from a setter of useState.
+ * Useful when needed to access state from an attached event listener.
+ */
 export const getUpdatedValue = (setValue) => {
   let output
   const func = (val) => {
@@ -35,9 +37,73 @@ export const attachListener = (params) => {
     if (preRemoval && !preRemoval()) {
       return
     }
-    target.removeEventListener(e.type, handler, { capture: capture })    // Fix others: Adding capture here is CRUCIAL
+    target.removeEventListener(e.type, handler, { capture: capture })
     postRemoval && postRemoval()
   }
 
   target.addEventListener('click', handler, { capture: capture })
+}
+
+/**
+ * 
+ * @param {Array} mappings      The state given by useState, stores a map of seq to callbacks
+ * @param {String} seq          A string representing the sequence of keys which activates callback
+ * @param {Function} callback   The function to run whenever user press the sequence of keys.
+ *                              It will receive the keydown event when called.
+ * @returns                     An object that, when fed into vimRemoveSeq, removes this handler 
+ */
+export const vimAddListener = (mappings, seq, callback) => {
+  const pair = [seq, callback]
+  mappings.push(pair)
+  return () => {
+    const index = mappings.indexOf(pair);
+    if (index > -1) {
+      mappings.splice(index, 1);
+    }
+  }
+}
+
+/**
+ * @param {Object} callback   The object returned by vimAddSequence when handler is registered
+ */
+export const vimRemoveListener = (callback) => {
+  callback()
+}
+
+/**
+ * @param {Object} e                 The keydown event
+ * @param {Array} mappings           
+ * @param {Function} setKeys         A setter function from useState. We need to keep track of two states.
+ * @param {Function} setKeyTimeout   Another setter function from useState.
+ * @param {Number} timeout           The number of milliseconds the user must press adjacent keys to fire callback
+ */
+export const vimDispatcher = (e, mappings, setKeys, setKeyTimeout, timeout) => {
+  if (document.activeElement.tagName === 'INPUT') {  // Don't steal keys when user is entering textboxes
+    return
+  }
+
+  const keys = getUpdatedValue(setKeys)
+  const keyTimeout = getUpdatedValue(setKeyTimeout)
+  clearTimeout(keyTimeout)
+  const seqThusFar = keys + e.key
+
+  const mappingsHash = new Map(mappings)       // Convert into a hash to remove duplicate keys
+  const arr = Array.from(mappingsHash.keys())
+
+  const nFullMatches = arr.filter((seq) => seq === seqThusFar).length
+  const nPartialMatches = arr.filter((seq) => seq !== seqThusFar && seq.startsWith(seqThusFar)).length
+
+  if (nFullMatches === 1 && nPartialMatches === 0) {
+    mappingsHash.get(seqThusFar)(e)
+    setKeys("")
+  } else if (nFullMatches + nPartialMatches !== 0) {
+    setKeys(seqThusFar)
+    const t = setTimeout(() => {
+      if (nFullMatches === 1) {
+        mappingsHash.get(seqThusFar)(e)
+      }
+      setKeys("")
+    }, timeout)
+    setKeyTimeout(t)
+  }
 }

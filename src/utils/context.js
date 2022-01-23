@@ -25,6 +25,7 @@ class Context {
   setInternetCallbacks = this.#prepState("internet")
   setDarkModeCallbacks = this.#prepState("darkMode")
   setShowLoadingCallbacks = this.#prepState("showLoading")
+  setKeyMappingsCallbacks = this.#prepState("keyMappings")
 
   setToastRef = (toastRefCallback) => {
     this.toastRefCallback = toastRefCallback
@@ -38,7 +39,7 @@ class Context {
   }
 
 
-  // Function to check if need to update both server and local, or just locally
+  /** Check if need to update both server and local, or just locally */
   updateServer = () => this.getInternet() && !!this.getUser()
 
 

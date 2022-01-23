@@ -5,6 +5,8 @@ import { FaTimes } from 'react-icons/fa'
 import { HiPencil } from 'react-icons/hi'
 import { BsTagsFill, BsCircle, BsCheckCircle } from 'react-icons/bs'
 
+import { getUpdatedValue, attachListener, vimAddListener, vimRemoveListener } from 'utils/helpers'
+
 import Tag from 'components/Tag'
 import TagsSelector from 'components/TagsSelector'
 import { MuiDatePicker, MuiTimePicker } from 'components/MuiPickers'
@@ -13,19 +15,16 @@ import Tooltip from 'material/Tooltip'
 import IconButton from 'material/IconButton'
 import Paper from 'material/Paper'
 
-import { getUpdatedValue, attachListener } from 'utils/helpers'
-
 import 'components/Task.css'
 
-const Task = ({ context, task, isCreated }) => {
+const Task = ({ context, task, isCreated, isSelected }) => {
 
-  /***** Retrieve states from context object *****/
+  // ---------------- Retrieve states from context object  ----------------
   const tags = context.getTags()
 
-  /***** Define other states and refs required *****/
-  const [isEditing, setIsEditing] = useState(false)        // False when user is editing the task
-  const [isCreating, setIsCreating] = useState(false)        // False when user is editing the task
-
+  // ---------------- Define other states and refs required  ----------------
+  const [isEditing, setIsEditing] = useState(false)          // True if user is editing a created (isCreated) task
+  const [isCreating, setIsCreating] = useState(false)        // True if user is now adding a new task (!isCreated)
 
   const [tagsOpen, setTagsOpen] = useState(false)
   const [dateTime, setDateTime] = useState(isCreated ? dayjs(task.day) : null)
@@ -65,12 +64,27 @@ const Task = ({ context, task, isCreated }) => {
   }, [date, time])
 
 
+  const [keyMappings, setKeyMappings] = [context.getKeyMappings(), context.setKeyMappings]
 
 
-  /***** Event handlers *****/
+  // ---------------- Event handlers  ----------------
+  
+  const inputKeyDowned = (e) => {
+    if (!isEditing) {
+      return
+    }
+    if (['Enter', 'Esc', 'Escape'].includes(e.key)) {
+      e.stopPropagation()
+      saveTask()
+      inputRef.current.blur()  // Remove focus so that keyboard shortcuts are available again
+    }
+  }
+
   const textChanged = (e) => setTextValue(e.target.value)
 
   const tickCircleClicked = (e) => {  // Toggle task as done or undone
+    const isDone =
+      context.toasts.success(Boolean(task.done).toString())
     context.editTask(task.id, {
       "done": !task.done
     })
@@ -89,7 +103,7 @@ const Task = ({ context, task, isCreated }) => {
             setIsCreating(false)
             return false
           }
-          return save()
+          return saveTask()
         },
         postRemoval: () => {
           setIsCreating(false)
@@ -106,51 +120,21 @@ const Task = ({ context, task, isCreated }) => {
   }
 
 
-  // (Only applicable to created tasks) Start the editing phase
+  /** (Only applicable to created tasks) Start the editing phase **/
   const pencilIconClicked = (e) => {
     if (!isEditing) {
-      attachListener({
-        target: window,
-        preRemoval: save,
-        postRemoval: () => setIsEditing(false),
-        // exclusionEvent: e,
-        exclusionSelector: ".task, .MuiCalendarPicker-root, .MuiPaper-root",
+      window.addEventListener('click', function listener(ev) {
+        if (e && e.nativeEvent === ev) {
+          return
+        }
+        if (ev.target.closest(".task, .MuiCalendarPicker-root, .MuiPaper-root")) {
+          return
+        }
+        saveTask(() => window.removeEventListener('click', listener))
       })
       inputRef.current.focus()
     }
     setIsEditing(!isEditing)
-  }
-
-
-  // Return false if fails validation, else true
-  const save = (text, dt) => {
-    // To add: Short circuit if task is not edited
-
-    const textValue = getUpdatedValue(setTextValue)
-    const date = getUpdatedValue(setDate)
-    const time = getUpdatedValue(setTime)
-    const dateTime = getUpdatedValue(setDateTime)
-
-    if (!textValue || !date || !time) {
-      return false
-    }
-
-    const asyncToDo = async () => {
-      if (isCreated) {
-        await context.editTask(task.id, {
-          "text": textValue,
-          "day": dateTime.toISOString()
-        })
-      } else {
-        await context.addTask(context.getSelectedListId(), {
-          "text": textValue,
-          "day": dateTime.toISOString(),
-          "tags": []
-        })
-      }
-    }
-    asyncToDo()
-    return true
   }
 
   const tagIconClicked = (e) => {
@@ -165,10 +149,85 @@ const Task = ({ context, task, isCreated }) => {
   }
 
 
+  /** Return false if fails validation, else true */
+  const saveTask = (removeListenerCallback) => {
+    // To add: Short circuit if task is not edited
 
-  /***** Helper functions for rendering *****/
+    if (!textValue || !date || !time) {
+      return false
+    }
+    if (!isCreating && !isEditing) {
+      return
+    }
+    if (isCreating) {
+      if (!textValue) {
+        setIsCreating(false)
+        return false
+      }
+    }
 
-  // If a tag is clicked in the TagsSelector component, add tag to list.
+    if (isCreating) {
+      context.addTask(context.getSelectedListId(), {  // An async function, but don't await here
+        "text": textValue,
+        "day": dateTime.toISOString(),
+        "tags": []
+      })
+    } else {
+      context.editTask(task.id, {
+        "text": textValue,
+        "day": dateTime.toISOString()
+      })
+    }
+
+    if (isCreating) {
+      setIsCreating(false)
+      setTextValue("")
+      setDate(null)
+      setTime(null)
+    } else {
+      setIsEditing(false)
+    }
+
+    removeListenerCallback && removeListenerCallback()
+  }
+
+
+
+  // ---------------- Add keyboard shortcuts ----------------
+
+  useEffect(() => {
+    if (!isSelected) {
+      return
+    }
+
+    const helper = (e) => {
+      e.preventDefault()
+      pencilIconClicked()
+      if (e.key === 'I') {
+        inputRef.current.setSelectionRange(0, 0)
+      }
+    }
+
+    const arr = []
+    arr.push(vimAddListener(keyMappings, 'i', helper))
+    arr.push(vimAddListener(keyMappings, 'A', helper))
+    arr.push(vimAddListener(keyMappings, 'I', helper))
+    arr.push(vimAddListener(keyMappings, 'Enter', (e) => tickCircleClicked()))
+    arr.push(vimAddListener(keyMappings, ' ', (e) => tickCircleClicked()))
+    arr.push(vimAddListener(keyMappings, 'cc', (e) => {
+      setTextValue("")
+      helper(e)
+    }))
+    arr.push(vimAddListener(keyMappings, 'dd', (e) => crossIconClicked()))
+    return () => arr.forEach((ret) => vimRemoveListener(ret))
+  }, [task, isSelected, inputRef])
+
+
+
+
+  // ---------------- Helper functions for rendering  ----------------
+
+  /** If a tag is clicked in the TagsSelector component, add tag to list. */
   const genDropdownTagClicked = (tagId) => {
     const tag = tags.find((tag) => tag.id === tagId)
     context.editTask(task.id, {
@@ -177,7 +236,7 @@ const Task = ({ context, task, isCreated }) => {
   }
 
   // Required by generateTagElems
-  // If a tag's cross icon is clicked, remove tag from list.
+  /** If a tag's cross icon is clicked, remove tag from list. */
   const genCrossClicked = (tag) => (e) => {
     e.stopPropagation()
     const tagToRemove = tag
@@ -202,11 +261,13 @@ const Task = ({ context, task, isCreated }) => {
     })
   }
 
-  const elevate = isEditing || isCreating  // If task to float up as visual indicator
+
+  // If task to float up as visual indicator
+  const elevation = (isEditing || isCreating) ? 3 : isSelected ? 2 : 1
 
   return (
     <div className="task__wrapper">
-      <Paper className="task" elevation={elevate ? 2 : 1} onClick={paperClicked}>
+      <Paper className="task" elevation={elevation} onClick={paperClicked}>
         <div className="task__checkbox">
           <Tooltip text={isCreated ? `Mark ${task.done ? "undone" : "done"}` : ""}>
             <IconButton onClick={tickCircleClicked}>
@@ -224,6 +285,7 @@ const Task = ({ context, task, isCreated }) => {
             readOnly={isCreated && !isEditing}
             value={textValue}
             onChange={textChanged}
+            onKeyDown={inputKeyDowned}
             placeholder={isCreated ? "" : "Add a task here"}
             ref={inputRef}
           />

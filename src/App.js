@@ -10,6 +10,7 @@ import { Context } from 'utils/context'
 import { getUser } from 'utils/user'
 import { syncResources } from 'utils/resource'
 import { objectHashed } from 'utils/funcs'
+import { vimAddListener, vimDispatcher } from 'utils/helpers'
 
 import useStorageState from 'modules/useStorageState'
 import Loading from 'modules/Loading'
@@ -23,7 +24,7 @@ if (!process.env.REACT_APP_FRONTEND_URL) {
 
 const App = () => {
 
-  /***** Initialise context object and associated states *****/
+  // ---------------- Initialise context object and associated states ----------------
   const context = new Context()
 
   const [lists, setLists] = useState([])                             // User data
@@ -45,19 +46,23 @@ const App = () => {
   const [internet, setInternet] = useState(navigator.onLine)         // Whether or not online - affects some behaviour of app
   context.setInternetCallbacks(() => internet, setInternet)
 
-
-  /***** Initialise more states for use within this component *****/
-
-  const [lastHash, setLastHash] = useStorageState('lasthash', null)  // A hash of variables lists, tasks, tags (kept in local storage)
   const [showLoading, setShowLoading] = useState(false)              // The Loading components requires a state too  
   context.setShowLoadingCallbacks(() => showLoading, setShowLoading)
 
-
-  const toastRef = useRef(null)                                         // Allows us to access functions in the Toasts component
-  context.setToastRef(() => toastRef)
-  
   const [darkMode, setDarkMode] = useState(false)
   context.setDarkModeCallbacks(() => darkMode, setDarkMode)
+
+  const [keyMappings, setKeyMappings] = useState([])
+  context.setKeyMappingsCallbacks(() => keyMappings, setKeyMappings)
+
+  // ---------------- Initialise more states for use within this component  ----------------
+
+  const [lastHash, setLastHash] = useStorageState('lasthash', null)  // A hash of variables lists, tasks, tags (kept in local storage)
+  const toastRef = useRef(null)                                      // Allows us to access functions in the Toasts component
+  context.setToastRef(() => toastRef)
+
+
+
 
 
   /***** Helper functions ****/
@@ -92,7 +97,6 @@ const App = () => {
 
 
 
-  /***** useEffect hooks ****/
 
   // Run once only on component load
   useEffect(() => {
@@ -154,31 +158,50 @@ const App = () => {
   }, [internet, lists, tasks, tags])
 
 
+  // ---------------- Detect keypresses and let vimDispatcher handle ----------------
 
-  /***** Misc *****/
-  // Function for testing purposes, triggered upon right clicking of app icon
-  const magic = async (e) => {
-    context.toasts.success("You've created a delayed toast")
-    context.toasts.delayedSuccess("I'm a delayed toast!")
-  }
-  context.setMagic(magic)
-
-  const keyPressed = (e) => {
-    if (e.key === 'x') {
-      if (!darkMode) {
+  const [keys, setKeys] = useState("")
+  const [keyTimeout, setKeyTimeout] = useState(null)
+  
+  
+  useEffect(() => {
+    const arr = []
+    arr.push(vimAddListener(keyMappings, 'x', () => {
+    if (!darkMode) {
         setDarkMode(true)
         context.toasts.info("Dark mode enabled!")
       } else {
         setDarkMode(false)
         context.toasts.info("Dark mode disabled.")
       }
+    }))
+    arr.push(vimAddListener(keyMappings, 'Control', () => {
+      context.magic()
+    }))
+  }, [])
+
+
+  useEffect(() => {
+    const keyPressed = (e) => {
+      vimDispatcher(e, keyMappings, setKeys, setKeyTimeout, 800, context)
     }
+    window.addEventListener('keydown', keyPressed)
+  }, [])
+
+
+  // ---------------- Misc  ----------------
+  /** Function for testing purposes */
+  const magic = async (e) => {
+    context.toasts.success("You've created a delayed toast")
+    context.toasts.delayedSuccess("I'm a delayed toast!")
+    console.log(document.activeElement)
   }
+  context.setMagic(magic)
 
 
 
   return (
-    <div className={`App${darkMode ? " dark" : ""}`} onKeyPress={keyPressed} tabIndex="-1">
+    <div className={`App${darkMode ? " dark" : ""}`} >
       <ToastContainer ref={toastRef} />
       <Loading show={showLoading} />
       <Router>

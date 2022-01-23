@@ -16,7 +16,8 @@ import ListsSidebar from 'components/ListsSidebar'
 import TagsSidebar from 'components/TagsSidebar'
 import Task from 'components/Task'
 
-import { attachListener } from 'utils/helpers'
+import { attachListener, vimRemoveListener } from 'utils/helpers'
+import { keepWithinBounds } from 'utils/funcs'
 import ResponsivePage from 'modules/ResponsivePage'
 import SlidingDrawer from 'modules/SlidingDrawer'
 
@@ -27,6 +28,7 @@ import Paper from 'material/Paper'
 import SelectableList from 'material/SelectableList'
 import SelectableListItem from 'material/SelectableListItem'
 import Tooltip from 'material/Tooltip'
+import { vimAddListener } from 'utils/helpers'
 
 import 'pages/Main.css'
 
@@ -34,18 +36,19 @@ import { httpGet, httpPost } from 'utils/network'
 
 const Main = ({ context }) => {
 
-  /***** Retrieve states from and set callbacks on context object *****/
+  // ---------------- Retrieve states from and set callbacks on context object  ----------------
+
   const tasks = context.getTasks()
   const lists = context.getLists()
   const tags = context.getTags()
-  const [searchValue, setSearchValue] = useState("")
-  context.setSearchValueCallbacks(() => searchValue, setSearchValue)
-  const [searchBools, setSearchBools] = useState([])
-  context.setSearchBoolsCallbacks(() => searchBools, setSearchBools)
   const [selectedListId, setSelectedListId] = [context.getSelectedListId(), context.setSelectedListId]
+  const [keyMappings, setKeyMappings] = [context.getKeyMappings(), context.setKeyMappings]
+
+  const [selectedTaskIndex, setSelectTaskIndex] = useState(null)
 
 
 
+  // ---------------- [Functionality 1] - Sharing and importing lists ----------------
 
   const [shareLink, setShareLink] = useState(null)
   const [shareClipboardClicked, setShareClipboardClicked] = useState(false)
@@ -53,16 +56,14 @@ const Main = ({ context }) => {
   const { hash } = useParams()
   const navigate = useNavigate()
 
-
   // If URL is a share, retrieve the list and tasks, but only after component renders
   // (because we need to await)
-
   useEffect(() => {
     const asyncToDo = async () => {  // React's useEffect dislikes async functions
       if (hash) {
         const r = await httpGet(`/share/${hash}`)
         if (r.status !== 200) {
-          context.toasts.error("Invalid link")
+          context.toasts.error("That link is invalid!")
           navigate('/')
           return
         }
@@ -73,70 +74,7 @@ const Main = ({ context }) => {
     asyncToDo()
   }, [selectedListId])
 
-
-  let currentList, currentListTasks
-  if (imports) {
-    currentList = imports.list
-    currentListTasks = imports.tasks
-  } else {
-    currentList = (context.getLists().find((list) => list.id === selectedListId))
-    currentListTasks = (tasks.filter((task) => task.list_id === selectedListId))
-  }
-
-
-
-
-
-  /***** Create states for use within this file (exclude search; that's below) *****/
-  const [nextPage, setNextPage] = useState(false)
-  const [editListOpen, setEditListOpen] = useState(false)
-
-
-  /***** Define some useful variables *****/
-  let currentListName = null
-  if (currentList) {
-    currentListName = currentList.text
-  }
-  let getTasksFromList = (list) => tasks.filter((task) => (task.list_id) === list.id)
-
-
-  /***** Event handlers - Editing list data *****/
-  const changePageClicked = (e) => setNextPage(!nextPage)  // This state is for the SlidingDrawer
-
-  // Opens menu for user to make changes to the list.
-  const dotsIconClicked = (e) => {
-    if (!editListOpen) {
-      attachListener({
-        target: window,
-        postRemoval: () => setEditListOpen(false),
-      })
-    }
-    setEditListOpen(!editListOpen)
-  }
-
-  const editListClicked = (e) => {
-    const userInput = prompt("Please enter name of list", currentListName)
-    if (userInput) {
-      context.editList(selectedListId, {
-        "text": userInput
-      })
-    }
-  }
-
-  const deleteListClicked = (e) => {
-    if (currentListTasks.length !== 0) {
-      const prompt = `You are about to permenantly delete this list containing ${currentListTasks.length} tasks. Continue?`
-      if (!window.confirm(prompt)) {
-        return
-      }
-    }
-    context.deleteList(selectedListId)
-    setSelectedListId(null)
-    // Also delete tasks locally?
-  }
-
-
-  /***** Event handlers - Sharing and importing lists *****/
+  // Event handlers required 
   const acceptShareClicked = async (e) => {
     const r = await httpPost(`/share/${hash}`)
     context.toasts.delayedSuccess("Imported!")
@@ -164,7 +102,103 @@ const Main = ({ context }) => {
     navigator.clipboard.writeText(shareLink)
   }
 
-  /***** Search/Filter/Sort - Prepare states and sort/filtering functions *****/
+
+  // ---------------- [Functionality 2] - Editing list data ----------------
+  
+  const [editListOpen, setEditListOpen] = useState(false)
+
+
+  // Define some useful variables
+  let currentList, currentTasks
+  if (imports) {
+    currentList = imports.list
+    currentTasks = imports.tasks
+  } else {
+    currentList = (context.getLists().find((list) => list.id === selectedListId))
+    currentTasks = (tasks.filter((task) => task.list_id === selectedListId))
+  }
+
+  const currentListName = currentList?.text
+
+  const getTasksFromList = (list) => tasks.filter((task) => (task.list_id) === list.id)
+
+
+  // Event handlers required 
+  /** Opens menu for user to make changes to the list */
+  const dotsIconClicked = (e) => {
+    if (!editListOpen) {
+      attachListener({
+        target: window,
+        postRemoval: () => setEditListOpen(false),
+      })
+    }
+    setEditListOpen(!editListOpen)
+  }
+
+  const editListClicked = (e) => {
+    const userInput = prompt("Please enter name of list", currentListName)
+    if (userInput) {
+      context.editList(selectedListId, {
+        "text": userInput
+      })
+    }
+  }
+
+  const deleteListClicked = (e) => {
+    if (currentTasks.length !== 0) {
+      const prompt = `You are about to permenantly delete this list containing ${currentTasks.length} tasks. Continue?`
+      if (!window.confirm(prompt)) {
+        return
+      }
+    }
+    context.deleteList(selectedListId)
+    setSelectedListId(null)
+    // Also delete tasks locally?
+  }
+
+  // ---------------- [Functionality 3] - Keyboard shortcuts ----------------
+  useEffect(() => {
+    const arr = []
+
+    arr.push(vimAddListener(keyMappings, 'j', () => {
+      setSelectTaskIndex((index) => (
+        index === null ? 0 : keepWithinBounds(index + 1, 0, currentTasks.length)
+      ))
+    }))
+
+    arr.push(vimAddListener(keyMappings, 'k', () => {
+      setSelectTaskIndex((index) => (
+        index === null ? currentTasks.length - 1 : keepWithinBounds(index - 1, 0, currentTasks.length)
+      ))
+    }))
+    arr.push(vimAddListener(keyMappings, 'Escape', () => setSelectTaskIndex(null)))
+
+    arr.push(vimAddListener(keyMappings, 'Tab', () => {
+      setSelectedListId((lid) => {
+        if (lid === null) {
+          return lists[0].id
+        }
+        const index = lists.findIndex((list) => list.id === lid)
+        return lists[keepWithinBounds(index + 1, 0, lists.length, true)].id
+      })
+    }))
+
+    return () => arr.forEach((ret) => vimRemoveListener(ret))
+
+
+
+  }, [lists, selectedListId])
+
+
+
+  // ---------------- [Functionality 4] - Search, filter, and sort ----------------
+
+  // Prepare states and sort/filtering functions
+  const [searchValue, setSearchValue] = useState("")
+  context.setSearchValueCallbacks(() => searchValue, setSearchValue)
+  const [searchBools, setSearchBools] = useState([])
+  context.setSearchBoolsCallbacks(() => searchBools, setSearchBools)
+
   const [SORT_AZ_ASC, SORT_AZ_DSC, SORT_TIME_ASC, SORT_TIME_DSC] = [1, 2, 3, 4]
   const [sortMethod, setSortMethod] = useState(SORT_AZ_ASC)
 
@@ -192,17 +226,31 @@ const Main = ({ context }) => {
   }
 
 
-  const filt = (task) => filtSearch(task) && filtTags(task)
-  const sor = allTasksComparers[sortMethod]
+  const filt = (task) => filtSearch(task) && filtTags(task)   // The combined filter function
+  const sor = allTasksComparers[sortMethod]                   // The combined sorting function
 
-  /***** Search/Filter/Sort - Helpers functions and event handlers *****/
-  let tasksMapper = (array) => (
-    array.map((task) =>
-      <Task context={context} key={task.id} task={task} isCreated={true} />
-    )
-  )
 
-  let createGroup = (group, text) => (
+  // Helpers functions and event handlers
+
+  /** Maps an array of task objects to an array of instantiated task components */
+  const tasksMapper = (array, selectedFunc) => {
+    const output = []
+    for (let i = 0; i < array.length; i++) {
+      const task = array[i]
+      output.push(
+        <Task
+          context={context}
+          key={task.id}
+          task={task}
+          isCreated={true}
+          isSelected={selectedFunc && selectedFunc(i)}
+        />
+      )
+    }
+    return output
+  }
+
+  const createGroup = (group, text) => (
     <>
       {text}
       {group}
@@ -229,22 +277,24 @@ const Main = ({ context }) => {
   }
 
 
-  /***** Search/Filter/Sort - Compute tasks to show after sorting and filtering *****/
+  // Compute tasks to show after sorting and filtering
   let tasksContents
 
   if (!searchValue) {
-    if (!currentList || !currentListTasks) {
+    if (!currentList || !currentTasks) {
       tasksContents = null
     } else {
       tasksContents = <>
-        {tasksMapper(currentListTasks.sort(sor))}
-        <Task context={context} isCreated={false} />
+        {tasksMapper(currentTasks.sort(sor),
+          (i) => i === selectedTaskIndex
+        )}                                             {/* Created tasks */}
+        <Task context={context} isCreated={false} />   {/* Uncreated task (for user to input new task) */}
       </>
     }
   } else {
     tasksContents = []
 
-    let fromCurrent = tasksMapper(currentListTasks.filter(filt).sort(sor))
+    let fromCurrent = tasksMapper(currentTasks.filter(filt).sort(sor))
 
     let fromOthers = []
     for (let i = 0; i < lists.length; i++) {
@@ -283,9 +333,11 @@ const Main = ({ context }) => {
           </>
         )
     )
-
   }
 
+
+  const [nextPage, setNextPage] = useState(false)                // This state is for the SlidingDrawer
+  const changePageClicked = (e) => setNextPage(!nextPage)  
 
 
   return (
