@@ -10,6 +10,7 @@ export const MuiDatePicker = ( { value, setValue }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
+        inputFormat="DD/MM/YYYY"
         value={value}
         onChange={(newValue) => {
           setValue(newValue)

@@ -25,10 +25,11 @@ const Toast = ({ text, color, duration }) => {
   )
 }
 
-
-// More than just a component. It exposes functions via its ref which can used to create notification toasts.
-// A delayed toast means the toast is only shown on browser refresh. This allows us to notify user in ways previous
-// not possible, such as after the user deletes their account.
+/**
+ * More than just a component. It exposes functions via its ref which can used to create notification toasts.
+ * A delayed toast means the toast is only shown on browser refresh. This allows us to notify user in ways previous
+ * not possible, such as after the user deletes their account.
+ */
 const ToastContainer = forwardRef((props, ref) => {
 
   const [toastArray, setToastArray] = useState([])

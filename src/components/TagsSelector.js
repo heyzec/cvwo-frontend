@@ -11,7 +11,7 @@ import 'components/TagsSelector.css'
 
 const TagsSelector = ({ tags, bools, genOnClick }) => {
 
-  /***** Validate input props *****/
+  // ---------------- Validate input props  ----------------
   if (
     (bools && !tags) ||
     (bools && bools.length !== 0 && tags.length !== bools.length)

@@ -7,6 +7,7 @@ import { attachListener, getUpdatedValue, vimAddListener, vimRemoveListener } fr
 import TagsSelector from 'components/TagsSelector'
 import IconButton from 'material/IconButton'
 import TextField from 'material/TextField'
+import Tooltip from 'material/Tooltip'
 
 
 import 'components/Searchbar.css'
@@ -93,11 +94,22 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
     return () => vimRemoveListener(obj)
   }, [])
 
+  // Pressing '/' also triggers search
+  useEffect(() => {
+    const obj = vimAddListener(keyMappings, '/', (e) => {
+      e.preventDefault()
+      searchIconClicked(true)
+    })
+    return () => vimRemoveListener(obj)
+  }, [])
+
   return (
     <div className="searchbar">
+    <Tooltip text="Search tasks">
       <IconButton className="searchbar__icon" onClick={searchIconClicked}>
         <GoSearch />
       </IconButton>
+    </Tooltip>
       <div className={`searchbar__box${searchActive ? " searchbar__box--active" : ""}`}>
         <TextField
           inputRef={searchBarRef}

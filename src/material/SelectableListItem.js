@@ -1,10 +1,10 @@
 import Button from 'material/Button'
 import 'material/SelectableListItem.css'
 
-const SelectableListItem = ({ startIcon, endIcon, selected, onClick, children }) => {
+const SelectableListItem = ({ startIcon, endIcon, selected, onClick, children, ...otherProps }) => {
 
   const contents = (
-    <div>
+    <div {...otherProps}>
       {startIcon}
       {children}
       {

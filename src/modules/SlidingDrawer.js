@@ -6,7 +6,7 @@ const SlidingDrawer = ({ drawer1, drawer2, label1, label2, nextPage, changePageC
   return (
     <div className="slider">
       <div className={`slider__page1${nextPage ? " slider--active" : ""}`}>
-        <div className="slider__button-wrapper">
+        <div className="slider__btn-wrapper">
           <Button variant="outlined" onClick={changePageClicked}>
             <BsChevronLeft />
             {label1}
@@ -15,7 +15,7 @@ const SlidingDrawer = ({ drawer1, drawer2, label1, label2, nextPage, changePageC
         {drawer1}
       </div>
       <div className={`slider__page2${nextPage ? " slider--active" : ""}`}>
-        <div className="slider__button-wrapper">
+        <div className="slider__btn-wrapper">
           <Button variant="outlined" onClick={changePageClicked}>
             {label2}
             <BsChevronRight />

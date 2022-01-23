@@ -31,26 +31,26 @@ const colorPalatte = [
 
 const TagsSidebar = ({ context }) => {
 
-  /***** Retrieve states from context object *****/
+  // ---------------- Retrieve states from context object  ----------------
   const tags = context.getTags()
   const tasks = context.getTasks()
 
 
 
-  /***** Initialise states and refs *****/
-  const [tagText, setTagText] = useState("")            // For input elem in editor
-  const [colorValue, setColorValue] = useState("")      // For input elem in editor
+  // ---------------- Initialise states and refs  ----------------
+  const [tagText, setTagText] = useState("")              // For input elem in editor
+  const [colorValue, setColorValue] = useState("")        // For input elem in editor
 
-  const [tagEditMode, setTagEditMode] = useState("")    // Whether tag is being created or edited
-  const [editorOpen, setEditorOpen] = useState(false)   // Keeps track whether sidebar shows tags or editor
+  const [tagEditMode, setTagEditMode] = useState("")      // Whether tag is being created or edited
+  const [editorOpen, setEditorOpen] = useState(false)     // Keeps track whether sidebar shows tags or editor
   const [selectedTagId, setSelectedTag] = useState(null)  // Which tag's menu icon was clicked
 
-  const colorRef = useRef(null)                         // A ref to the invisible color picker input elem
-  const floatRef = useRef(null)                         // Ref to the floating menu
+  const colorRef = useRef(null)                           // A ref to the invisible color picker input elem
+  const floatRef = useRef(null)                           // Ref to the floating menu
 
 
 
-  /***** Event handlers *****/
+  // ---------------- Event handlers  ----------------
   const colorValueChanged = (e) => setColorValue(e.target.value)
   const tagTextChanged = (e) => setTagText(e.target.value)
 
@@ -145,10 +145,11 @@ const TagsSidebar = ({ context }) => {
     setEditorOpen(false)
   }
 
-
-  // Not an event handler, but generates an event handler. This event handler
-  // opens and moves a menu to the location of the button user clicked. Menu is
-  // closed only if user clicks elsewhere.
+  /**
+  * Not an event handler, but generates an event handler. This event handler
+  * opens and moves a menu to the location of the button user clicked. Menu is
+  * closed only if user clicks elsewhere.
+  */
   const genDotsClicked = (tag) => (e) => {
     console.log(e.currentTarget)
 
@@ -168,7 +169,7 @@ const TagsSidebar = ({ context }) => {
   }
 
 
-  const tagItems = tags.map((tag) => (
+  const tagItems = tags?.map((tag) => (
     <div className="tags-sidebar__row">
       <Tag key={tag.id} tag={tag} />
       <span className="tags-sidebar__spacer"></span>
@@ -231,15 +232,14 @@ const TagsSidebar = ({ context }) => {
             onClick={() => colorRef.current.click()}
           />
           <span>
-            <input id="tags-sidebar__input-color" className={`themed-input${validateColor(colorValue) ? "" : " red"}`}
+            <input className={`tags-sidebar__input-color${validateColor(colorValue) ? "" : " tags-sidebar--invalid"}`}
               maxLength={7} value={colorValue} placeholder="Color (hex value)" onChange={colorValueChanged} />
           </span>
         </div>
-        <Button variant="contained" onClick={doneButtonClicked}>
+        <Button className="tags-sidebar__done" variant="contained" onClick={doneButtonClicked}>
           Done
         </Button>
       </Paper>
-
     </div>
   )
 }

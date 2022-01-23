@@ -29,7 +29,7 @@ const Header = ({ context }) => {
   const user = context.getUser()
  
 
-  // Opens user profile menu. Close it only if the user clicks elsewhere.
+  /** Opens user profile menu. Close it only if the user clicks elsewhere. */
   const userImageClicked = (e) => {
     if (!userMenuOpen) {
       attachListener({
@@ -44,7 +44,7 @@ const Header = ({ context }) => {
   const showSearchIcon = location.pathname === '/'
 
 
-  /***** Make the clock update itself every second *****/
+  // ---------------- Make the clock update itself every second  ----------------
   useEffect(() => {
     const timerId = setInterval(
       () => setNowString(dayjs().format("dddd, DD MMMM YYYY, HH:mm")),
@@ -59,7 +59,7 @@ const Header = ({ context }) => {
 
 
 
-  /***** Other event handlers *****/
+  // ---------------- Other event handlers  ----------------
   const appIconClicked = (e) => navigate("/")
   const signinButtonClicked = (e) => navigate("/signin")
   const signupButtonClicked = (e) => navigate("/signup")
@@ -74,9 +74,7 @@ const Header = ({ context }) => {
   return (
     <header id="header">
       <Tooltip text="Go home">
-        <FaClipboardList id="header__icon" className="clickable" size="25" onClick={appIconClicked}
-          onContextMenu={(e) => { e.preventDefault(); context.magic() }}
-        />
+        <FaClipboardList id="header__icon" className="clickable" size="25" onClick={appIconClicked} />
       </Tooltip>
       <h1 id="header__title">Your To Dos</h1>
       <div id="header__spacer"></div>
@@ -96,9 +94,11 @@ const Header = ({ context }) => {
             </IconButton>
           ) : (
             <>
+            <Tooltip text="Personalisation">
               <IconButton onClick={settingsClicked}>
-                <BsFillGearFill />
+                <BsFillGearFill size="16"/>
               </IconButton>
+            </Tooltip>
               <Button className="header__signin" onClick={signinButtonClicked}>
                 Sign in
               </Button>

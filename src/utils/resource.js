@@ -10,7 +10,7 @@ import { getUpdatedValue } from 'utils/helpers'
 // edit   -> UPDATE -> PATCH  -> update
 // delete -> DELETE -> DELETE -> destroy
 
-/***** READ *****/
+// ---------------- READ  ----------------
 
 export const fetchObjCallback = (res, updateServer, setState) => async () => {
   if (updateServer) {
@@ -24,7 +24,7 @@ export const fetchObjCallback = (res, updateServer, setState) => async () => {
 }
 
 
-/***** CREATE *****/
+// ---------------- CREATE  ----------------
 
 const addObjServer = async (res, data) => {
   const location = res === "tasks" ? `/lists/${data.list_id}/create` : `/${res}`
@@ -55,7 +55,7 @@ export const addObjCallback = (res, updateServer, setState) => async (data) => {
 }
 
 
-/***** DELETE *****/
+// ---------------- DELETE  ----------------
 
 const deleteObjServer = async (res, id) => await httpDelete(`/${res}/${id}`)
 
@@ -74,7 +74,7 @@ export const deleteObjCallback = (res, updateServer, setState) => async (id) => 
 }
 
 
-/***** UPDATE *****/
+// ---------------- UPDATE  ----------------
 
 const editObjServer = async (res, id, data) => await httpPatch(`/${res}/${id}`, data)
 
@@ -98,7 +98,7 @@ export const editObjCallback = (res, updateServer, setState) => async (id, data)
 }
 
 
-/***** Functions for syncing (local to server) after connection restored *****/
+// ---------------- Functions for syncing (local to server) after connection restored  ----------------
 
 const objSortComparer = (obj1, obj2) => obj1.id < obj2.id ? -1 : 1
 

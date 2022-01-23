@@ -13,7 +13,8 @@ export const getUpdatedValue = (setValue) => {
 }
 
 /**
- * Attaches an event handler which conditionally detaches itself.
+ * Attaches an event handler which conditionally detaches itself. Note that the handler attached will
+ * get stale states.
  * @param {object}   params                    An object containing all params
  * @param {object}   params.target             The DOM element to attach the event handler to.
  * @param {Function} params.preRemoval         Function to call before removal of event listener. If function returns falsy,
@@ -92,15 +93,20 @@ export const vimDispatcher = (e, mappings, setKeys, setKeyTimeout, timeout) => {
 
   const nFullMatches = arr.filter((seq) => seq === seqThusFar).length
   const nPartialMatches = arr.filter((seq) => seq !== seqThusFar && seq.startsWith(seqThusFar)).length
+  
+  const executeCallback = (seq, e) => {
+    e.preventDefault()         // Prevent Tab key default
+    mappingsHash.get(seq)(e)
+  }
 
   if (nFullMatches === 1 && nPartialMatches === 0) {
-    mappingsHash.get(seqThusFar)(e)
+    executeCallback(seqThusFar, e)
     setKeys("")
   } else if (nFullMatches + nPartialMatches !== 0) {
     setKeys(seqThusFar)
     const t = setTimeout(() => {
       if (nFullMatches === 1) {
-        mappingsHash.get(seqThusFar)(e)
+        executeCallback(seqThusFar, e)
       }
       setKeys("")
     }, timeout)

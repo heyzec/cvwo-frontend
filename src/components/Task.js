@@ -37,6 +37,8 @@ const Task = ({ context, task, isCreated, isSelected }) => {
   const timeReadable = isCreated ? dateTime.format("HH:mm") : ""
 
   const inputRef = useRef(null)  // Ref to the input elem so that we can force focus to it whenever
+  
+  const [selectedListId, setSelectedListId] = [context.getSelectedListId(), context.setSelectedListId]
 
 
   // These properties must be set only after comp renders
@@ -153,6 +155,15 @@ const Task = ({ context, task, isCreated, isSelected }) => {
   const saveTask = (removeListenerCallback) => {
     // To add: Short circuit if task is not edited
 
+    
+    const textValue = getUpdatedValue(setTextValue)
+    const date = getUpdatedValue(setDate)
+    const time = getUpdatedValue(setTime)
+    const dateTime = getUpdatedValue(setDateTime)
+    const isCreating = getUpdatedValue(setIsCreating)
+    const isEditing = getUpdatedValue(setIsEditing)
+    const selectedListId = getUpdatedValue(setSelectedListId)
+
     if (!textValue || !date || !time) {
       return false
     }
@@ -167,7 +178,7 @@ const Task = ({ context, task, isCreated, isSelected }) => {
     }
 
     if (isCreating) {
-      context.addTask(context.getSelectedListId(), {  // An async function, but don't await here
+      context.addTask(selectedListId, {  // An async function, but don't await here
         "text": textValue,
         "day": dateTime.toISOString(),
         "tags": []
@@ -281,7 +292,7 @@ const Task = ({ context, task, isCreated, isSelected }) => {
         </div>
         <div className="task__text" >
           <input
-            className={`themed-input${isCreated && task.done ? " task--strikethrough" : ""}`}
+            className={isCreated && task.done ? " task--strikethrough" : ""}
             readOnly={isCreated && !isEditing}
             value={textValue}
             onChange={textChanged}

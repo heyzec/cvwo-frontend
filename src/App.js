@@ -6,7 +6,7 @@ import Auth from 'pages/Auth'
 import Settings from 'pages/Settings'
 import Sandbox from 'pages/Sandbox'
 
-import { Context } from 'utils/context'
+import Context from 'utils/Context'
 import { getUser } from 'utils/user'
 import { syncResources } from 'utils/resource'
 import { objectHashed } from 'utils/funcs'
@@ -27,9 +27,9 @@ const App = () => {
   // ---------------- Initialise context object and associated states ----------------
   const context = new Context()
 
-  const [lists, setLists] = useState([])                             // User data
-  const [tasks, setTasks] = useState([])                             // User data
-  const [tags, setTags] = useState([])                               // User data
+  const [lists, setLists] = useState(null)                             // User data
+  const [tasks, setTasks] = useState(null)                             // User data
+  const [tags, setTags] = useState(null)                               // User data
   context.setListsCallbacks(() => lists, setLists)
   context.setTasksCallbacks(() => tasks, setTasks)
   context.setTagsCallbacks(() => tags, setTags)
@@ -86,7 +86,7 @@ const App = () => {
   }
 
   const putIntoStorage = (user, lists, tasks, tags) => {
-    if (lists.length + tasks.length + tags.length === 0) {
+    if (!(lists?.length + tasks?.length + tags?.length)) {  // If all are length 0 or any is null
       return  // No need to store if there's no user data at all
     }
     const storageDataKey = user ? "user_data" : "guest_data"
@@ -94,7 +94,6 @@ const App = () => {
       { lists, tasks, tags }
     ))
   }
-
 
 
 
@@ -106,6 +105,13 @@ const App = () => {
     const asyncToDo = async () => {  // React's useEffect dislikes async functions
       setShowLoading(true)
       const userDetails = await getUser()
+      if (userDetails === undefined) {
+        // A bad request/network error occurred.
+        context.toasts.error("An error has occured.")
+        setShowLoading(false)
+        return
+      }
+      
       setUser(userDetails)
       loadFromStorage(user, setLists, setTasks, setTags)
       if (!user) {
@@ -178,7 +184,7 @@ const App = () => {
     arr.push(vimAddListener(keyMappings, 'Control', () => {
       context.magic()
     }))
-  }, [])
+  }, [darkMode])
 
 
   useEffect(() => {

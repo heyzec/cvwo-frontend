@@ -103,8 +103,16 @@
   align-items: center;
 }
 
-#tags-sidebar__input-color {
+.tags-sidebar__input-color {
   width: 100%;
   min-width: 8rem;
   font-size: small;
+}
+
+.tags-sidebar--invalid {
+  color: red;
+}
+
+.tags-sidebar__done {
+  color: var(--theme-orange);
 }

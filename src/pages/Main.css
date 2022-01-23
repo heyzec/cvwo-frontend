@@ -1,10 +1,20 @@
 .main__import-notice {
-  font-size: large;
-  background-color: rgb(184, 184, 184);
-  padding: 1rem 5rem;
   box-sizing: border-box;
   width: 80%;
+  padding: 1rem 5rem;
   margin: 0.5rem auto;
+
+  font-size: large;
+  background-color: var(--background-popup);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.main__import-btn {
+  color: var(--theme-orange);
 }
 
 .main__list-name {
@@ -15,7 +25,7 @@
 .main__menu {
   position: relative;
   display: inline-block;
-  color: var(--text-themed)
+  color: var(--text-themed);
 }
 
 .main__share {
@@ -32,14 +42,15 @@
   right: 0;
   top: 0;
   z-index: 1;
+  justify-content: center;
   
   background-color: var(--background-popup);
+  color: var(--text-themed);
 }
 
 .main__share-link {
   flex: 1;
   font-size: 0.8rem;
-  color: black;
 }
 
 .main__float {
@@ -56,6 +67,10 @@
 
 .main__float--show {
   display: initial;
+}
+
+.main__sort-btn--themed {
+  color: var(--theme-orange);
 }
 
 #task-container {
