@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 
-import { GoSearch } from 'react-icons/go'
+import { MdSearch, MdSearchOff } from 'react-icons/md'
 import { BsFillTagsFill } from 'react-icons/bs'
 
 import { attachListener, getUpdatedValue, vimAddListener, vimRemoveListener } from 'utils/helpers'
@@ -22,19 +22,24 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
   // An array of bools to indicate which tags are selected (and hence which to filter)
   const [searchBools, setSearchBools] = [context.getSearchBools(), context.setSearchBools]
 
+  const [selectedListId, setSelectedListId] = [context.getSelectedListId(), context.setSelectedListId]
+
   const [isOpen, setIsOpen] = useState(false)
 
   const searchBarRef = useRef(null)
-  
+
   const [keyMappings, setKeyMappings] = [context.getKeyMappings(), context.setKeyMappings]
 
 
   /** Opens the searchbar. Close it back only if the search params is empty and no tags were added. */
   const searchIconClicked = (e) => {
+    if (!selectedListId) {
+      context.toasts.success("Please select a list first!")
+      return
+    }
 
     if (!searchActive) {
       searchBarRef.current.focus()
-
       const preRemoval = () => {
         const searchValue = getUpdatedValue(setSearchValue)
         const searchBools = getUpdatedValue(setSearchBools)
@@ -43,12 +48,22 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
       attachListener({
         target: window,
         preRemoval,
-        postRemoval: () => setSearchActive(false),
-        exclusionSelector: ".searchbar__box, .searchbar__dropdown-wrapper"
+        postRemoval: cancelSearch,
+        exclusionSelector: ".searchbar"
       })
+      setSearchActive(true)
+      setSearchBools(tags.map(() => false))
+    } else {
+      cancelSearch()
     }
-    setSearchActive(!searchActive)
-    setSearchBools(tags.map(() => false))
+  }
+
+  const cancelSearch = () => {
+    setSearchValue("")
+    setIsOpen(false)
+    setSearchActive(false)
+    setSearchBools((bools) => bools.map(() => false))
+    searchBarRef.current.blur()  // Remove focus so that keyboard shortcuts are available again
   }
 
 
@@ -63,14 +78,7 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
   }
 
   /** Opens menu for user to choose tags. Close it only if the user clicks elsewhere. */
-  const tagsIconClicked = (e) => {
-    attachListener({
-      target: window,
-      preRemoval: () => setIsOpen(false),
-      exclusionSelector: ".searchbar__dropdown-wrapper"
-    })
-    setIsOpen(!isOpen)
-  }
+  const tagsIconClicked = (e) => setIsOpen(!isOpen)
 
   const inputKeyDowned = (e) => {
     if (!searchActive) {
@@ -78,10 +86,7 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
     }
     if (['Esc', 'Escape'].includes(e.key)) {
       e.stopPropagation()
-      setSearchValue("")
-      setSearchBools(tags.map(() => false))
-      setSearchActive(false)
-      searchBarRef.current.blur()  // Remove focus so that keyboard shortcuts are available again
+      cancelSearch()
     }
   }
 
@@ -96,20 +101,28 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
 
   // Pressing '/' also triggers search
   useEffect(() => {
-    const obj = vimAddListener(keyMappings, '/', (e) => {
+    const arr = []
+    arr.push(vimAddListener(keyMappings, '/', (e) => {
       e.preventDefault()
       searchIconClicked(true)
-    })
-    return () => vimRemoveListener(obj)
+    }))
+    arr.push(vimAddListener(keyMappings, 'Escape', (e) => {
+      cancelSearch()
+    }))
+    return () => arr.forEach(vimRemoveListener)
   }, [])
 
   return (
     <div className="searchbar">
-    <Tooltip text="Search tasks">
-      <IconButton className="searchbar__icon" onClick={searchIconClicked}>
-        <GoSearch />
-      </IconButton>
-    </Tooltip>
+      <Tooltip text={searchActive ? "Cancel" : "Search tasks"}>
+        <IconButton className="searchbar__icon" onClick={searchIconClicked}>
+          {
+            searchActive
+              ? <MdSearchOff size="20" />
+              : <MdSearch size="20" />
+          }
+        </IconButton>
+      </Tooltip>
       <div className={`searchbar__box${searchActive ? " searchbar__box--active" : ""}`}>
         <TextField
           inputRef={searchBarRef}
@@ -120,9 +133,11 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
           className={`searchbar__input`}
         />
         <div className="searchbar__tags">
-          <IconButton onClick={tagsIconClicked}>
-            <BsFillTagsFill />
-          </IconButton>
+          <Tooltip text="Filter by tags">
+            <IconButton onClick={tagsIconClicked}>
+              <BsFillTagsFill />
+            </IconButton>
+          </Tooltip>
           <div className={`searchbar__dropdown-wrapper${isOpen ? "" : " remove"}`}>
             {
               isOpen

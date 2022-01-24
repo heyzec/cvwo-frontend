@@ -52,18 +52,20 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
 
   return (
     <Paper elevation="4" className="tags-selector" >
-      {
-        tags.length !== 0
-          ? (
-            <>
-              <TextField value={searchValue} onChange={valueChanged} />
-              <SelectableList>
-                {tableContents}
-              </SelectableList>
-            </>
-          )
-          : "No tags available."
-      }
+      <TextField label="Search tags" value={searchValue} onChange={valueChanged} />
+      <div className="tags-selector__tags">
+        {
+          tags.length !== 0 && tableContents.length !== 0
+            ? (
+              <>
+                <SelectableList>
+                  {tableContents}
+                </SelectableList>
+              </>
+            )
+            : "No tags available."
+        }
+      </div>
     </Paper>
   )
 }

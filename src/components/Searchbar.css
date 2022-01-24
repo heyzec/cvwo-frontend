@@ -19,8 +19,9 @@
 
 .searchbar__dropdown-wrapper {
   position: absolute;
-  z-index: 5 ;
+  top: var(--header-height);
   right: 1px;
+  z-index: 1;
   animation: dropin 150ms forwards;  /* Defined in App.css */
   border-radius: 1rem;
 }

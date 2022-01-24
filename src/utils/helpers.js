@@ -46,16 +46,17 @@ export const attachListener = (params) => {
 }
 
 /**
- * 
+ * Adds an entry of {keystrokes => callback} to the mappings. If an entry contains a key keystrokes
+ * which has previously been added, it will override the previous entry until the previous entry is removed.
  * @param {Array} mappings      The state given by useState, stores a map of seq to callbacks
  * @param {String} seq          A string representing the sequence of keys which activates callback
  * @param {Function} callback   The function to run whenever user press the sequence of keys.
  *                              It will receive the keydown event when called.
- * @returns                     An object that, when fed into vimRemoveSeq, removes this handler 
+ * @returns                     An object that, when fed into vimRemoveListener, removes this handler 
  */
 export const vimAddListener = (mappings, seq, callback) => {
   const pair = [seq, callback]
-  mappings.push(pair)
+  mappings.unshift(pair)
   return () => {
     const index = mappings.indexOf(pair);
     if (index > -1) {
@@ -65,7 +66,7 @@ export const vimAddListener = (mappings, seq, callback) => {
 }
 
 /**
- * @param {Object} callback   The object returned by vimAddSequence when handler is registered
+ * @param {Object} callback   The "object" (abstraction) returned by vimAddListener when handler is registered
  */
 export const vimRemoveListener = (callback) => {
   callback()
@@ -93,7 +94,7 @@ export const vimDispatcher = (e, mappings, setKeys, setKeyTimeout, timeout) => {
 
   const nFullMatches = arr.filter((seq) => seq === seqThusFar).length
   const nPartialMatches = arr.filter((seq) => seq !== seqThusFar && seq.startsWith(seqThusFar)).length
-  
+
   const executeCallback = (seq, e) => {
     e.preventDefault()         // Prevent Tab key default
     mappingsHash.get(seq)(e)

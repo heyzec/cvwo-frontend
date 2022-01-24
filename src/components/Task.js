@@ -37,7 +37,7 @@ const Task = ({ context, task, isCreated, isSelected }) => {
   const timeReadable = isCreated ? dateTime.format("HH:mm") : ""
 
   const inputRef = useRef(null)  // Ref to the input elem so that we can force focus to it whenever
-  
+
   const [selectedListId, setSelectedListId] = [context.getSelectedListId(), context.setSelectedListId]
 
 
@@ -70,7 +70,7 @@ const Task = ({ context, task, isCreated, isSelected }) => {
 
 
   // ---------------- Event handlers  ----------------
-  
+
   const inputKeyDowned = (e) => {
     if (!isEditing) {
       return
@@ -85,8 +85,6 @@ const Task = ({ context, task, isCreated, isSelected }) => {
   const textChanged = (e) => setTextValue(e.target.value)
 
   const tickCircleClicked = (e) => {  // Toggle task as done or undone
-    const isDone =
-      context.toasts.success(Boolean(task.done).toString())
     context.editTask(task.id, {
       "done": !task.done
     })
@@ -155,7 +153,7 @@ const Task = ({ context, task, isCreated, isSelected }) => {
   const saveTask = (removeListenerCallback) => {
     // To add: Short circuit if task is not edited
 
-    
+
     const textValue = getUpdatedValue(setTextValue)
     const date = getUpdatedValue(setDate)
     const time = getUpdatedValue(setTime)
@@ -230,7 +228,7 @@ const Task = ({ context, task, isCreated, isSelected }) => {
       helper(e)
     }))
     arr.push(vimAddListener(keyMappings, 'dd', (e) => crossIconClicked()))
-    return () => arr.forEach((ret) => vimRemoveListener(ret))
+    return () => arr.forEach(vimRemoveListener)
   }, [task, isSelected, inputRef])
 
 

@@ -9,6 +9,7 @@ import {
   ImSortNumericAsc,
   ImSortNumbericDesc
 } from 'react-icons/im'
+import { BsCircle, BsCheckCircle } from 'react-icons/bs'
 import { IoShareSocial } from 'react-icons/io5'
 
 import Header from 'components/Header'
@@ -81,7 +82,7 @@ const Main = ({ context }) => {
           navigate('/')
           return
         }
-      setImports(output)
+        setImports(output)
       }
     }
     asyncToDo()
@@ -130,7 +131,7 @@ const Main = ({ context }) => {
 
 
   // ---------------- [Functionality 2] - Editing list data ----------------
-  
+
   const [editListOpen, setEditListOpen] = useState(false)
 
 
@@ -209,10 +210,7 @@ const Main = ({ context }) => {
       })
     }))
 
-    return () => arr.forEach((ret) => vimRemoveListener(ret))
-
-
-
+    return () => arr.forEach(vimRemoveListener)
   }, [lists, selectedListId])
 
 
@@ -225,15 +223,19 @@ const Main = ({ context }) => {
   const [searchBools, setSearchBools] = useState([])
   context.setSearchBoolsCallbacks(() => searchBools, setSearchBools)
 
-  const [SORT_AZ_ASC, SORT_AZ_DSC, SORT_TIME_ASC, SORT_TIME_DSC] = [1, 2, 3, 4]
+  const [SORT_DONE_LAST, SORT_DONE_FIRST, SORT_AZ_ASC, SORT_AZ_DSC, SORT_TIME_ASC, SORT_TIME_DSC] = [...Array(6).keys()]
   const [sortMethod, setSortMethod] = useState(SORT_AZ_ASC)
 
+  const tasksComparerDoneLast = (task1, task2) => task1.done > task2.done
+  const tasksComparerDoneFirst = (task1, task2) => task1.done < task2.done
   const tasksComparerAzAsc = (task1, task2) => task1.text > task2.text
   const tasksComparerAzDsc = (task1, task2) => task1.text < task2.text
   const tasksComparerTimeAsc = (task1, task2) => task1.day > task2.day
   const tasksComparerTimeDsc = (task1, task2) => task1.day < task2.day
 
   const allTasksComparers = {
+    [SORT_DONE_LAST]: tasksComparerDoneLast,
+    [SORT_DONE_FIRST]: tasksComparerDoneFirst,
     [SORT_AZ_ASC]: tasksComparerAzAsc,
     [SORT_AZ_DSC]: tasksComparerAzDsc,
     [SORT_TIME_ASC]: tasksComparerTimeAsc,
@@ -244,7 +246,7 @@ const Main = ({ context }) => {
 
   const filtTags = (task) => {
     for (let i = 0; i < tags.length; i++) {
-      if (searchBools[i] && !task.tags.includes(tags[i].id)) {
+      if (searchBools[i] && !task.tags.includes(tags[i].text)) {
         return false
       }
     }
@@ -283,30 +285,50 @@ const Main = ({ context }) => {
     </>
   )
 
-  const sortAZClicked = (e) => {
-    if (sortMethod === SORT_AZ_ASC) {
-      setSortMethod(SORT_AZ_DSC)
-    } else if (sortMethod === SORT_AZ_DSC) {
-      setSortMethod(SORT_AZ_ASC)
-    } else {
-      setSortMethod(SORT_AZ_ASC)
-    }
+  const genSortButton = (const1, const2, getIcon, onClick, text, getTooltipText) => {
+    // null if not selected, 
+    const status = ![const1, const2].includes(sortMethod) ? null : sortMethod === const1 ? 0 : 1
+
+    return (
+      <Tooltip text={getTooltipText(status)}>
+        <Button
+          variant={status !== null ? "contained" : "outlined"}
+          className={status !== null ? "main__sort-btn--themed" : ""}
+          startIcon={getIcon(status)}
+          onClick={onClick}
+        >
+          {text}
+        </Button>
+      </Tooltip>
+    )
   }
-  const sortTimeClicked = (e) => {
-    if (sortMethod === SORT_TIME_ASC) {
-      setSortMethod(SORT_TIME_DSC)
-    } else if (sortMethod === SORT_TIME_DSC) {
-      setSortMethod(SORT_TIME_ASC)
-    } else {
-      setSortMethod(SORT_TIME_ASC)
+
+
+  const genSortMethodClicked = (const1, const2) => (e) => {
+
+    const func = (sortMethod) => {
+      if (sortMethod === const1) {
+        return const2
+      } else if (sortMethod === const2) {
+        return const1
+      } else {
+        return const1
+      }
     }
+
+    setSortMethod(func)
+
   }
+
+  const sortDoneClicked = genSortMethodClicked(SORT_DONE_LAST, SORT_DONE_FIRST)
+  const sortAZClicked = genSortMethodClicked(SORT_AZ_ASC, SORT_AZ_DSC)
+  const sortTimeClicked = genSortMethodClicked(SORT_TIME_ASC, SORT_TIME_DSC)
 
 
   // Compute tasks to show after sorting and filtering
   let tasksContents
 
-  if (!searchValue) {
+  if (!searchValue && searchBools.every((bool) => !bool)) {  // This is the normal state of the app, simply render the tasks in current list
     if (!currentList || !currentTasks) {
       tasksContents = null
     } else {
@@ -317,7 +339,7 @@ const Main = ({ context }) => {
         <Task context={context} isCreated={false} />   {/* Uncreated task (for user to input new task) */}
       </>
     }
-  } else {
+  } else {                   // This is when the user is searching for something
     tasksContents = []
 
     let fromCurrent = tasksMapper(currentTasks.filter(filt).sort(sor))
@@ -363,7 +385,7 @@ const Main = ({ context }) => {
 
 
   const [nextPage, setNextPage] = useState(false)                // This state is for the SlidingDrawer
-  const changePageClicked = (e) => setNextPage(!nextPage)  
+  const changePageClicked = (e) => setNextPage(!nextPage)
 
 
   return (
@@ -393,11 +415,10 @@ const Main = ({ context }) => {
               : <>
                 {
                   hash ? (
-                 <Paper className="main__import-notice">
+                    <Paper className="main__import-notice">
                       <span>Import this list?</span>
                       <Button className="main__import-btn" variant="contained" onClick={acceptShareClicked}>Yes</Button>
-                 </Paper> 
-                    
+                    </Paper>
                   ) : null
                 }
                 <div>
@@ -428,7 +449,7 @@ const Main = ({ context }) => {
                                     </Tooltip>
                                   </>
                                 )
-                                : <Spinner size="14"/>
+                                : <Spinner size="14" />
                             }
                           </Paper>
                       }
@@ -451,22 +472,34 @@ const Main = ({ context }) => {
                   </div>
                 </div>
                 <div>
-                  <Button
-                    variant={[SORT_AZ_ASC, SORT_AZ_DSC].includes(sortMethod) ? "contained" : "outlined"}
-                    className={[SORT_AZ_ASC, SORT_AZ_DSC].includes(sortMethod) ? "main__sort-btn--themed" : ""}
-                    startIcon={sortMethod !== SORT_AZ_DSC ? <ImSortAlphaAsc /> : <ImSortAlphaDesc />}
-                    onClick={sortAZClicked}
-                  >
-                    Sort: AZ
-                  </Button>
-                  <Button
-                    variant={[SORT_TIME_ASC, SORT_TIME_DSC].includes(sortMethod) ? "contained" : "outlined"}
-                    className={[SORT_TIME_ASC, SORT_TIME_DSC].includes(sortMethod) ? "main__sort-btn--themed" : ""}
-                    startIcon={sortMethod !== SORT_TIME_DSC ? <ImSortNumericAsc /> : <ImSortNumbericDesc />}
-                    onClick={sortTimeClicked}
-                  >
-                    Sort: Time
-                  </Button>
+                  {
+                    genSortButton(
+                      SORT_DONE_FIRST,
+                      SORT_DONE_LAST,
+                      (status) => !status ? <BsCheckCircle /> : <BsCircle />,
+                      sortDoneClicked,
+                      "Sort: Done",
+                      (status) => status !== 0 ? "Click to show undone first" : "Click to show done first"
+                    )
+                  }{
+                    genSortButton(
+                      SORT_AZ_ASC,
+                      SORT_AZ_DSC,
+                      (status) => !status ? <ImSortAlphaAsc /> : <ImSortAlphaDesc />,
+                      sortAZClicked,
+                      "Sort: AZ",
+                      (status) => status !== 0 ? "Click to sort by text, ascending" : "Click to sort by text, descending"
+                    )
+                  }{
+                    genSortButton(
+                      SORT_TIME_ASC,
+                      SORT_TIME_DSC,
+                      (status) => !status ? <ImSortNumericAsc /> : <ImSortNumbericDesc />,
+                      sortTimeClicked,
+                      "Sort: Time",
+                      (status) => status !== 0 ? "Click to sort by time, earlier first" : "Click to sort by time, later first"
+                    )
+                  }
                 </div>
                 <div id="task-container">
                   {tasksContents}

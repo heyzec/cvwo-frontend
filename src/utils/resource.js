@@ -27,32 +27,45 @@ export const fetchObjCallback = (res, updateServer, setState) => async () => {
 // ---------------- CREATE  ----------------
 
 const addObjServer = async (res, data) => {
+  // Adding tasks is the exception - need to access the specific list's resource and post to it instead.
   const location = res === "tasks" ? `/lists/${data.list_id}/create` : `/${res}`
   return await httpPost(location, data)
 }
 
-export const addObjCallback = (res, updateServer, setState) => async (data) => {
-  if (updateServer) {
-
-    // During normal operation, only update local if req was successful
-    const r = await addObjServer(res, data)
-    if (r.ok) {
-      const obj = await r.json()
-      setState((state) => [...state, obj])
-      return obj
-    }
-    return
-  }
-  // If internet is down, create object locally with a randomised temp id.
-  // We'll update the id with the server when internet is back.
+const addObjLocal = (setState, data) => {
+  // Create object locally with a randomised temp id.
   const tempId = rand32()
-  const obj = {
+  const tempObj = {
     ...data,
     id: tempId,
   }
-  setState((state) => [...state, obj])
-  return obj
+  setState((state) => [...state, tempObj])
+  return tempObj
 }
+
+
+export const addObjCallback = (res, updateServer, setState) => async (data) => {
+  const oldState = getUpdatedValue(setState)
+
+  // A temp obj is received. We'll update the id with the server later.
+  const tempObj = addObjLocal(setState, data)
+
+  if (!updateServer) {
+    return tempObj
+  }
+
+  const r = await addObjServer(res, data)
+  if (!r.ok) {
+    // If req fails, revert state locally
+    setState(oldState)
+    return
+  }
+
+  const serverObj = await r.json()
+  setState((state) => state.map((obj) => obj.id === tempObj.id ? serverObj : obj))  // Updating the temp obj's id
+  return serverObj
+}
+
 
 
 // ---------------- DELETE  ----------------
@@ -64,13 +77,20 @@ const deleteObjLocal = (setState, id) => {
 }
 
 export const deleteObjCallback = (res, updateServer, setState) => async (id) => {
-  if (updateServer) {
-    const r = await deleteObjServer(res, id)
-    if (r.ok) {
-      deleteObjLocal(setState, id)
-    }
-  }
+  const oldState = getUpdatedValue(setState)
+
   deleteObjLocal(setState, id)
+
+  if (!updateServer) {
+    return
+  }
+
+  const r = await deleteObjServer(res, id)
+  if (!r.ok) {
+    setState(oldState)
+    return r
+  }
+  return r
 }
 
 
@@ -85,16 +105,21 @@ const editObjLocal = (setState, id, data) => {
 }
 
 export const editObjCallback = (res, updateServer, setState) => async (id, data) => {
-  if (updateServer) {
-    // During normal operation, only update local if req was successful
-    const r = await editObjServer(res, id, data)
-    if (r.ok) {
-      editObjLocal(setState, id, data)
-    }
-    return
-  }
+  const oldState = getUpdatedValue(setState)
+
   // If internet is down, just update local, we'll sync changes later
   editObjLocal(setState, id, data)
+
+  if (!updateServer) {
+    return r
+  }
+
+  const r = await editObjServer(res, id, data)
+  if (!r.ok) {
+    // If req fails, revert state locally
+    setState(oldState)
+  }
+  return r
 }
 
 
@@ -183,12 +208,12 @@ export const syncResources = async (setLists, setTasks, setTags) => {
   const lists = getUpdatedValue(setLists)
   const tasks = getUpdatedValue(setTasks)
   const tags = getUpdatedValue(setTags)
-  
+
   // No clobber protection - refuse to sync if user data is empty
   if (lists.length + tasks.length + tags.length === 0) {
     return
   }
-  
+
   const idMappings = new Map()  // A map to translate temp ids to final ids obtained from server
   // Lists before tasks because tasks have .list_id attr which needs to be mapped
   await syncResource('lists', lists, setLists, idMappings)

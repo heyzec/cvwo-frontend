@@ -10,7 +10,7 @@ import Context from 'utils/Context'
 import { getUser } from 'utils/user'
 import { syncResources } from 'utils/resource'
 import { objectHashed } from 'utils/funcs'
-import { vimAddListener, vimDispatcher } from 'utils/helpers'
+import { vimAddListener, vimRemoveListener, vimDispatcher } from 'utils/helpers'
 
 import useStorageState from 'modules/useStorageState'
 import Loading from 'modules/Loading'
@@ -104,14 +104,18 @@ const App = () => {
     }
     const asyncToDo = async () => {  // React's useEffect dislikes async functions
       setShowLoading(true)
+      const t = setTimeout(() => context.toasts.info("Backend is waking up from hibernation, please hold on...", 6000), 8000)
       const userDetails = await getUser()
+      clearTimeout(t)
       if (userDetails === undefined) {
         // A bad request/network error occurred.
-        context.toasts.error("An error has occured.")
+        context.toasts.error("Unable to connect to server. You are in offline mode.")
+        loadFromStorage(user, setLists, setTasks, setTags)
+        setInternet(false)
         setShowLoading(false)
         return
       }
-      
+
       setUser(userDetails)
       loadFromStorage(user, setLists, setTasks, setTags)
       if (!user) {
@@ -168,25 +172,22 @@ const App = () => {
 
   const [keys, setKeys] = useState("")
   const [keyTimeout, setKeyTimeout] = useState(null)
-  
-  
+
+
   useEffect(() => {
     const arr = []
     arr.push(vimAddListener(keyMappings, 'x', () => {
-    if (!darkMode) {
-        setDarkMode(true)
-        context.toasts.info("Dark mode enabled!")
-      } else {
-        setDarkMode(false)
-        context.toasts.info("Dark mode disabled.")
-      }
+      setDarkMode((mode) => !mode)
+      context.toasts.info(`Dark mode ${darkMode ? "disabled." : "enabled!"}`)
     }))
     arr.push(vimAddListener(keyMappings, 'Control', () => {
       context.magic()
     }))
+    return () => arr.forEach(vimRemoveListener)
   }, [darkMode])
 
 
+  // This handles all (exclude when input is focused) key presses for shortcuts
   useEffect(() => {
     const keyPressed = (e) => {
       vimDispatcher(e, keyMappings, setKeys, setKeyTimeout, 800, context)
@@ -200,7 +201,7 @@ const App = () => {
   const magic = async (e) => {
     context.toasts.success("You've created a delayed toast")
     context.toasts.delayedSuccess("I'm a delayed toast!")
-    console.log(document.activeElement)
+    console.log(keyMappings)
   }
   context.setMagic(magic)
 

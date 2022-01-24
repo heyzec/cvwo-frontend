@@ -6,7 +6,7 @@ import { FaClipboardList } from 'react-icons/fa'
 import { BsFillGearFill } from 'react-icons/bs'
 
 import { signOut } from 'utils/user'
-import { attachListener } from 'utils/helpers'
+import { attachListener, vimAddListener, vimRemoveListener } from 'utils/helpers'
 import IconButton from 'material/IconButton'
 import Paper from 'material/Paper'
 import Button from 'material/Button'
@@ -22,12 +22,13 @@ const Header = ({ context }) => {
   const [searchActive, setSearchActive] = useState(false)
   const [nowString, setNowString] = useState(dayjs().format("dddd, DD MMMM YYYY, HH:mm"))
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [keyMappings, setKeyMappings] = [context.getKeyMappings(), context.setKeyMappings]
 
   const navigate = useNavigate()
   const location = useLocation()
 
   const user = context.getUser()
- 
+
 
   /** Opens user profile menu. Close it only if the user clicks elsewhere. */
   const userImageClicked = (e) => {
@@ -64,11 +65,19 @@ const Header = ({ context }) => {
   const signinButtonClicked = (e) => navigate("/signin")
   const signupButtonClicked = (e) => navigate("/signup")
 
-  const signoutButtonClicked = async (e) => {
-    await signOut(context, navigate)
-  }
+  const signoutButtonClicked = async (e) => signOut(context, navigate)
 
   const settingsClicked = (e) => navigate('/settings')
+
+
+  useEffect(() => {
+    const helper = () => signOut(context, navigate)
+    const arr = []
+    arr.push(vimAddListener(keyMappings, ':qEnter', helper))
+    arr.push(vimAddListener(keyMappings, 'ZZ', helper))
+    arr.push(vimAddListener(keyMappings, 'ZQ', helper))
+    return () => arr.forEach(vimRemoveListener)
+  }, [])
 
 
   return (
@@ -94,11 +103,11 @@ const Header = ({ context }) => {
             </IconButton>
           ) : (
             <>
-            <Tooltip text="Personalisation">
-              <IconButton onClick={settingsClicked}>
-                <BsFillGearFill size="16"/>
-              </IconButton>
-            </Tooltip>
+              <Tooltip text="Personalisation">
+                <IconButton onClick={settingsClicked}>
+                  <BsFillGearFill size="16" />
+                </IconButton>
+              </Tooltip>
               <Button className="header__signin" onClick={signinButtonClicked}>
                 Sign in
               </Button>
