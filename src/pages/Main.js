@@ -272,6 +272,7 @@ const Main = ({ context }) => {
           task={task}
           isCreated={true}
           isSelected={selectedFunc && selectedFunc(i)}
+          importedTags={imports?.tags}        // All tags associated to the imported task
         />
       )
     }

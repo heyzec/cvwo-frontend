@@ -17,7 +17,8 @@ import Paper from 'material/Paper'
 
 import 'components/Task.css'
 
-const Task = ({ context, task, isCreated, isSelected }) => {
+const Task = ({ context, task, isCreated, isSelected, importedTags }) => {
+
 
   // ---------------- Retrieve states from context object  ----------------
   const tags = context.getTags()
@@ -259,8 +260,11 @@ const Task = ({ context, task, isCreated, isSelected }) => {
       return null
     }
 
-    return task.tags.map((text) => {
-      const tag = tags.find((tag) => tag.text === text)
+    return task.tags.map((tagText) => {
+      let tag = tags.find((tag) => tag.text === tagText)
+      if (!tag && importedTags) {
+        tag = importedTags.find((tag) => tag.text === tagText)
+      }
       const cross = (
         tagsOpen
           ? <FaTimes className="clickable" size="12" onClick={genCrossClicked(tag)} />
