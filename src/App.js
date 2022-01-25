@@ -25,7 +25,7 @@ if (!process.env.REACT_APP_FRONTEND_URL) {
 const App = () => {
 
   // ---------------- Initialise context object and associated states ----------------
-  const context = new Context()
+  const [context,] = useState(() => new Context())
 
   const [lists, setLists] = useState(null)                             // User data
   const [tasks, setTasks] = useState(null)                             // User data
@@ -38,18 +38,14 @@ const App = () => {
   const [user, setUser] = useStorageState("user", null)              // Stores object containing user details (kept in local storage)
   context.setUserCallbacks(() => user, setUser)
 
-  const [selectedListId, setSelectedListId] = useState(null)         // The current list user is looking at
-  context.setSelectedListIdCallbacks(
-    () => selectedListId, setSelectedListId
-  )
 
   const [internet, setInternet] = useState(navigator.onLine)         // Whether or not online - affects some behaviour of app
   context.setInternetCallbacks(() => internet, setInternet)
 
-  const [showLoading, setShowLoading] = useState(false)              // The Loading components requires a state too  
+  const [showLoading, setShowLoading] = useState(true)              // The Loading components requires a state too  
   context.setShowLoadingCallbacks(() => showLoading, setShowLoading)
 
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useStorageState("darkMode", false)
   context.setDarkModeCallbacks(() => darkMode, setDarkMode)
 
   const [keyMappings, setKeyMappings] = useState([])
@@ -103,7 +99,6 @@ const App = () => {
       return
     }
     const asyncToDo = async () => {  // React's useEffect dislikes async functions
-      setShowLoading(true)
       const t = setTimeout(() => context.toasts.info("Backend is waking up from hibernation, please hold on...", 6000), 8000)
       const userDetails = await getUser()
       clearTimeout(t)
@@ -128,6 +123,8 @@ const App = () => {
         context.fetchLists()
       ])
       setShowLoading(false)
+      
+      
       window.addEventListener("offline", () => {
         setInternet(false)
         context.toasts.error("You are offline!")
@@ -135,6 +132,18 @@ const App = () => {
     }
     asyncToDo()
   }, [])
+  
+
+  
+  // useEffect(() => {
+  //   const timerId = setInterval(
+  //     () => setNowString(dayjs().format("dddd, DD MMMM YYYY, HH:mm")),
+  //     1000
+  //   )
+
+  //   // Return cleanup function when component unmounts
+  //   return () => clearInterval(timerId)
+  // }, [])
 
   // On data changes, update local storage and check if need to sync with server
   useEffect(() => {
@@ -142,6 +151,7 @@ const App = () => {
       setLastHash(objectHashed({ lists, tasks, tags }))
     }
     putIntoStorage(user, lists, tasks, tags)
+
 
     const handler = (e) => {
       if (!user) {
@@ -190,10 +200,13 @@ const App = () => {
   // This handles all (exclude when input is focused) key presses for shortcuts
   useEffect(() => {
     const keyPressed = (e) => {
+      if (showLoading) {
+        return
+      }
       vimDispatcher(e, keyMappings, setKeys, setKeyTimeout, 800, context)
     }
     window.addEventListener('keydown', keyPressed)
-  }, [])
+  }, [showLoading])
 
 
   // ---------------- Misc  ----------------

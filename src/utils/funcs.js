@@ -44,7 +44,7 @@ export const traverseForParents = (elem) => {
  */
 export const keepWithinBounds = (n, min, max, cycle = false) => {
   if (n < min) {
-    return cycle ? max : min
+    return cycle ? max - 1 : min
   } else if (n > max - 1) {
     return cycle ? min : max - 1
   }

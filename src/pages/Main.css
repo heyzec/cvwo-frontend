@@ -1,4 +1,11 @@
-.main__import-notice {
+.main {
+  height: 100%;
+  overflow-y: auto;
+  flex-direction: column;
+  display: flex;
+}
+
+.main__notice {
   box-sizing: border-box;
   width: 80%;
   padding: 1rem 5rem;
@@ -35,7 +42,7 @@
 
 .main__share-popup {
   display: inline-flex;
-  padding: 0.5rem;
+  padding: 0 0.5rem;
   width: 25rem;
   position: absolute;
   transform: translateY(100%);
@@ -43,6 +50,7 @@
   top: 0;
   z-index: 1;
   justify-content: center;
+  align-items: center;
   
   background-color: var(--background-popup);
   color: var(--text-themed);
@@ -78,4 +86,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+footer {
+  display: block;
+  width: 100%;
+  margin: auto;
+  /* position:sticky; */
+  /* bottom:0; */
+}
+
+footer a, footer span {
+  font-size: small;
+  color: var(--text-themed);
+}
+
+.main__spacer {
+  flex: 1;
 }

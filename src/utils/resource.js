@@ -26,18 +26,21 @@ export const fetchObjCallback = (res, updateServer, setState) => async () => {
 
 // ---------------- CREATE  ----------------
 
-const addObjServer = async (res, data) => {
+const addObjServer = async (res, data, list_id) => {
   // Adding tasks is the exception - need to access the specific list's resource and post to it instead.
-  const location = res === "tasks" ? `/lists/${data.list_id}/create` : `/${res}`
+  const location = list_id ? `/lists/${list_id}/create` : `/${res}`
   return await httpPost(location, data)
 }
 
-const addObjLocal = (setState, data) => {
+const addObjLocal = (setState, data, list_id) => {
   // Create object locally with a randomised temp id.
   const tempId = rand32()
   const tempObj = {
     ...data,
     id: tempId,
+  }
+  if (list_id) {
+    tempObj.list_id = list_id
   }
   setState((state) => [...state, tempObj])
   return tempObj
@@ -45,10 +48,12 @@ const addObjLocal = (setState, data) => {
 
 
 export const addObjCallback = (res, updateServer, setState) => async (data) => {
-  const oldState = getUpdatedValue(setState)
+  const list_id = res === "tasks" ? data.list_id : null
+
+  const oldState = getUpdatedValue(setState, list_id)
 
   // A temp obj is received. We'll update the id with the server later.
-  const tempObj = addObjLocal(setState, data)
+  const tempObj = addObjLocal(setState, data, list_id)
 
   if (!updateServer) {
     return tempObj
@@ -111,7 +116,7 @@ export const editObjCallback = (res, updateServer, setState) => async (id, data)
   editObjLocal(setState, id, data)
 
   if (!updateServer) {
-    return r
+    return
   }
 
   const r = await editObjServer(res, id, data)

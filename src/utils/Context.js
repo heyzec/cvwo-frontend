@@ -58,7 +58,7 @@ class Context {
   }
   addTask = async (list_id, data) => {
     return await addObjCallback("tasks", this.updateServer(), this.setTasks)(
-      { list_id, ...data }
+      { ...data, list_id }
     )
   }
   addTag = async (data) => {
