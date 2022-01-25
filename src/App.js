@@ -214,7 +214,6 @@ const App = () => {
   const magic = async (e) => {
     context.toasts.success("You've created a delayed toast")
     context.toasts.delayedSuccess("I'm a delayed toast!")
-    console.log(keyMappings)
   }
   context.setMagic(magic)
 

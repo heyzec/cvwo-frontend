@@ -18,7 +18,7 @@
 ## Local deployment
 Note: Frontend runs on port 4000, while backend runs on port 3000. (By default, React will use port 3000).
 
-Click here for [backend](https://github.com/heyzec/cvwo-backend2#local-deployment) instructions.
+Click here for [backend](https://github.com/heyzec/cvwo-backend#local-deployment) instructions.
 
 ### Frontend instructions
 0. Clone this repository and `cd` into it.

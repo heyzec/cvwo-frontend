@@ -50,3 +50,9 @@ export const keepWithinBounds = (n, min, max, cycle = false) => {
   }
   return n
 }
+
+export const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)]
+
+export const caseInsensitivePartial = (str, query) => str.toLowerCase().includes(query.toLowerCase())
+
+export const caseInsensitiveMatch = (str, query) => str.toLowerCase() === query.toLowerCase()

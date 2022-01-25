@@ -1,7 +1,6 @@
 import 'material/TextField.css'
 
-const TextField = ({ type, label, className, value, onChange, inputRef, ...otherProps }) => {
-
+const TextField = ({ type, label, className, value, onChange, inputRef, fixedLabel, ...otherProps }) => {
   return (
     <div className={`textfield${className ? " " + className : ""}`}>
       <input
@@ -15,7 +14,7 @@ const TextField = ({ type, label, className, value, onChange, inputRef, ...other
       />
       <div className="textfield__outline"></div>
       <div className="textfield__text-wrapper">
-        <span className="textfield__text">{label}</span>
+        <span className={`textfield__text${fixedLabel ? " textfield--fixed" : ""}`}>{label}</span>
       </div>
     </div>
   )

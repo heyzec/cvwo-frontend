@@ -6,7 +6,6 @@ import { FcGoogle } from 'react-icons/fc'
 
 import { changePassword, changeEmail, submitAvatar } from 'utils/settings'
 import { getUser, deleteAccount, authGithubRedirect, authGoogleRedirect } from 'utils/user'
-import { httpGet } from 'utils/network'
 
 import ResponsivePage from 'modules/ResponsivePage'
 import Header from 'components/Header'
@@ -31,7 +30,7 @@ const Settings = ({ context }) => {
   const [googleLinked, setGoogleLinked] = useState(null)
 
   const [currentTab, setCurrentTab] = useState(0)
-  
+
   const [darkMode, setDarkMode] = [context.getDarkMode(), context.setDarkMode]
 
 
@@ -116,10 +115,10 @@ const Settings = ({ context }) => {
     authGoogleRedirect()
   }
 
-  const getAvatar = (e) => {
-    httpGet('/getavatar')
-  }
-  
+  // const getAvatar = (e) => {
+  //   httpGet('/getavatar')
+  // }
+
 
 
   // ---------------- Tabs  ----------------
@@ -139,8 +138,7 @@ const Settings = ({ context }) => {
     </div>
   )
 
-  const getAccountTab = () =>  <>
-    <Button onClick={getAvatar}>HEHE</Button>
+  const getAccountTab = () => <>
     <div>
       <h1>Change display name</h1>
       <span>Your current name is blank</span>
@@ -185,48 +183,51 @@ const Settings = ({ context }) => {
       <h1>Linked accounts</h1>
       <span>Link your account for a seamless login experience!</span>
       <table className="settings__table">
-        <tr>
-          <td>
-            <BsGithub size="35" />
-          </td>
-          {
-            githubLinked
-              ? <>
-                <td>
-                  <span>You have linked your GitHub account.</span>
-                </td>
-              </>
-              : <>
-                <td>
-                  <span>Click here to link your GitHub account!</span>
-                </td>
-                <td>
-                  <Button onClick={extAuthGithubClicked} variant="outlined">Link</Button>
-                </td>
-              </>
-          }
-        </tr>
-        <tr>
-          <td>
-            <FcGoogle size="35" />
-          </td>
-          {
-            googleLinked
-              ? <>
-                <td>
-                  <span>You have linked your Google account.</span>
-                </td>
-              </>
-              : <>
-                <td>
-                  <span>Click here to link your Google account!</span>
-                </td>
-                <td>
-                  <Button onClick={extAuthGoogleClicked} variant="outlined">Link</Button>
-                </td>
-              </>
-          }
-        </tr>
+        <tbody>
+          <tr>
+            <td>
+              <BsGithub size="35" />
+            </td>
+            {
+              githubLinked
+                ? <>
+                  <td>
+                    <span>You have linked your GitHub account.</span>
+                  </td>
+                </>
+                : <>
+                  <td>
+                    <span>Click here to link your GitHub account!</span>
+                  </td>
+                  <td>
+                    <Button onClick={extAuthGithubClicked} variant="outlined">Link</Button>
+                  </td>
+                </>
+            }
+          </tr>
+          <tr>
+            <td>
+              <FcGoogle size="35" />
+            </td>
+            {
+              googleLinked
+                ? <>
+                  <td>
+                    <span>You have linked your Google account.</span>
+                  </td>
+                </>
+                : <>
+                  <td>
+                    <span>Click here to link your Google account!</span>
+                  </td>
+                  <td>
+                    <Button onClick={extAuthGoogleClicked} variant="outlined">Link</Button>
+                  </td>
+                </>
+            }
+          </tr>
+
+        </tbody>
       </table>
     </div>
     <div>

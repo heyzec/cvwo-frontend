@@ -8,6 +8,12 @@
   font-size: smaller;
 }
 
+.tags-selector__item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .tags-selector__tags {
   overflow-y: auto;
   max-height: 60vh;

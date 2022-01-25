@@ -6,7 +6,6 @@
 .searchbar__box {
   width: 0;
   transition: width 200ms ease-in-out;
-  color: white;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -15,6 +14,10 @@
 .searchbar__box--active {
   width: 14rem;
   overflow: visible;
+}
+
+.searchbar__input {
+  color: var(--theme-purple);
 }
 
 .searchbar__dropdown-wrapper {
@@ -47,15 +50,16 @@
 }
 
 .searchbar__num {
-  background-color: var(--background-popup);
-  border-radius: 50%;
+  position: absolute;
   width: 1rem;
   height: 1rem;
-  position: absolute;
-  font-size: small;
-  vertical-align: middle;
-  
   top: 0;
   right: 0;
 
+  color: var(--text-primary-dark);
+  background-color: var(--background-popup);
+  border-radius: 50%;
+  font-size: small;
+  line-height: 1rem;
+  pointer-events: none;
 }

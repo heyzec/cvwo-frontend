@@ -67,8 +67,8 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
   }
 
 
-  const genOnClick = (tagId) => {
-    const index = tags.findIndex((tag) => tag.id === tagId)
+  const flipBoolByText = (tagText) => {
+    const index = tags.findIndex((tag) => tag.text === tagText)
     // Flip the index-th bool in the array
     setSearchBools((bools) => {
       bools = [...bools]  // Create a new array first
@@ -78,7 +78,14 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
   }
 
   /** Opens menu for user to choose tags. Close it only if the user clicks elsewhere. */
-  const tagsIconClicked = (e) => setIsOpen(!isOpen)
+  const tagsIconClicked = (e) => {
+    attachListener({
+      target: window,
+      preRemoval: () => setIsOpen(false),
+      exclusionSelector: ".searchbar__dropdown-wrapper"
+    })
+    setIsOpen(!isOpen)
+  }
 
   const inputKeyDowned = (e) => {
     if (!searchActive) {
@@ -88,6 +95,10 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
       e.stopPropagation()
       cancelSearch()
     }
+  }
+
+  const enterMatched = (searchValue) => {
+    flipBoolByText(searchValue)
   }
 
 
@@ -103,7 +114,7 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
     }))
     return () => arr.forEach(vimRemoveListener)
   }, [selectedListId])
-  
+
 
   const nBoolsTrue = searchBools.filter(Boolean).length
 
@@ -135,14 +146,16 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
           </Tooltip>
           {
             !nBoolsTrue ? null
-            : <div className="searchbar__num">{nBoolsTrue}</div>
+              : <div className="searchbar__num">{nBoolsTrue}</div>
           }
           <div className={`searchbar__dropdown-wrapper${isOpen ? "" : " remove"}`}>
             {
               tags && isOpen
                 ? <TagsSelector
+                  context={context}
                   tags={tags}
-                  genOnClick={genOnClick}
+                  genOnClick={flipBoolByText}
+                  enterMatched={enterMatched}
                   bools={searchBools}
                 />
                 : null

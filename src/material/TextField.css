@@ -41,7 +41,8 @@
 }
 
 .textfield__input:focus ~ .textfield__text-wrapper .textfield__text,
-  input:not(.textfield__input[value=""]) ~ .textfield__text-wrapper .textfield__text {
+  input:not(.textfield__input[value=""]) ~ .textfield__text-wrapper .textfield__text,
+  .textfield__text.textfield--fixed {
   background-color: var(--background-base);
   font-size: 67.25%;
   transform: translate(0, -2em);

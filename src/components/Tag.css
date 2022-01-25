@@ -4,7 +4,7 @@
   padding: 3px 6px;
   display: inline-block;
   height: 1rem;
-  margin: 5px;
+  /* margin: 5px; */
   width: fit-content;  /* Stop it from expanding when container has additional space*/
   white-space: nowrap;
   

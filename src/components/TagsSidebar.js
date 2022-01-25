@@ -4,7 +4,8 @@ import { FaPlus } from 'react-icons/fa'
 import { HiOutlineDotsVertical } from 'react-icons/hi'
 import svgColorWheel from 'resources/colorwheel.png'
 
-import { validateColor } from 'utils/funcs'
+import { colorPalatte } from 'utils/constants'
+import { pickRandom, validateColor } from 'utils/funcs'
 import { attachListener } from 'utils/helpers'
 import Tag from 'components/Tag'
 
@@ -17,17 +18,6 @@ import Paper from 'material/Paper'
 
 import 'components/TagsSidebar.css'
 
-const colorPalatte = [
-  "#f5714d",
-  "#b7758c",
-  "#7cabc9",
-  "#f0e6e7",
-  "#e8b689",
-  "#ed9ec9",
-  "#f0d9b2",
-  "#fcca65",
-  "#bde0ed",
-]
 
 const TagsSidebar = ({ context }) => {
 
@@ -56,7 +46,7 @@ const TagsSidebar = ({ context }) => {
 
   const createTagClicked = () => {
     setTagEditMode("create")
-    setColorValue(colorPalatte[Math.floor(Math.random() * colorPalatte.length)])
+    setColorValue(pickRandom(colorPalatte))
     setEditorOpen(true)
     attachListener({
       target: window,
@@ -115,8 +105,8 @@ const TagsSidebar = ({ context }) => {
         return
       }
       await context.addTag({
-        "text": tagText,
-        "color": colorValue
+        text: tagText,
+        color: colorValue
       })
     } else if (tagEditMode.match(/^edit\d+$/)) {
       const tagId = parseInt(tagEditMode.match(/\d+/)[0])
@@ -169,18 +159,6 @@ const TagsSidebar = ({ context }) => {
   }
 
 
-//   useEffect(() => {
-//     const listener = (e) => {
-//       if (e.target.closest(".tags__sidebar-editor")) {
-//         return
-//       }
-//       setEditorOpen(false)
-//     }
-
-//     window.addEventListener('click', listener)
-
-//     return () => window.removeEventListener('click', listener)
-//   }, [])
 
   /**
   * Not an event handler, but generates an event handler. This event handler
