@@ -31,8 +31,9 @@
   opacity: 0;
   top: 1rem;
   transform: translateX(-50%) scale(75%);
+  z-index: -1;
 
-  transition-property: opacity, top, transform;
+  transition-property: opacity, top, transform, z-index;
   transition: 100ms;
 }
 

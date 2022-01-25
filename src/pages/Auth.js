@@ -120,7 +120,7 @@ const Auth = ({ type, context }) => {
                 : "Let's go!"
             }
           </Button>
-          <div class="auth__separator">or instead</div>
+          <div className="auth__separator">or instead</div>
           <div className="auth__external">
             <Button
               className="auth__ext-btn"

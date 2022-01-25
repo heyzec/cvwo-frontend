@@ -6,7 +6,6 @@ import 'modules/Toasts.css'
 
 const Toast = ({ text, color, duration }) => {
   const [shrinking, setShrinking] = useState(false)
-  const self = useRef(null)
 
   useEffect(() => {
     setTimeout(() => {
@@ -19,7 +18,7 @@ const Toast = ({ text, color, duration }) => {
   }
 
   return (
-    <Paper ref={self} elevation="3" className={`toast-box${shrinking ? " toast-shrinking" : ""}`} style={style}>
+    <Paper elevation="3" className={`toast-box${shrinking ? " toast-shrinking" : ""}`} style={style}>
       {text}
     </Paper>
   )

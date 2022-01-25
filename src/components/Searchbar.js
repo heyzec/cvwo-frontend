@@ -90,14 +90,6 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
     }
   }
 
-  // Pressing '/' also triggers search
-  useEffect(() => {
-    const obj = vimAddListener(keyMappings, '/', (e) => {
-      e.preventDefault()
-      searchIconClicked(true)
-    })
-    return () => vimRemoveListener(obj)
-  }, [])
 
   // Pressing '/' also triggers search
   useEffect(() => {
@@ -110,7 +102,10 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
       cancelSearch()
     }))
     return () => arr.forEach(vimRemoveListener)
-  }, [])
+  }, [selectedListId])
+  
+
+  const nBoolsTrue = searchBools.filter(Boolean).length
 
   return (
     <div className="searchbar">
@@ -138,9 +133,13 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
               <BsFillTagsFill />
             </IconButton>
           </Tooltip>
+          {
+            !nBoolsTrue ? null
+            : <div className="searchbar__num">{nBoolsTrue}</div>
+          }
           <div className={`searchbar__dropdown-wrapper${isOpen ? "" : " remove"}`}>
             {
-              isOpen
+              tags && isOpen
                 ? <TagsSelector
                   tags={tags}
                   genOnClick={genOnClick}

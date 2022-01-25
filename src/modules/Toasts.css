@@ -3,6 +3,7 @@
   top: 50px;
   left: 0;
   right: 0;
+  padding: 2rem;
   
   display: flex;
   flex-direction: column;
@@ -24,6 +25,7 @@
   background-color: blueviolet;
   border-radius: 10px;
   color: var(--translucent-black);
+  pointer-events: auto;
   
   /* Aligning contents */
   display: flex;

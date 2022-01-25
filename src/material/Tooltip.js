@@ -1,24 +1,27 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import 'material/Tooltip.css'
 
 const Tooltip = ({ text, children, delay }) => {
   const [visible, setVisible] = useState(false)
-  const [delayHandler, setDelayHandler] = useState(null)
+  const [timeoutId, setTimeoutId] = useState(null)
   
   delay = delay ? delay : 500  // Set default delay to 500ms
   
   const contentEntered = (e) => {
-    setDelayHandler(setTimeout(() => {
+    setTimeoutId(setTimeout(() => {
       setVisible(true)
     }, delay))
   }
   
   const contentLeft = (e) => {
-    clearTimeout(delayHandler)
+    clearTimeout(timeoutId)
     setVisible(false)
   }
 
+  useEffect(() => {  // Need clear timeout on unmounting (React will warn)
+    return () => clearTimeout(timeoutId)
+  }, [timeoutId])
   
   return (
     <div className="tooltip">

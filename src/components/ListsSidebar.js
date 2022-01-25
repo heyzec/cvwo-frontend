@@ -21,7 +21,7 @@ const ListsSidebar = ({ context }) => {
       return
     }
     const newList = await context.addList({
-      "text": userInput
+      text: userInput
     })
     setSelectedListId(newList.id)
   }

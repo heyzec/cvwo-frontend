@@ -2,15 +2,16 @@
   width: 8rem;
   padding: 5px;
 
-  color: black;  /* For icons inside to inherit */
+  color: var(--text-primary-dark);
   background-color: var(--background-popup);
   border: 1px solid var(--divider-color);
   font-size: smaller;
 }
 
 .tags-selector__tags {
-  overflow-y: scroll;
+  overflow-y: auto;
   max-height: 60vh;
   align-items: center;
   font-size: small;
+  white-space: nowrap;
 }

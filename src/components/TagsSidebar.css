@@ -48,7 +48,7 @@
 .tags-sidebar__float-wrap {
   position: fixed;
   z-index: 1;
-  animation: dropin 150ms forwards;  /* Defined in App.css */
+  animation: dropin 100ms forwards;  /* Defined in App.css */
 }
 
 .tags-sidebar__float {
@@ -72,7 +72,7 @@
   height: 0;
   opacity: 0;
   transition-property: height, opacity;
-  transition-duration: 400ms, 400ms;
+  transition-duration: 300ms, 300ms;
 }
 
 .tags-sidebar__editor.tags--editing {

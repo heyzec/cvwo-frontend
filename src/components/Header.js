@@ -53,9 +53,7 @@ const Header = ({ context }) => {
     )
 
     // Return cleanup function when component unmounts
-    return () => {
-      clearInterval(timerId)
-    }
+    return () => clearInterval(timerId)
   }, [])
 
 

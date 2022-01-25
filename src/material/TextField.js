@@ -13,6 +13,7 @@ const TextField = ({ type, label, className, value, onChange, inputRef, ...other
         onChange={onChange}
         {...otherProps}
       />
+      <div className="textfield__outline"></div>
       <div className="textfield__text-wrapper">
         <span className="textfield__text">{label}</span>
       </div>

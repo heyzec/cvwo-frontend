@@ -18,7 +18,7 @@ export const MuiDatePicker = ( { value, setValue }) => {
         renderInput={({ inputRef, inputProps, InputProps }) => (
           <div className="picker__wrap">
             <div ref={inputRef}>
-              <TextField label="Date" {...inputProps} />
+              <TextField label="Date" fixedLabel {...inputProps} />
             </div>
             {InputProps?.endAdornment}
           </div>
@@ -42,7 +42,7 @@ export const MuiTimePicker = ({ value, setValue }) => {
         renderInput={({ inputRef, inputProps, InputProps }) => {
           return <div className="picker__wrap">
             <div ref={inputRef}>
-              <TextField label="Time" {...inputProps} />
+              <TextField label="Time" fixedLabel {...inputProps} />
             </div>
             {InputProps?.endAdornment}
           </div>

@@ -13,10 +13,10 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
 
   // ---------------- Validate input props  ----------------
   if (
-    (bools && !tags) ||
+    (!tags) ||
     (bools && bools.length !== 0 && tags.length !== bools.length)
   ) {
-    console.warn("Invalid input received by TagsSelector component.")
+    console.error("Invalid input received by TagsSelector component.")
   }
 
   const [searchValue, setSearchValue] = useState("")
@@ -33,6 +33,7 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
 
     tableContents.push(
       <SelectableListItem
+        key={tag.id}
         onClick={(e) => {
           genOnClick(tag.id)
           setSearchValue("")
@@ -41,7 +42,6 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
         <div>
           <TiTick className={bools && bools[i] ? "" : "hidden"} />
           <Tag
-            key={tag.id}
             tag={tag}
           />
         </div>
@@ -51,7 +51,7 @@ const TagsSelector = ({ tags, bools, genOnClick }) => {
 
 
   return (
-    <Paper elevation="4" className="tags-selector" >
+    <Paper elevation="3" className="tags-selector" >
       <TextField label="Search tags" value={searchValue} onChange={valueChanged} />
       <div className="tags-selector__tags">
         {
