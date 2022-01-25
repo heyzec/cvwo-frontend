@@ -4,9 +4,13 @@ const githubAuthoriseUrl = 'https://github.com/login/oauth/authorize'
 const googleAuthoriseUrl = 'https://accounts.google.com/o/oauth2/v2/auth'
 
 
+/** Returns an object with user details if user session data is in cookies. If error occurs, returns undefined. */
 export const getUser = async () => {
   const r = await httpGet("/user")
-  return await r.json()
+  if (r.ok) {
+    return await r.json()
+  }
+  return undefined
 }
 
 export const signUp = async (context, navigate, email, password) => {

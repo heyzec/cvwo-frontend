@@ -14,16 +14,9 @@
   padding: 0 15px;
 }
 
-.header__signin {
-  /* color: var(--text-primary-light); */
-}
 .header__signup {
-  color: blue;
+  color: var(--theme-orange);
 }
-.header__signout {
-  /* color: var(--text-primary-light); */
-}
-
 
 #header__title {
   display: flex;

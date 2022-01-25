@@ -1,8 +1,10 @@
 import Paper from 'material/Paper'
 import 'material/Button.css'
 
-const Button = ({ variant, startIcon, endIcon, children, className, onClick }) => {
+const Button = ({ variant, startIcon, endIcon, children, className, onClick, ...otherProps }) => {
 
+  // https://css-tricks.com/how-to-recreate-the-ripple-effect-of-material-design-buttons/
+  // Also refer to comment by Joao Rodrigues
   const createRipple = (e) => {
     const button = e.currentTarget
     const diameter = Math.max(button.clientWidth, button.clientHeight) / 2
@@ -38,7 +40,10 @@ const Button = ({ variant, startIcon, endIcon, children, className, onClick }) =
   )
 
   return (
-    <button className={`button${variantClass}${className ? " " + className : ""}`} onClick={buttonClicked}>
+    <button className={`button${variantClass}${className ? " " + className : ""}`}
+      onClick={buttonClicked}
+      {...otherProps}
+    >
       {
         variant === "contained"
           ? (

@@ -120,18 +120,18 @@ const Auth = ({ type, context }) => {
                 : "Let's go!"
             }
           </Button>
+          <div className="auth__separator">or instead</div>
           <div className="auth__external">
             <Button
-              className="auth__ext-button"
+              className="auth__ext-btn"
               variant="outlined"
               startIcon={<BsGithub size="20" />}
               onClick={extAuthGithubClicked}
             >
               Login with GitHub
             </Button>
-            <div className="auth__spacer"></div>
             <Button
-              className="auth__ext-button"
+              className="auth__ext-btn"
               variant="outlined"
               startIcon={<FcGoogle size="20" />}
               onClick={extAuthGoogleClicked}

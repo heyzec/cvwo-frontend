@@ -1,18 +1,20 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
-import { GoSearch } from 'react-icons/go'
+import { MdSearch, MdSearchOff } from 'react-icons/md'
 import { BsFillTagsFill } from 'react-icons/bs'
 
-import { attachListener, getUpdatedValue } from 'utils/helpers'
+import { attachListener, getUpdatedValue, vimAddListener, vimRemoveListener } from 'utils/helpers'
 import TagsSelector from 'components/TagsSelector'
 import IconButton from 'material/IconButton'
 import TextField from 'material/TextField'
+import Tooltip from 'material/Tooltip'
+
 
 import 'components/Searchbar.css'
 
 const Searchbar = ({ context, searchActive, setSearchActive }) => {
 
-  /***** Retrieve states from context object *****/
+  // ---------------- Retrieve states from context object  ----------------
   const tags = context.getTags()
 
   // Value of input elem in searchbar
@@ -20,16 +22,24 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
   // An array of bools to indicate which tags are selected (and hence which to filter)
   const [searchBools, setSearchBools] = [context.getSearchBools(), context.setSearchBools]
 
+  const [selectedListId, setSelectedListId] = [context.getSelectedListId(), context.setSelectedListId]
+
   const [isOpen, setIsOpen] = useState(false)
 
-  const refSearchBar = useRef(null)
-  
-  // Opens the searchbar. Close it back only if the search params is empty and no tags were added.
+  const searchBarRef = useRef(null)
+
+  const [keyMappings, setKeyMappings] = [context.getKeyMappings(), context.setKeyMappings]
+
+
+  /** Opens the searchbar. Close it back only if the search params is empty and no tags were added. */
   const searchIconClicked = (e) => {
+    if (!selectedListId) {
+      context.toasts.success("Please select a list first!")
+      return
+    }
 
     if (!searchActive) {
-      refSearchBar.current.focus()
-
+      searchBarRef.current.focus()
       const preRemoval = () => {
         const searchValue = getUpdatedValue(setSearchValue)
         const searchBools = getUpdatedValue(setSearchBools)
@@ -38,12 +48,22 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
       attachListener({
         target: window,
         preRemoval,
-        postRemoval: () => setSearchActive(false),
-        exclusionSelector: ".searchbar__box, .searchbar__dropdown-wrapper"
+        postRemoval: cancelSearch,
+        exclusionSelector: ".searchbar"
       })
+      setSearchActive(true)
+      setSearchBools(tags.map(() => false))
+    } else {
+      cancelSearch()
     }
-    setSearchActive(!searchActive)
-    setSearchBools(tags.map(() => false))
+  }
+
+  const cancelSearch = () => {
+    setSearchValue("")
+    setIsOpen(false)
+    setSearchActive(false)
+    setSearchBools((bools) => bools.map(() => false))
+    searchBarRef.current.blur()  // Remove focus so that keyboard shortcuts are available again
   }
 
 
@@ -57,37 +77,69 @@ const Searchbar = ({ context, searchActive, setSearchActive }) => {
     })
   }
 
-  // Opens menu for user to choose tags. Close it only if the user clicks elsewhere.
-  const tagsIconClicked = (e) => {
-    attachListener({
-      target: window,
-      preRemoval: () => setIsOpen(false),
-      exclusionSelector: ".searchbar__dropdown-wrapper"
-    })
-    setIsOpen(!isOpen)
+  /** Opens menu for user to choose tags. Close it only if the user clicks elsewhere. */
+  const tagsIconClicked = (e) => setIsOpen(!isOpen)
+
+  const inputKeyDowned = (e) => {
+    if (!searchActive) {
+      return
+    }
+    if (['Esc', 'Escape'].includes(e.key)) {
+      e.stopPropagation()
+      cancelSearch()
+    }
   }
 
 
+  // Pressing '/' also triggers search
+  useEffect(() => {
+    const arr = []
+    arr.push(vimAddListener(keyMappings, '/', (e) => {
+      e.preventDefault()
+      searchIconClicked(true)
+    }))
+    arr.push(vimAddListener(keyMappings, 'Escape', (e) => {
+      cancelSearch()
+    }))
+    return () => arr.forEach(vimRemoveListener)
+  }, [selectedListId])
+  
+
+  const nBoolsTrue = searchBools.filter(Boolean).length
+
   return (
     <div className="searchbar">
-      <IconButton className="searchbar__icon" onClick={searchIconClicked}>
-        <GoSearch />
-      </IconButton>
+      <Tooltip text={searchActive ? "Cancel" : "Search tasks"}>
+        <IconButton className="searchbar__icon" onClick={searchIconClicked}>
+          {
+            searchActive
+              ? <MdSearchOff size="20" />
+              : <MdSearch size="20" />
+          }
+        </IconButton>
+      </Tooltip>
       <div className={`searchbar__box${searchActive ? " searchbar__box--active" : ""}`}>
         <TextField
-          inputRef={refSearchBar}
+          inputRef={searchBarRef}
           label="Search"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
+          onKeyDown={inputKeyDowned}
           className={`searchbar__input`}
         />
         <div className="searchbar__tags">
-          <IconButton onClick={tagsIconClicked}>
-            <BsFillTagsFill />
-          </IconButton>
+          <Tooltip text="Filter by tags">
+            <IconButton onClick={tagsIconClicked}>
+              <BsFillTagsFill />
+            </IconButton>
+          </Tooltip>
+          {
+            !nBoolsTrue ? null
+            : <div className="searchbar__num">{nBoolsTrue}</div>
+          }
           <div className={`searchbar__dropdown-wrapper${isOpen ? "" : " remove"}`}>
             {
-              isOpen
+              tags && isOpen
                 ? <TagsSelector
                   tags={tags}
                   genOnClick={genOnClick}

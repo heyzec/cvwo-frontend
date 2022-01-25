@@ -12,7 +12,7 @@ import { useState } from 'react'
   of event listener method instead.
 **/
 
-// This hook can set either sessionStorage or localStorage
+/** This hook can set either sessionStorage or localStorage */
 const useStorageState = (key, defaultValue, useSession = false) => {
   
   const storage = useSession ? window.sessionStorage : window.localStorage

@@ -9,7 +9,6 @@ const Tag = ({ tag, className, passRef, clickables, onClick }) => {
   const bgColor = (tag ? tag.color : "#888888")
   const fontColor = isBright(bgColor) ? "#000000" : "#FFFFFF"
   const displayText = tag.text || "Tag preview"
-  // const dataTagId = tag ? tag.id : null  // Later attach the tag's id as a data-* attribute to the DOM
 
   const style = {
     backgroundColor: bgColor,
@@ -17,7 +16,6 @@ const Tag = ({ tag, className, passRef, clickables, onClick }) => {
   }
 
   return (
-    // <div data-tag-id={dataTagId} className={`tag${className}`} style={style} onClick={onClick}>
     <div className={`tag${className}`} style={style} onClick={onClick}>
       <div className="tag__clickables">
         {clickables}

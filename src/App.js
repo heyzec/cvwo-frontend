@@ -6,10 +6,11 @@ import Auth from 'pages/Auth'
 import Settings from 'pages/Settings'
 import Sandbox from 'pages/Sandbox'
 
-import { Context } from 'utils/context'
+import Context from 'utils/Context'
 import { getUser } from 'utils/user'
 import { syncResources } from 'utils/resource'
 import { objectHashed } from 'utils/funcs'
+import { vimAddListener, vimRemoveListener, vimDispatcher } from 'utils/helpers'
 
 import useStorageState from 'modules/useStorageState'
 import Loading from 'modules/Loading'
@@ -23,12 +24,12 @@ if (!process.env.REACT_APP_FRONTEND_URL) {
 
 const App = () => {
 
-  /***** Initialise context object and associated states *****/
-  const context = new Context()
+  // ---------------- Initialise context object and associated states ----------------
+  const [context,] = useState(() => new Context())
 
-  const [lists, setLists] = useState([])                             // User data
-  const [tasks, setTasks] = useState([])                             // User data
-  const [tags, setTags] = useState([])                               // User data
+  const [lists, setLists] = useState(null)                             // User data
+  const [tasks, setTasks] = useState(null)                             // User data
+  const [tags, setTags] = useState(null)                               // User data
   context.setListsCallbacks(() => lists, setLists)
   context.setTasksCallbacks(() => tasks, setTasks)
   context.setTagsCallbacks(() => tags, setTags)
@@ -37,27 +38,27 @@ const App = () => {
   const [user, setUser] = useStorageState("user", null)              // Stores object containing user details (kept in local storage)
   context.setUserCallbacks(() => user, setUser)
 
-  const [selectedListId, setSelectedListId] = useState(null)         // The current list user is looking at
-  context.setSelectedListIdCallbacks(
-    () => selectedListId, setSelectedListId
-  )
 
   const [internet, setInternet] = useState(navigator.onLine)         // Whether or not online - affects some behaviour of app
   context.setInternetCallbacks(() => internet, setInternet)
 
-
-  /***** Initialise more states for use within this component *****/
-
-  const [lastHash, setLastHash] = useStorageState('lasthash', null)  // A hash of variables lists, tasks, tags (kept in local storage)
-  const [showLoading, setShowLoading] = useState(false)              // The Loading components requires a state too  
+  const [showLoading, setShowLoading] = useState(true)              // The Loading components requires a state too  
   context.setShowLoadingCallbacks(() => showLoading, setShowLoading)
 
-
-  const toastRef = useRef(null)                                         // Allows us to access functions in the Toasts component
-  context.setToastRef(() => toastRef)
-  
-  const [darkMode, setDarkMode] = useState(false)
+  const [darkMode, setDarkMode] = useStorageState("darkMode", false)
   context.setDarkModeCallbacks(() => darkMode, setDarkMode)
+
+  const [keyMappings, setKeyMappings] = useState([])
+  context.setKeyMappingsCallbacks(() => keyMappings, setKeyMappings)
+
+  // ---------------- Initialise more states for use within this component  ----------------
+
+  const [lastHash, setLastHash] = useStorageState('lasthash', null)  // A hash of variables lists, tasks, tags (kept in local storage)
+  const toastRef = useRef(null)                                      // Allows us to access functions in the Toasts component
+  context.setToastRef(() => toastRef)
+
+
+
 
 
   /***** Helper functions ****/
@@ -81,7 +82,7 @@ const App = () => {
   }
 
   const putIntoStorage = (user, lists, tasks, tags) => {
-    if (lists.length + tasks.length + tags.length === 0) {
+    if (!(lists?.length + tasks?.length + tags?.length)) {  // If all are length 0 or any is null
       return  // No need to store if there's no user data at all
     }
     const storageDataKey = user ? "user_data" : "guest_data"
@@ -92,16 +93,24 @@ const App = () => {
 
 
 
-  /***** useEffect hooks ****/
-
   // Run once only on component load
   useEffect(() => {
     if (window.location.href.includes('auth/callback')) {
       return
     }
     const asyncToDo = async () => {  // React's useEffect dislikes async functions
-      setShowLoading(true)
+      const t = setTimeout(() => context.toasts.info("Backend is waking up from hibernation, please hold on...", 6000), 8000)
       const userDetails = await getUser()
+      clearTimeout(t)
+      if (userDetails === undefined) {
+        // A bad request/network error occurred.
+        context.toasts.error("Unable to connect to server. You are in offline mode.")
+        loadFromStorage(user, setLists, setTasks, setTags)
+        setInternet(false)
+        setShowLoading(false)
+        return
+      }
+
       setUser(userDetails)
       loadFromStorage(user, setLists, setTasks, setTags)
       if (!user) {
@@ -114,6 +123,8 @@ const App = () => {
         context.fetchLists()
       ])
       setShowLoading(false)
+      
+      
       window.addEventListener("offline", () => {
         setInternet(false)
         context.toasts.error("You are offline!")
@@ -121,6 +132,18 @@ const App = () => {
     }
     asyncToDo()
   }, [])
+  
+
+  
+  // useEffect(() => {
+  //   const timerId = setInterval(
+  //     () => setNowString(dayjs().format("dddd, DD MMMM YYYY, HH:mm")),
+  //     1000
+  //   )
+
+  //   // Return cleanup function when component unmounts
+  //   return () => clearInterval(timerId)
+  // }, [])
 
   // On data changes, update local storage and check if need to sync with server
   useEffect(() => {
@@ -128,6 +151,7 @@ const App = () => {
       setLastHash(objectHashed({ lists, tasks, tags }))
     }
     putIntoStorage(user, lists, tasks, tags)
+
 
     const handler = (e) => {
       if (!user) {
@@ -154,31 +178,50 @@ const App = () => {
   }, [internet, lists, tasks, tags])
 
 
+  // ---------------- Detect keypresses and let vimDispatcher handle ----------------
 
-  /***** Misc *****/
-  // Function for testing purposes, triggered upon right clicking of app icon
+  const [keys, setKeys] = useState("")
+  const [keyTimeout, setKeyTimeout] = useState(null)
+
+
+  useEffect(() => {
+    const arr = []
+    arr.push(vimAddListener(keyMappings, 'x', () => {
+      setDarkMode((mode) => !mode)
+      context.toasts.info(`Dark mode ${darkMode ? "disabled." : "enabled!"}`)
+    }))
+    arr.push(vimAddListener(keyMappings, 'Control', () => {
+      context.magic()
+    }))
+    return () => arr.forEach(vimRemoveListener)
+  }, [darkMode])
+
+
+  // This handles all (exclude when input is focused) key presses for shortcuts
+  useEffect(() => {
+    const keyPressed = (e) => {
+      if (showLoading) {
+        return
+      }
+      vimDispatcher(e, keyMappings, setKeys, setKeyTimeout, 800, context)
+    }
+    window.addEventListener('keydown', keyPressed)
+  }, [showLoading])
+
+
+  // ---------------- Misc  ----------------
+  /** Function for testing purposes */
   const magic = async (e) => {
     context.toasts.success("You've created a delayed toast")
     context.toasts.delayedSuccess("I'm a delayed toast!")
+    console.log(keyMappings)
   }
   context.setMagic(magic)
-
-  const keyPressed = (e) => {
-    if (e.key === 'x') {
-      if (!darkMode) {
-        setDarkMode(true)
-        context.toasts.info("Dark mode enabled!")
-      } else {
-        setDarkMode(false)
-        context.toasts.info("Dark mode disabled.")
-      }
-    }
-  }
 
 
 
   return (
-    <div className={`App${darkMode ? " dark" : ""}`} onKeyPress={keyPressed} tabIndex="-1">
+    <div className={`App${darkMode ? " dark" : ""}`} >
       <ToastContainer ref={toastRef} />
       <Loading show={showLoading} />
       <Router>

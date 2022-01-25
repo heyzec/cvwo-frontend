@@ -12,13 +12,15 @@
   --theme-bluegray: #566175;
   --theme-gray: #f4f4f4;
   --theme-orange: orange;
+  --theme-purple: blueviolet;
 
   /* Material default colors for text */
-  --translucent-white:  rgb(255, 255, 255, 0.87);
-  --translucent-black: rgb(0, 0, 0, 0.87);
+  --translucent-white:  rgba(255, 255, 255, 0.87);
+  --translucent-black: rgba(0, 0, 0, 0.87);
   
   /* Material default colors */
-  --divider-color: rgba(0, 0, 0, 0.12);
+  --invisible-white: rgba(255, 255, 255, 0.12);
+  --invisible-black: rgba(0, 0, 0, 0.12);
 }
 
 
@@ -30,6 +32,8 @@
   --text-primary-light: var(--translucent-white);
   --text-primary-dark: var(--translucent-black);
   --text-themed: var(--theme-bluegray);              /* only applied to text within background colors */
+  
+  --divider-color: var(--invisible-black);
 }
 
 .App.dark {
@@ -40,6 +44,8 @@
   --text-primary-light: var(--translucent-black);
   --text-primary-dark: var(--translucent-white);
   --text-themed: var(--theme-gray);
+
+  --divider-color: var(--invisible-white);
 }
 
 .App {

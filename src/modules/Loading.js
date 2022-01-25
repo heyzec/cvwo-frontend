@@ -12,10 +12,12 @@ export const Spinner = ({ size = 32 }) => {
 }
 
 const Loading = ({ show, ref }) => {
-
+  
   const TRANSITION_DURATION = 150
+  
+  // SHOW: Show spinner, FADE: Overlay element is present, but hidden, REMOVE: Completely remove element from DOM
   const [SHOW, FADE, REMOVE] = [0, 1, 2]
-  const [state, setState] = useState(REMOVE)
+  const [state, setState] = useState(FADE)
 
   useEffect(() => {
     if (show) {

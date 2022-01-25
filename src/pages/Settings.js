@@ -41,7 +41,7 @@ const Settings = ({ context }) => {
   const navigate = useNavigate()
 
 
-  /***** Check for user details, but only after component is loaded *****/
+  // ---------------- Check for user details, but only after component is loaded  ----------------
   useEffect(() => {
     const asyncToDo = async () => {  // React's useEffect dislikes async functions
       const user = await getUser()
@@ -55,7 +55,7 @@ const Settings = ({ context }) => {
   }, [])
 
 
-  /***** Event handlers *****/
+  // ---------------- Event handlers  ----------------
   const emailValueChanged = (e) => setEmailValue(e.target.value)
   const oldPasswordValueChanged = (e) => setOldPasswordValue(e.target.value)
   const newPasswordValueChanged = (e) => setNewPasswordValue(e.target.value)
@@ -73,7 +73,7 @@ const Settings = ({ context }) => {
       return
     }
     alert("Email changed successfully.")
-    context.setUser(emailValue)
+    window.location.reload()
   }
 
   const changePasswordClicked = async (e) => {
@@ -122,7 +122,7 @@ const Settings = ({ context }) => {
   
 
 
-  /***** Tabs *****/
+  // ---------------- Tabs  ----------------
 
   const personalisationTab = (
     <div>
@@ -131,6 +131,7 @@ const Settings = ({ context }) => {
       <br />
       <span>Protip: Press <kbd>x</kbd> to toggle on or off!</span>
       <Button
+        className="settings__btn-dark-mode"
         onClick={() => setDarkMode((darkMode) => !darkMode)}
         variant="contained">
         {darkMode ? "Enable" : "Disable"}

@@ -7,21 +7,21 @@ import 'components/ListsSidebar.css'
 
 const ListsSidebar = ({ context }) => {
 
-  /***** Retrieve states from context object *****/
+  // ---------------- Retrieve states from context object  ----------------
   const lists = context.getLists()
   const [selectedListId, setSelectedListId] = [context.getSelectedListId(), context.setSelectedListId]
   
   const navigate = useNavigate()
 
 
-  /***** Event handlers *****/
+  // ---------------- Event handlers  ----------------
   const addListClicked = async (e) => {
     const userInput = prompt("Enter name of new list")
     if (!userInput) {
       return
     }
     const newList = await context.addList({
-      "text": userInput
+      text: userInput
     })
     setSelectedListId(newList.id)
   }
@@ -48,7 +48,7 @@ const ListsSidebar = ({ context }) => {
       </Button>
       <SelectableList className="lists-sidebar__lists">
         {
-          lists.map((list) => (
+          lists?.map((list) => (
             <SelectableListItem
               key={list.id}
               onClick={genListClicked(list)}

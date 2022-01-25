@@ -27,6 +27,10 @@
   color: var(--text-themed);
 }
 
+.settings__btn-dark-mode {
+  color: var(--theme-orange)
+}
+
 .settings__close-acc {
   color: darkred;
 }

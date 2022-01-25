@@ -1,6 +1,9 @@
 .textfield {
   position: relative;
-  height: 2.5em;
+  height: 2.5rem;
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
+  
   overflow-x: clip;
   overflow-y: visible;
 }
@@ -12,6 +15,14 @@
   padding: 0 1.2rem;
 
   outline: none;
+  color: var(--text-primary-dark);
+}
+
+.textfield__outline {
+  position: absolute;
+  inset: 0 0 0 0;
+  pointer-events: none;
+  
   border: 1px solid;
   border-color: var(--divider-color);
   border-radius: 0.2rem;
@@ -19,28 +30,25 @@
   transition: border-color 100ms ease-out;
 }
 
-.textfield__input:hover {
+.textfield__input:hover + .textfield__outline {
   border-width: 1px;
-  border-color: #252525;
+  border-color: var(--text-primary-dark);
 }
 
-.textfield__input:focus {
-  border-color: blueviolet;
-}
-
-.textfield__input:focus {
+.textfield__input:focus + .textfield__outline {
+  border-color: currentColor;
   border-width: 2px;
 }
 
-.textfield__input:focus + .textfield__text-wrapper .textfield__text,
-  :not(.textfield__input[value=""]) + .textfield__text-wrapper .textfield__text {
-  background-color: white;
+.textfield__input:focus ~ .textfield__text-wrapper .textfield__text,
+  input:not(.textfield__input[value=""]) ~ .textfield__text-wrapper .textfield__text {
+  background-color: var(--background-base);
   font-size: 67.25%;
   transform: translate(0, -2em);
 }
 
-.textfield__input:focus + .textfield__text-wrapper .textfield__text {
-  color: blueviolet;
+.textfield__input:focus ~ .textfield__text-wrapper .textfield__text {
+  color: currentColor;
 }
 
 .textfield__text-wrapper {
@@ -56,12 +64,15 @@
 .textfield__text {
   font-size: 100%;
   padding: 0 0.5rem;
+  white-space: nowrap;
 
   transform: translate(0);
-  color: black;
+  color: var(--text-primary-dark);
   background-color: transparent;
+  border-radius: 1rem;
 
   transition-property: transform, font-size, color, background-color;
   transition-duration: 150ms;
   transition-timing-function: ease-out;
 }
+
