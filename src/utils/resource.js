@@ -59,7 +59,7 @@ export const addObjCallback = (res, updateServer, setState) => async (data) => {
     return tempObj
   }
 
-  const r = await addObjServer(res, data)
+  const r = await addObjServer(res, data, list_id)
   if (!r.ok) {
     // If req fails, revert state locally
     setState(oldState)

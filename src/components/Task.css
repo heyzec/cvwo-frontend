@@ -51,6 +51,14 @@
   z-index: 1;
 }
 
+.task__date {
+  flex: 2;
+}
+
+.task__time {
+  flex: 1;
+}
+
 .tag-container {
   max-height: 50px;  /* not sure why 100% not working */
   overflow-y: hidden;

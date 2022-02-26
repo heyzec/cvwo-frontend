@@ -296,7 +296,7 @@ const Task = ({ context, task, isCreated, isSelected, importedTags }) => {
 
   return (
     <div className="task__wrapper">
-      <Paper className={`task${isEditing ? " task-edit" : ""}`} elevation={elevation} onClick={paperClicked}>
+      <Paper className={`task${isEditing || isCreating ? " task-edit" : ""}`} elevation={elevation} onClick={paperClicked}>
         <div className="task__checkbox">
           <Tooltip text={`Mark ${isDone ? "undone" : "done"}`}>
             <IconButton onClick={tickCircleClicked}>
